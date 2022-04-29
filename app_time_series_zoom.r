@@ -1,0 +1,2 @@
+# it might be possible to change how the Time Series graphs are made, or rather the data so as to make them facets. Put Trend and Seasonal into a new column labeled Type and then use facets to split them.
+# this will make a lot of the management of them easier, including zooming

@@ -1,0 +1,7 @@
+*.env
+*.RData
+* - Old.*
+@Old
+*.dcf
+*.png
+rsconnect
