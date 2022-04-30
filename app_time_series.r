@@ -50,7 +50,7 @@ TIME$timeTREND	=	function(COL, DELT = DATA$duration, ...)	{
 	TEXT	=	NULL
 	
 	ggplot(data = TS.df, aes(x = Index, y = Trend)) + 
-	ggtitle(paste0(COL, " - Time Series Trend")) + GRAPH$CAPTION + 
+	ggtitle(paste0(rem_(COL), " - Time Series Trend")) + GRAPH$CAPTION + 
 	geom_line(aes(color = TIME$COLORsets[[COL]]), show.legend = FALSE) + 
 	stat_smooth(na.rm = TRUE) + TEXT + 
 	scale_x_continuous(
@@ -69,7 +69,7 @@ TIME$timeSEAS	=	function(COL, DELT = DATA$duration, ...)	{
 	TEXT	=	NULL
 	
 	ggplot(data = TS.df, aes(x = Index, y = Seasonal + median(Trend, na.rm = TRUE))) +  
-	ggtitle(paste0(COL, " - Time Series Seasonal")) + GRAPH$CAPTION + 
+	ggtitle(paste0(rem_(COL), " - Time Series Seasonal")) + GRAPH$CAPTION + 
 	geom_line(aes(color = TIME$COLORsets[[COL]]), show.legend = FALSE) + 
 	# stat_smooth(na.rm = TRUE) + TEXT + 
 	scale_x_continuous(
