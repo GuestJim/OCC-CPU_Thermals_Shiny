@@ -94,12 +94,8 @@ server <- function(input, output, session) {
 
 	},	label = "Data Loading",	priority	=	10)
 
-	# observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-		# req(DATA$DATAS)
-		# output$test	=	renderText({"Test"})
-	# },	ignoreInit	=	TRUE)
-
 	source("app_tables.r", local = TRUE)
+	if (any(c(VIEW$GRAPHS, VIEW$HIST, VIEW$TSERIES)))	source("app_graphs_layers.r", local = TRUE)
 	if (VIEW$GRAPHS)	source("app_graphs.r", local = TRUE)
 	if (VIEW$HIST)		source("app_histograms.r", local = TRUE)
 	if (VIEW$TSERIES)	source("app_time_series.r", local = TRUE)
