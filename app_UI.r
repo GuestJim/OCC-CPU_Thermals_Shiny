@@ -311,7 +311,8 @@ ui	<-	fluidPage(
 	sidebarLayout(
 		sidebarPanel(
 			selectInput('dataSel',	label	=	"Data to Load",	selectize	=	FALSE,
-				choices	=	setNames(FILES, gsub(".env|.RData", "", names(FILES))), selected	=	FILES[1]
+				# choices	=	setNames(FILES, gsub(".env|.RData", "", names(FILES))), selected	=	FILES[1]
+				choices	=	FILES, selected	=	FILES[1]
 			),
 			actionButton(inputId	=	"dataSelLOAD",	label	=	"Load Selected Data"),
 			tabsetPanel(

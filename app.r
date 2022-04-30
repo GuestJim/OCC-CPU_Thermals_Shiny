@@ -35,7 +35,16 @@ source("app_functions.r", local	=	TRUE)
 
 FILES		=	list.files(pattern = "*.env$|*.RData$",	recursive = FALSE)
 FILES.names	=	unlist(sapply(FILES, strsplit, "/"), use.names = FALSE)
-FILES		=	setNames(FILES, FILES.names[grepl(".env|.RData", FILES.names)])
+# FILES		=	setNames(FILES, FILES.names[grepl(".env|.RData", FILES.names)])
+
+FILES	=	as.data.frame(cbind(
+	Test	=	sapply(FILES.names, function(IN) strsplit(IN, " ~ ")[[1]][1]),
+	Config	=	gsub(".RData", "", sapply(FILES.names, function(IN) strsplit(IN, " ~ ")[[1]][2])),
+	File	=	FILES.names
+))
+rownames(FILES) <- NULL
+FILES	=	as.list(by(FILES[, c("File")], FILES$Config, identity))
+
 mergeENV	=	function(env1, env2)	for (obj in ls(env2, all.names = TRUE))	assign(obj, get(obj, env2), envir = env1)
 
 source("app_UI.r", local = TRUE)
@@ -54,6 +63,7 @@ server <- function(input, output, session) {
 
 	output$subTitle	=	renderTable({TESTconfig()}, rownames = FALSE, colnames = FALSE, align = 'rl')
 	observeEvent(input$dataSelLOAD,	{
+		TEST <<-	input$dataSel
 		mergeENV(DATA, readRDS(input$dataSel))
 		#	I think <<- is needed so it places what is loaded into the environment created at the beginning of this script
 		DATA$LOAD	=	TRUE
