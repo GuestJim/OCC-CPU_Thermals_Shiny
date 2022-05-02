@@ -83,14 +83,14 @@ TIME$timeSEAS	=	function(COL, DELT = DATA$duration, ...)	{
 	theme(plot.title.position = "plot") + GRAPH$COLORS
 }
 
-
+if (VIEW$BRUSH) source("app_time_series_zoom.r", local = TRUE)
 
 observeEvent(list(input$dataSelLOAD, DATA$LOAD) ,{
 	req(DATA$dataALL)
 	
 	TS.df	<-	TIME$DF("CPU_Temp")
-	output$timeTEMPtrend	=	renderPlot({	TIME$timeTREND("CPU_Temp", TS.df = TS.df)	})
-	output$timeTEMPseas		=	renderPlot({	TIME$timeSEAS("CPU_Temp", TS.df = TS.df)	})
+	output$timeTEMPtrend	=	renderPlot({	TIME$timeTREND(	"CPU_Temp", TS.df = TS.df)	})
+	output$timeTEMPseas		=	renderPlot({	TIME$timeSEAS(	"CPU_Temp", TS.df = TS.df)	})
 	
 	TS.df	<-	TIME$DF("Frequency")
 	output$timeFREQtrend	=	renderPlot({	TIME$timeTREND("Frequency", TS.df = TS.df)	})
@@ -105,5 +105,3 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD) ,{
 	output$timeCOREseas		=	renderPlot({	TIME$timeSEAS("Core_Energy", TS.df = TS.df)		})
 	
 })
-
-# if (BRUSH) source("app_time_series_zoom.r", local = TRUE)

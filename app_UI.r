@@ -1,3 +1,8 @@
+ifBRUSH	=	function(IN)	{
+	if (VIEW$BRUSH)	return(IN)
+	return(NULL)
+}
+
 tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
 	ns	<-	NS(id)
 	
@@ -80,10 +85,6 @@ tablemultoutUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table Outputs")	
 GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI")	{
 	ns	<-	NS(id)
 
-	ifBRUSH	=	function(IN)	{
-		if (BRUSH)	return(IN)
-		return(NULL)
-	}
 	if (!SHOW)	return(NULL)
 	BRUSHexpl	<-	NULL
 	BRUSHexpl	<-	strong("Click and Drag to Zoom Below")
@@ -162,10 +163,6 @@ GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI")	
 HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI")	{
 	ns	<-	NS(id)
 
-	ifBRUSH	=	function(IN)	{
-		if (BRUSH)	return(IN)
-		return(NULL)
-	}
 	if (!SHOW)	return(NULL)
 
 	tabPanel("Histograms",
@@ -269,38 +266,47 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 TSERIEStabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Series UI")	{
 	ns	<-	NS(id)
 
-	ifBRUSH	=	function(IN)	{
-		if (BRUSH)	return(IN)
-		return(NULL)
-	}
 	if (!SHOW)	return(NULL)
 
 	tabPanel("Time Series",
 		tagList(
 			tabsetPanel(
 				tabPanel("Temperature",
-					plotOutput('timeTEMPtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEtempTRENDdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempTREND", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('timeTEMPtrend',	height=480),
+					# plotOutput('timeTEMPtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEtempTRENDdbl"),
+						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempTREND",	resetOnNew	=	TRUE, direction	=	"x"))),
 					plotOutput('timeTEMPseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEtempSEASdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
+						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempSEAS",	resetOnNew	=	TRUE, direction	=	"x"))),
+					# plotOutput('brushTIMEtempTREND',	height = 480),
+					plotOutput('brushTIMEtempSEAS',	height = 480),
+					actionButton('brushTIMEtempSEASapp', "Apply zoom to Other Seasonal Graphs"),
 				),
 				tabPanel("Frequency",
-					plotOutput('timeFREQtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEfreqTRENDdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEfreqTREND", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('timeFREQtrend',	height=480),
+					# plotOutput('timeFREQtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEfreqTRENDdbl"),
+						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEfreqTREND", resetOnNew	=	TRUE, direction	=	"x"))),
 					plotOutput('timeFREQseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEfreqSEASdbl"),
 						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEfreqSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('brushTIMEfreqSEAS',	height = 480),
+					actionButton('brushTIMEfreqSEASapp', "Apply zoom to Other Seasonal Graphs"),
 				),
 				tabPanel("Socket Power",
-					plotOutput('timeSOCKtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEsockTRENDdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEsockTREND", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('timeSOCKtrend',	height=480),
+					# plotOutput('timeSOCKtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEsockTRENDdbl"),
+						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEsockTREND", resetOnNew	=	TRUE, direction	=	"x"))),
 					plotOutput('timeSOCKseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEsockSEASdbl"),
 						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEsockSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('brushTIMEsockSEAS',	height = 480),
+					actionButton('brushTIMEsockSEASapp', "Apply zoom to Other Seasonal Graphs"),
 				),
 				tabPanel("Core Power",
-					plotOutput('timeCOREtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEcoreTRENDdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEcoreTREND", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('timeCOREtrend',	height=480),
+					# plotOutput('timeCOREtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEcoreTRENDdbl"),
+						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEcoreTREND", resetOnNew	=	TRUE, direction	=	"x"))),
 					plotOutput('timeCOREseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEcoreSEASdbl"),
 						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEcoreSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
+					plotOutput('brushTIMEcoreSEAS',	height = 480),
+					actionButton('brushTIMEcoreSEASapp', "Apply zoom to Other Seasonal Graphs"),
 				),
 			)
 		)
