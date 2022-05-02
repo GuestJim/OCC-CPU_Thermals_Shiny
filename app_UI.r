@@ -33,6 +33,7 @@ tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, ..., label = "Table UI")	
 							label	=	"Decimals in Tables",	value	=	2,
 							min	=	0,	step	=	1
 						),
+				checkboxInput("medOFFapply", "Subtract Median Warm-up Temp"),
 				radioButtons(inputId	=	"engPOW",	label	=	"mJ or W",	inline	=	TRUE,
 					choices	=	c("mJ", "W"),	selected = "W"),
 				checkboxGroupInput(inputId	=	"listPERI",	label	=	"Period to show:"),

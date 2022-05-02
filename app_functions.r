@@ -75,6 +75,11 @@ tableECDF	<-	function(IN, COL, listECDF, engPOW = "W")	{
 
 	dataSUM[, !grepl("^<0$", names(dataSUM))]
 }
+appOFFSET	=	function(IN, OFF)	{
+	numCOL	=	sapply(IN, is.numeric)
+	IN[, numCOL]	<-	IN[, numCOL] - OFF
+	return(IN)
+}
 
 rem_		=	function(INPUT)	gsub("_", " ", INPUT)
 unitCOL		=	function(IN)	{

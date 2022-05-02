@@ -63,7 +63,6 @@ server <- function(input, output, session) {
 
 	output$subTitle	=	renderTable({TESTconfig()}, rownames = FALSE, colnames = FALSE, align = 'rl')
 	observeEvent(input$dataSelLOAD,	{
-		TEST <<-	input$dataSel
 		mergeENV(DATA, readRDS(input$dataSel))
 		#	I think <<- is needed so it places what is loaded into the environment created at the beginning of this script
 		DATA$LOAD	=	TRUE
@@ -71,6 +70,9 @@ server <- function(input, output, session) {
 		DATA$maxPWR		=	nearCEIL(DATA$dataALL$Socket_Energy,	5000)
 		DATA$maxCLK		=	nearCEIL(DATA$dataALL$Frequency,		500)
 		if	(!is.numeric(DATA$FREQ.COEF))	DATA$FREQ.COEF	=	signif(exp(round(log(DATA$maxPWR/DATA$maxCLK / 1000), 0)), 1)
+
+		DATA$warmMED	=	median(DATA$dataALL[DATA$dataALL$Period == "Warm-up", "CPU_Temp"])
+		updateCheckboxInput(inputId = "medOFFapply", label = paste0("Subtract Median Warm-up Temp (", DATA$warmMED, " °C)"))
 
 		GRAPH$CAPTION	=	c(DATA$CPUname, DATA$COOLERname,	ifelse(is.null(DATA$PULSE), DATA$TESTname, paste0(DATA$TESTname, " (", DATA$PULSE, " s)"))	)
 		GRAPH$CAPTION	=	labs(caption = paste(GRAPH$CAPTION, collapse = "\n"))

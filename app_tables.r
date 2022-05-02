@@ -1,18 +1,26 @@
 if (!require(tidyr))	install.packages('tidyr')
 library(tidyr)
 
-TABLE$longSUM	<-	eventReactive(list(input$dataSelLOAD, DATA$LOAD),	{
+TABLE$warmOFF	=	eventReactive(input$medOFFapply,	{
+	ifelse(input$medOFFapply, DATA$warmMED, 0)
+})
+
+TABLE$longSUM	<-	eventReactive(list(input$dataSelLOAD, DATA$LOAD, input$medOFFapply),	{
 	req(DATA$DATAS, DATA$GROUPS)
-	dataSUM	=	sepCOL(aggregate(DATA$DATAS, DATA$GROUPS, stats))
-	hold	=	pivot_longer(dataSUM,
+	
+	holdDATAS	=	DATA$DATAS
+	holdDATAS$CPU_Temp	=	holdDATAS$CPU_Temp - TABLE$warmOFF()
+	
+	dataSUM	=	sepCOL(aggregate(holdDATAS, DATA$GROUPS, stats))
+	holdSUM	=	pivot_longer(dataSUM,
 		cols			=	-c(1:length(DATA$GROUPS)),
 		names_to		=	c("Measurement", ".value"),
 		names_sep		=	' - ',
 		names_ptypes	=	list(Measurement = factor(ordered = TRUE))
 	)
 
-	levels(hold$Measurement)	=	unitCOL(levels(hold$Measurement))
-	mJ2W(hold)
+	levels(holdSUM$Measurement)	=	unitCOL(levels(holdSUM$Measurement))
+	mJ2W(holdSUM)
 },	ignoreInit	=	TRUE)
 
 tableFILT	=	function(TAB)	{
