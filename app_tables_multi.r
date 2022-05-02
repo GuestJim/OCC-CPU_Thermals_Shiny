@@ -21,10 +21,10 @@ TABLE$multiCOREecdf	<-	eventReactive(list(input$dataSelLOAD, input$multiCOREecdf
 
 observeEvent(input$roundTerm,	{
 	#	CPU_Temp
-	output$tableTEMPperc	=	renderTable({	appOFFSET(tablePERC(DATA$dataALL, "CPU_Temp", TABLE$multiTEMPperc()), TABLE$warmOFF())
+	output$tableTEMPperc	=	renderTable({	tablePERC(DATA$dataALL, "CPU_Temp", TABLE$multiTEMPperc(), valOFF = TABLE$warmOFF())
 		},	digits	=	input$roundTerm,	striped	=	TRUE)
 	
-	output$tableTEMPecdf	=	renderTable({	appOFFSET(tableECDF(DATA$dataALL, "CPU_Temp", TABLE$multiTEMPecdf()), TABLE$warmOFF())
+	output$tableTEMPecdf	=	renderTable({	tableECDF(DATA$dataALL, "CPU_Temp", TABLE$multiTEMPecdf(), valOFF = TABLE$warmOFF())
 		},	digits	=	input$roundTerm,	striped	=	TRUE)
 	
 	#	Frequency

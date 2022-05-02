@@ -43,7 +43,7 @@ ECDF	=	function(IN, listECDF = NULL)	{
 	setNames(ecdf(IN)(listECDF) * 100, paste0("<", listECDF))
 }
 
-tablePERC	<-	function(IN, COL, listPERC, engPOW = "W")	{
+tablePERC	<-	function(IN, COL, listPERC, engPOW = "W", valOFF = 0)	{
 	if (any(is.null(listPERC), listPERC == 100, listPERC == 0, listPERC == ""))	return(NULL) 
 	
 	INdata	<-	IN[[COL]]
@@ -51,6 +51,7 @@ tablePERC	<-	function(IN, COL, listPERC, engPOW = "W")	{
 		INdata	<-	INdata/1000
 		COL		<-	gsub("Energy",	"Power",	COL)
 	}
+	if (grepl("Temp", COL))	INdata	<-	INdata - valOFF
 	
 	dataSUM	=	sepCOL(aggregate(INdata, DATA$GROUPS, PERC, listPERC))
 	if (unique(dataSUM$Socket) == 0)	dataSUM$Socket	=	NULL
@@ -59,7 +60,7 @@ tablePERC	<-	function(IN, COL, listPERC, engPOW = "W")	{
 
 	dataSUM[, !grepl("^0%$", names(dataSUM))]
 }
-tableECDF	<-	function(IN, COL, listECDF, engPOW = "W")	{
+tableECDF	<-	function(IN, COL, listECDF, engPOW = "W", valOFF = 0)	{
 	if (any(is.null(listECDF), listECDF == ""))	return(NULL) 
 	
 	INdata	<-	IN[[COL]]
@@ -67,6 +68,7 @@ tableECDF	<-	function(IN, COL, listECDF, engPOW = "W")	{
 		INdata	<-	INdata/1000
 		COL		<-	gsub("Energy",	"Power",	COL)
 	}
+	if (grepl("Temp", COL))	INdata	<-	INdata - valOFF
 	
 	dataSUM	=	sepCOL(aggregate(INdata, DATA$GROUPS, ECDF, listECDF))
 	if (unique(dataSUM$Socket) == 0)	dataSUM$Socket	=	NULL
@@ -74,11 +76,6 @@ tableECDF	<-	function(IN, COL, listECDF, engPOW = "W")	{
 	names(dataSUM)[1]	<-	unitCOL(COL)
 
 	dataSUM[, !grepl("^<0$", names(dataSUM))]
-}
-appOFFSET	=	function(IN, OFF)	{
-	numCOL	=	sapply(IN, is.numeric)
-	IN[, numCOL]	<-	IN[, numCOL] - OFF
-	return(IN)
 }
 
 rem_		=	function(INPUT)	gsub("_", " ", INPUT)
