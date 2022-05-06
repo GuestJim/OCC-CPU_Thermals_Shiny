@@ -118,3 +118,27 @@ mJ2W	=	function(IN){
 
 	out[order(out$Period, out$Socket, out$Measurement), ]
 }
+
+tempCROSS	=	function(IN, PERIOD, LIM, OP = NULL, LIST = 10)	{
+	COLS	=	c("Time", "CPU_Temp", "CPU_Temp_Diff")
+	out		=	IN[IN$Thread == 0 & IN$Period == PERIOD, COLS]
+	out$Time	=	as.integer(out$Time)
+	if (PERIOD == "Cooldown")	out	=	cbind(out, "Cooldown Time" = as.integer(out$Time - DATA$duration))
+	
+	timeCOLs	=	grepl("Time", names(out))
+	# out[, timeCOLs]	=	as.integer(out[, timeCOLs])
+	
+	# if (QUAN < 1)	LIM	=	quantile(out$CPU_Temp, QUAN)
+	# if (QUAN > 1)	LIM	=	QUAN
+	
+	if (is.null(OP))	{
+		if (PERIOD == DATA$TESTname)	OP	=	">="
+		if (PERIOD == "Cooldown")		OP	=	"<="
+	}
+	
+	if (OP == "<=")		out	<-	out[out$CPU_Temp <= LIM, ][1:LIST, ]
+	if (OP == ">=")		out	<-	out[out$CPU_Temp >= LIM, ][1:LIST, ]
+	
+	names(out)[1:3]	=	c("Time", "Temperature", "Difference")
+	out[!is.na(out$Time), c(which(timeCOLs), which(!timeCOLs))]
+}

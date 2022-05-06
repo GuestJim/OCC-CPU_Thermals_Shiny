@@ -19,17 +19,13 @@ app.BREAK	=	TRUE
 #	this keeps DATA within the Shiny environment too, so when Shiny ends, the data is apparently removed, which I'm good with
 
 VIEW$MULTtab	=	TRUE	#	control if the tables should be separated or not
+VIEW$CROSStab	=	TRUE	#	control if Temperature Crossing tables are shown
 VIEW$DOWN	=	FALSE	#	control if it should be possible to download tables
 						#	usually it would be !exists("FILE", envir=DATA)
 VIEW$GRAPHS		=	TRUE	#	control if Graphs should be included or not
 VIEW$HIST		=	TRUE	#	control if Histograms should be included or not
 VIEW$TSERIES	=	TRUE	#	control if Time Series graphs should be included or not
 VIEW$BRUSH		=	TRUE	#	control if Zoomed/Single Graphs should be included or not
-VIEW$FACflip	=	TRUE	#	control if Facet Flipping should be allowed
-VIEW$gTABLES	=	TRUE	#	control if HTML tables for Presets and 60 FPS Target configurations are shown
-							#	does check if files exists
-VIEW$tabDESK	=	TRUE	#	control if Desktop Specifications are shown
-VIEW$tabTEST	=	TRUE	#	control if Test System Specifications are shown
 
 source("app_functions.r", local	=	TRUE)
 

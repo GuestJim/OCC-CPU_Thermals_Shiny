@@ -28,7 +28,24 @@ tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
 	)
 }
 
-tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, ..., label = "Table UI")	{
+tablecrossUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Table UI")	{
+	ns	<-	NS(id)
+	
+	if (!SHOW)	return(NULL)
+	
+	tagList(
+		numericInput(inputId	=	"tableCROSSlim",	label	=	"Length of Lists",
+			value	=	10,	min	=	0,	step	=	1),
+		strong("Test Period Temperature Crosses"),
+		numericInput(inputId	=	"tableCROSStest",
+			label	=	"",	value	=	0,	step	=	1),
+		strong("Cooldown Temperature Crosses"),
+		numericInput(inputId	=	"tableCROSScool",	
+			label	=	"",		value	=	0,	step	=	1),
+	)
+}
+
+tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, SHOWcross = TRUE, ..., label = "Table UI")	{
 	ns	<-	NS(id)
 	
 	if (!SHOW)	return(NULL)
@@ -48,11 +65,12 @@ tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, ..., label = "Table UI")	
 					choiceValues	=	c(FALSE,					TRUE),	selected	=	FALSE),
 				checkboxGroupInput(inputId	=	"listSTAT",	label	=	"Statistics to show:"),
 			)
-	if (SHOWmulti)	return(
+	if (any(c(SHOWmulti, SHOWcross)))	return(
 		tabPanel("Table", 
 			tabsetPanel(
 				tabPanel("Controls", out),
-				tabPanel("Custom Stats", tablemultUI("tableMULTI"))
+				if (SHOWmulti)	tabPanel("Custom Stats", tablemultUI("tableMULTI")),
+				if (SHOWcross)	tabPanel("Temp. Crosses", tablecrossUI("tableCROSS")),
 				)	)	)
 	tabPanel("Table",	out)
 }
@@ -79,6 +97,20 @@ tablemultoutUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table Outputs")	
 			column(6,	tableOutput("tableCOREperc")),
 			column(6,	tableOutput("tableCOREecdf"))
 		),
+	)
+}
+
+tablecrossoutUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Table Outputs")	{
+	ns	<-	NS(id)
+	
+	if (!SHOW)	return(NULL)
+	
+	tagList(
+		fillRow(
+			tagList(strong("Test Period"),	tableOutput('tableCROSStest')),
+			tagList(strong("Cooldown"),		tableOutput('tableCROSScool')),
+			flex = c(5, 7)
+		)
 	)
 }
 
@@ -323,7 +355,7 @@ ui	<-	fluidPage(
 			),
 			actionButton(inputId	=	"dataSelLOAD",	label	=	"Load Selected Data"),
 			tabsetPanel(
-				tableUI("tableTAB", TRUE, SHOWmulti = VIEW$MULTtab),
+				tableUI("tableTAB", TRUE, SHOWmulti = VIEW$MULTtab, SHOWcross = VIEW$CROSStab),
 				tabPanel("Graphs",
 					numericInput('FREQ.COEF',	label	=	"Power-Frequency Coefficient",
 						value = 0.01,	min = 0.01,	max = 1,	step = 0.01),
@@ -336,8 +368,15 @@ ui	<-	fluidPage(
 			tableOutput('subTitle'),
 			tabsetPanel(
 				tabPanel("Table",
-					tableOutput("tableSUMM"),
-					tablemultoutUI("tableMULI", VIEW$MULTtab),
+					tabsetPanel(
+						tabPanel("Summary Stats",
+							tableOutput("tableSUMM"),
+							tablemultoutUI("tableMULI", VIEW$MULTtab),
+						),
+						if (VIEW$CROSStab)	tabPanel("Temperature Crosses",
+							tablecrossoutUI("tableCRUS", VIEW$CROSStab)
+						)
+					)
 				),
 			# textOutput("test"),
 				GRAPHtabUI("graphTAB",	VIEW$GRAPHS,	VIEW$BRUSH),

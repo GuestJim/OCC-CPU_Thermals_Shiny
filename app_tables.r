@@ -51,3 +51,4 @@ observeEvent(list(input$roundTerm),	{
 },	label = "Table - Summary")
 
 if (VIEW$MULTtab)	source("app_tables_multi.r", local = TRUE)
+source("app_tables_cross.r", local = TRUE)
