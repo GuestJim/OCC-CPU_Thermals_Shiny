@@ -211,16 +211,16 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					if (BRUSH)	tagList(
 						fixedRow(
 							column(3, numericInput('brushHISTtempMIN',	label = "Lower Limit (°C)",
-								value = NULL,	step = 1,	min = 0,	max = 115)),
+								value = NULL,	step = 1,	min = 1,	max = 115)),
 							column(3, numericInput('brushHISTtempMAX',	label = "Upper Limit (°C)",
-								value = NULL,	step = 1,	min = 0,	max = 115))
+								value = NULL,	step = 1,	min = 1,	max = 115))
 						),
 						tableOutput('graphHISTtempTAB')
 					)
 				),
 				tabPanel("Frequency",
 					fixedRow(
-						column(2, numericInput('graphHISTfreqBIN',	label = "Bin Width",	value = 1,	min = 0)),
+						column(2, numericInput('graphHISTfreqBIN',	label = "Bin Width",	value = 1,		min = 0)),
 						column(3, numericInput('graphHISTfreqMIN',	label = "X-Minimum",	value = 2000,	min = 0)),
 						column(3, actionButton(inputId	=	'graphHISTfreqUPD',	label = "Update Histogram")),
 						column(4, textInput('graphHISTfreqSPEC',	label = "Frequency Specs (MHz)")),
@@ -230,9 +230,9 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					if (BRUSH)	tagList(
 						fixedRow(
 							column(3, numericInput('brushHISTfreqMIN',	label = "Lower Limit (MHz)",
-								value = NULL,	step = 100,	min = 0,	max = 6000)),
+								value = NULL,	step = 100,	min = 1,	max = 6000)),
 							column(3, numericInput('brushHISTfreqMAX',	label = "Upper Limit (MHz)",
-								value = NULL,	step = 100,	min = 0,	max = 6000))
+								value = NULL,	step = 100,	min = 1,	max = 6000))
 						),
 						tableOutput('graphHISTfreqTAB')
 					)
@@ -240,7 +240,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 				tabPanel("Socket Power",
 					fixedRow(
 						column(2, numericInput('graphHISTsockBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTsockMIN',	label = "X-Minimum",	value = 0,	min = 0)),
+						column(3, numericInput('graphHISTsockMIN',	label = "X-Minimum",	value = 0,		min = 0)),
 						column(3, actionButton(inputId	=	'graphHISTsockUPD',	label = "Update Histogram")),
 					),
 					plotOutput('graphHISTsock',	height=720,
@@ -248,9 +248,9 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					if (BRUSH)	tagList(
 						fixedRow(
 							column(3, numericInput('brushHISTsockMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 1,	min = 0,	max = 300)),
+								value = NULL,	step = 1,	min = 1,	max = 300)),
 							column(3, numericInput('brushHISTsockMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 1,	min = 0,	max = 300))
+								value = NULL,	step = 1,	min = 1,	max = 300))
 						),
 						tableOutput('graphHISTsockTAB')
 					)
@@ -258,7 +258,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 				tabPanel("Core Power",
 					fixedRow(
 						column(2, numericInput('graphHISTcoreBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTcoreMIN',	label = "X-Minimum",	value = 0,	min = 0)),
+						column(3, numericInput('graphHISTcoreMIN',	label = "X-Minimum",	value = 0,		min = 0)),
 						column(3, actionButton(inputId	=	'graphHISTcoreUPD',	label = "Update Histogram")),
 					),
 					plotOutput('graphHISTcore',	height=720,
@@ -266,9 +266,9 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					if (BRUSH)	tagList(
 						fixedRow(
 							column(3, numericInput('brushHISTcoreMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300)),
+								value = NULL,	step = 0.1,	min = 0.1,	max = 300)),
 							column(3, numericInput('brushHISTcoreMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300))
+								value = NULL,	step = 0.1,	min = 0.1,	max = 300))
 						),
 						tableOutput('graphHISTcoreTAB')
 					)
@@ -276,7 +276,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 				tabPanel("Uncore Power",
 					fixedRow(
 						column(2, numericInput('graphHISTuncoreBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTuncoreMIN',	label = "X-Minimum",	value = 0,	min = 0)),
+						column(3, numericInput('graphHISTuncoreMIN',	label = "X-Minimum",	value = 0,		min = 0)),
 						column(3, actionButton(inputId	=	'graphHISTuncoreUPD',	label = "Update Histogram")),
 					),
 					plotOutput('graphHISTuncore',	height=720,
@@ -284,9 +284,9 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					if (BRUSH)	tagList(
 						fixedRow(
 							column(3, numericInput('brushHISTuncoreMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300)),
+								value = NULL,	step = 0.1,	min = 0.1,	max = 300)),
 							column(3, numericInput('brushHISTuncoreMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300))
+								value = NULL,	step = 0.1,	min = 0.1,	max = 300))
 						),
 						tableOutput('graphHISTuncoreTAB')
 					)

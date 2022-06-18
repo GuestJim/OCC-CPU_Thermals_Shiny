@@ -13,6 +13,8 @@ sepCOL	=	function(aggOUT)	{
 	return(out)
 }
 
+remNA	=	function(IN)	IN[!is.na(IN)]
+
 stats	=	function(DATA)	{
 	return(c(
 		Min		=	min(DATA),
