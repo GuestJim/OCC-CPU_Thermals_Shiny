@@ -9,7 +9,7 @@ observeEvent(input$brushHISTtemp,	{
 	if (brushHISTtemp$x[1] <= 0)	brushHISTtemp$x[1]	<-	input$graphHISTtempBIN
 	updateNumericInput(inputId = "brushHISTtempMIN",	value = round(brushHISTtemp$x[1]))
 	updateNumericInput(inputId = "brushHISTtempMAX",	value = round(brushHISTtemp$x[2]))
-})
+},	priority = 10)
 observeEvent(list(input$brushHISTtempMIN, input$brushHISTtempMAX),	{
 	brushHISTtemp$x[1]		<-	min(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
 	brushHISTtemp$x[2]		<-	max(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
@@ -45,7 +45,7 @@ observeEvent(input$brushHISTfreq,	{
 	if (brushHISTfreq$x[1] <= 0)	brushHISTfreq$x[1]	<-	input$graphHISTfreqBIN
 	updateNumericInput(inputId = "brushHISTfreqMIN",	value = round(brushHISTfreq$x[1]))
 	updateNumericInput(inputId = "brushHISTfreqMAX",	value = round(brushHISTfreq$x[2]))
-})
+},	priority = 10)
 observeEvent(list(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	{
 	brushHISTfreq$x[1]		<-	min(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
 	brushHISTfreq$x[2]		<-	max(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
@@ -88,7 +88,7 @@ observeEvent(input$brushHISTsock,	{
 	if (brushHISTsock$x[1] <= 0)	brushHISTsock$x[1]	<-	input$graphHISTsockBIN
 	updateNumericInput(inputId = "brushHISTsockMIN",	value = round(brushHISTsock$x[1], 1))
 	updateNumericInput(inputId = "brushHISTsockMAX",	value = round(brushHISTsock$x[2], 1))
-})
+},	priority = 10)
 observeEvent(list(input$brushHISTsockMIN, input$brushHISTsockMAX),	{
 	brushHISTsock$x[1]		<-	min(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
 	brushHISTsock$x[2]		<-	max(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
@@ -124,7 +124,7 @@ observeEvent(input$brushHISTcore,	{
 	if (brushHISTcore$x[1] <= 0)	brushHISTcore$x[1]	<-	input$graphHISTcoreBIN
 	updateNumericInput(inputId = "brushHISTcoreMIN",	value = round(brushHISTcore$x[1], 1))
 	updateNumericInput(inputId = "brushHISTcoreMAX",	value = round(brushHISTcore$x[2], 1))
-})
+},	priority = 10)
 observeEvent(list(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	{
 	brushHISTcore$x[1]		<-	min(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
 	brushHISTcore$x[2]		<-	max(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
@@ -160,7 +160,7 @@ observeEvent(input$brushHISTuncore,	{
 	if (brushHISTuncore$x[1] <= 0)	brushHISTuncore$x[1]	<-	input$graphHISTuncoreBIN
 	updateNumericInput(inputId = "brushHISTuncoreMIN",	value = round(brushHISTuncore$x[1], 1))
 	updateNumericInput(inputId = "brushHISTuncoreMAX",	value = round(brushHISTuncore$x[2], 1))
-})
+},	priority = 10)
 observeEvent(list(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	{
 	brushHISTuncore$x[1]		<-	min(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
 	brushHISTuncore$x[2]		<-	max(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
