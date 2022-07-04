@@ -24,6 +24,7 @@ VIEW$DOWN	=	FALSE	#	control if it should be possible to download tables
 						#	usually it would be !exists("FILE", envir=DATA)
 VIEW$GRAPHS		=	TRUE	#	control if Graphs should be included or not
 VIEW$HIST		=	TRUE	#	control if Histograms should be included or not
+VIEW$MODES		=	TRUE	#	control if the Modality controls should be included
 VIEW$TSERIES	=	TRUE	#	control if Time Series graphs should be included or not
 VIEW$BRUSH		=	TRUE	#	control if Zoomed/Single Graphs should be included or not
 

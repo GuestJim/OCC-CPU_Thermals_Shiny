@@ -146,3 +146,4 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$graphHISTuncoreUPD),	{
 })
 
 if (VIEW$BRUSH)	source("app_histograms_brush.r", local = TRUE)
+if (VIEW$MODES)	source("app_histograms_modes.r", local = TRUE)

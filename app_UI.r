@@ -192,7 +192,7 @@ GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI")	
 		)
 	)
 }
-HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI")	{
+HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = "Histograms UI")	{
 	ns	<-	NS(id)
 
 	if (!SHOW)	return(NULL)
@@ -208,7 +208,19 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					),
 					plotOutput('graphHISTtemp',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTtemp", resetOnNew	=	TRUE, direction	=	"x"))),
+					if (MODES)	tagList(
+						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesTEMPupd',	label = "Update Modes")),
+						tableOutput('modesTEMP'),
+						fixedRow(
+							column(2,	numericInput('modesTEMPbin',	label = "Bin Width",		value = 1,	min = 0)),
+							column(3,	numericInput('modesTEMPlow',	label = "Lower Limit",		value = 0,	min = 0)),
+							column(3,	numericInput('modesTEMPupp',	label = "Upper Limit",		value = 95,	min = 0)),
+							column(3,	numericInput('modesTEMPnum',	label = "Number of Modes",	value = 1,	min = 1)),
+						),
+						HTML("<hr>")
+					),
 					if (BRUSH)	tagList(
+						strong("Brush Stats"),
 						fixedRow(
 							column(3, numericInput('brushHISTtempMIN',	label = "Lower Limit (°C)",
 								value = NULL,	step = 1,	min = 0,	max = 115)),
@@ -227,7 +239,19 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					),
 					plotOutput('graphHISTfreq',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTfreq", resetOnNew	=	TRUE, direction	=	"x"))),
+					if (MODES)	tagList(
+						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesFREQupd',	label = "Update Modes")),
+						tableOutput('modesFREQ'),
+						fixedRow(
+							column(2,	numericInput('modesFREQbin',	label = "Bin Width",		value = 100,	min = 0)),
+							column(3,	numericInput('modesFREQlow',	label = "Lower Limit",		value = 2000,	min = 0)),
+							column(3,	numericInput('modesFREQupp',	label = "Upper Limit",		value = 6000,	min = 0)),
+							column(3,	numericInput('modesFREQnum',	label = "Number of Modes",	value = 1,		min = 1)),
+						),
+						HTML("<hr>")
+					),
 					if (BRUSH)	tagList(
+						strong("Brush Stats"),
 						fixedRow(
 							column(3, numericInput('brushHISTfreqMIN',	label = "Lower Limit (MHz)",
 								value = NULL,	step = 100,	min = 0,	max = 6000)),
@@ -245,7 +269,19 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					),
 					plotOutput('graphHISTsock',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTsock", resetOnNew	=	TRUE, direction	=	"x"))),
+					if (MODES)	tagList(
+						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesSOCKupd',	label = "Update Modes")),
+						tableOutput('modesSOCK'),
+						fixedRow(
+							column(2,	numericInput('modesSOCKbin',	label = "Bin Width",		value = 0.1,	min = 0)),
+							column(3,	numericInput('modesSOCKlow',	label = "Lower Limit",		value = 0,		min = 0)),
+							column(3,	numericInput('modesSOCKupp',	label = "Upper Limit",		value = 200,	min = 0)),
+							column(3,	numericInput('modesSOCKnum',	label = "Number of Modes",	value = 1,		min = 1)),
+						),
+						HTML("<hr>")
+					),
 					if (BRUSH)	tagList(
+						strong("Brush Stats"),
 						fixedRow(
 							column(3, numericInput('brushHISTsockMIN',	label = "Lower Limit (W)",
 								value = NULL,	step = 1,	min = 0,	max = 300)),
@@ -263,7 +299,19 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					),
 					plotOutput('graphHISTcore',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTcore", resetOnNew	=	TRUE, direction	=	"x"))),
+					if (MODES)	tagList(
+						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesCOREupd',	label = "Update Modes")),
+						tableOutput('modesCORE'),
+						fixedRow(
+							column(2,	numericInput('modesCOREbin',	label = "Bin Width",		value = 0.1,	min = 0)),
+							column(3,	numericInput('modesCORElow',	label = "Lower Limit",		value = 0,		min = 0)),
+							column(3,	numericInput('modesCOREupp',	label = "Upper Limit",		value = 20,		min = 0)),
+							column(3,	numericInput('modesCOREnum',	label = "Number of Modes",	value = 1,		min = 1)),
+						),
+						HTML("<hr>")
+					),
 					if (BRUSH)	tagList(
+						strong("Brush Stats"),
 						fixedRow(
 							column(3, numericInput('brushHISTcoreMIN',	label = "Lower Limit (W)",
 								value = NULL,	step = 0.1,	min = 0,	max = 300)),
@@ -281,7 +329,19 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Histograms UI
 					),
 					plotOutput('graphHISTuncore',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTuncore", resetOnNew	=	TRUE, direction	=	"x"))),
+					if (MODES)	tagList(
+						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesUNCOREupd',	label = "Update Modes")),
+						tableOutput('modesUNCORE'),
+						fixedRow(
+							column(2,	numericInput('modesUNCOREbin',	label = "Bin Width",		value = 0.1,	min = 0)),
+							column(3,	numericInput('modesUNCORElow',	label = "Lower Limit",		value = 0,		min = 0)),
+							column(3,	numericInput('modesUNCOREupp',	label = "Upper Limit",		value = 60,		min = 0)),
+							column(3,	numericInput('modesUNCOREnum',	label = "Number of Modes",	value = 1,		min = 1)),
+						),
+						HTML("<hr>")
+					),
 					if (BRUSH)	tagList(
+						strong("Brush Stats"),
 						fixedRow(
 							column(3, numericInput('brushHISTuncoreMIN',	label = "Lower Limit (W)",
 								value = NULL,	step = 0.1,	min = 0,	max = 300)),
@@ -380,7 +440,7 @@ ui	<-	fluidPage(
 				),
 			# textOutput("test"),
 				GRAPHtabUI("graphTAB",	VIEW$GRAPHS,	VIEW$BRUSH),
-				HISTtabUI("histTAB",	VIEW$HIST,		VIEW$BRUSH),
+				HISTtabUI("histTAB",	VIEW$HIST,		VIEW$BRUSH,	VIEW$MODES),
 				TSERIEStabUI("histTAB",	VIEW$TSERIES,	VIEW$BRUSH),
 			id	=	"Table",
 			type	=	"pills"
