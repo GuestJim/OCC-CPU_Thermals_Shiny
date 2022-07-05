@@ -2,7 +2,7 @@ if (!require(multimode))	install.packages('multimode')
 library(multimode)
 
 #	Temperature
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPlow, input$modesTEMPupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
 	req(DATA$dataALL$CPU_Temp)
 	
 	modesNUM	=	nmodes(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, ]$CPU_Temp, bw = input$modesTEMPbin, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)
@@ -22,7 +22,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPlow, input$modesT
 },	ignoreInit = FALSE)
 
 #	Frequency
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQlow, input$modesFREQupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
 	req(DATA$dataALL$Frequency)
 	
 	modesNUM	=	nmodes(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, ]$Frequency, bw = input$modesFREQbin, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)
@@ -42,7 +42,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQlow, input$modesF
 })
 
 #	Socket Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKlow, input$modesSOCKupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
 	req(DATA$dataALL$Socket_Energy)
 	
 	modesNUM	=	nmodes(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]/1000, bw = input$modesSOCKbin, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)
@@ -62,7 +62,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKlow, input$modesS
 })
 
 #	Core Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCORElow, input$modesCOREupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
 	req(DATA$dataALL$Core_Energy)
 	
 	modesNUM	=	nmodes(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]/1000, bw = input$modesCOREbin, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)
@@ -82,7 +82,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCORElow, input$modesC
 })
 
 #	Uncore Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesUNCORElow, input$modesUNCOREupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD, input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
 	req(DATA$dataALL$Uncore_Energy)
 	
 	modesNUM	=	nmodes(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]/1000, bw = input$modesUNCOREbin, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)
