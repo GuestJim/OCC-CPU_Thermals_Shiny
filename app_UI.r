@@ -202,7 +202,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 			tabsetPanel(
 				tabPanel("Temperature",
 					fixedRow(
-						column(2, numericInput('graphHISTtempBIN',	label = "Bin Width",	value = 1,	min = 0)),
+						column(2, numericInput('graphHISTtempBIN',	label = "Bin Width",	value = 1,	min = 0,	step = 0.1)),
 						column(3, numericInput('graphHISTtempMIN',	label = "X-Minimum",	value = 0,	min = 0)),
 						column(3, actionButton(inputId	=	'graphHISTtempUPD',	label = "Update Histogram")),
 					),
@@ -212,7 +212,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 						fluidRow(strong("Test Period Modality"),	actionButton(inputId = 'modesTEMPupd',	label = "Update Modes")),
 						tableOutput('modesTEMP'),
 						fixedRow(
-							column(2,	numericInput('modesTEMPbin',	label = "Bin Width",		value = 1,	min = 0)),
+							column(2,	numericInput('modesTEMPbin',	label = "Bin Width",		value = 1,	min = 0,	step = 0.1)),
 							column(3,	numericInput('modesTEMPlow',	label = "Lower Limit",		value = 0,	min = 0)),
 							column(3,	numericInput('modesTEMPupp',	label = "Upper Limit",		value = 95,	min = 0)),
 							column(3,	numericInput('modesTEMPnum',	label = "Number of Modes",	value = 1,	min = 1)),
