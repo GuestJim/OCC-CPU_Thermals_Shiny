@@ -19,7 +19,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPbin, input$modesT
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
 	})
-},	ignoreInit = FALSE)
+},	ignoreInit = TRUE)
 
 #	Frequency
 observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
@@ -39,7 +39,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQbin, input$modesF
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
 	})
-})
+},	ignoreInit = TRUE)
 
 #	Socket Power
 observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
@@ -59,7 +59,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKbin, input$modesS
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
 	})
-})
+},	ignoreInit = TRUE)
 
 #	Core Power
 observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
@@ -79,7 +79,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCOREbin, input$modesC
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
 	})
-})
+},	ignoreInit = TRUE)
 
 #	Uncore Power
 observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD, input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
@@ -99,4 +99,4 @@ observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD, input$modesUNCOREbin, input$
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
 	})
-})
+},	ignoreInit = TRUE)
