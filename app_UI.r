@@ -107,8 +107,8 @@ tablecrossoutUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Tab
 	
 	tagList(
 		fillRow(
-			tagList(strong("Test Period"),	tableOutput('tableCROSStest')),
-			tagList(strong("Cooldown"),		tableOutput('tableCROSScool')),
+			tagList(strong("Test Period"),	hr(),	tableOutput('tableCROSStest')),
+			tagList(strong("Cooldown"),		hr(),	tableOutput('tableCROSScool')),
 			flex = c(5, 7)
 		)
 	)
