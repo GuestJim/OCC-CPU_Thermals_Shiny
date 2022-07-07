@@ -2,16 +2,17 @@ if (!require(multimode))	install.packages('multimode')
 library(multimode)
 
 #	Temperature
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$CPU_Temp)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
 	
-	modesNUM	=	nmodes(FILT, bw = input$modesTEMPbin, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)
-	updateNumericInput(inputId	=	"modesTEMPnum",	value	=	modesNUM)
+	observeEvent(list(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
+		modesNUM	=	nmodes(FILT, bw = input$modesTEMPbin, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)
+		updateNumericInput(inputId	=	"modesTEMPnum",	value	=	modesNUM)
+	})
 	
-	observeEvent(input$modesTEMPupd,	{
+	observeEvent(list(input$modesTEMPupd, input$roundTerm),	{
 		modesLOC	=	locmodes(FILT, mod0 = input$modesTEMPnum, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)$location
-		
 		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
 		
 		output$modesTEMP	=	renderTable({
@@ -19,18 +20,20 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesTEMPbin, input$modesT
 			rownames(modesLOCtab)	<-	"Modes (°C)"
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
-	})
+	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Frequency
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Frequency)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Frequency"]
 	
-	modesNUM	=	nmodes(FILT, bw = input$modesFREQbin, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)
-	updateNumericInput(inputId	=	"modesFREQnum",	value	=	modesNUM)
+	observeEvent(list(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
+		modesNUM	=	nmodes(FILT, bw = input$modesFREQbin, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)
+		updateNumericInput(inputId	=	"modesFREQnum",	value	=	modesNUM)
+	})
 	
-	observeEvent(input$modesFREQupd,	{
+	observeEvent(list(input$modesFREQupd, input$roundTerm),	{
 		modesLOC	=	locmodes(FILT, mod0 = input$modesFREQnum, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)$location
 		
 		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
@@ -40,18 +43,20 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesFREQbin, input$modesF
 			rownames(modesLOCtab)	<-	"Modes (MHz)"
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
-	})
+	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Socket Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Socket_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]
 	
-	modesNUM	=	nmodes(FILT/1000, bw = input$modesSOCKbin, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)
-	updateNumericInput(inputId	=	"modesSOCKnum",	value	=	modesNUM)
+	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp), {
+		modesNUM	=	nmodes(FILT/1000, bw = input$modesSOCKbin, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)
+		updateNumericInput(inputId	=	"modesSOCKnum",	value	=	modesNUM)
+	})
 	
-	observeEvent(input$modesSOCKupd,	{
+	observeEvent(list(input$modesSOCKupd, input$roundTerm),	{
 		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesSOCKnum, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)$location
 		
 		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
@@ -61,18 +66,20 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesSOCKbin, input$modesS
 			rownames(modesLOCtab)	<-	"Modes (W)"
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
-	})
+	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Core Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Core_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]
 	
-	modesNUM	=	nmodes(FILT/1000, bw = input$modesCOREbin, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)
-	updateNumericInput(inputId	=	"modesCOREnum",	value	=	modesNUM)
+	observeEvent(list(input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
+		modesNUM	=	nmodes(FILT/1000, bw = input$modesCOREbin, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)
+		updateNumericInput(inputId	=	"modesCOREnum",	value	=	modesNUM)
+	})
 	
-	observeEvent(input$modesCOREupd,	{
+	observeEvent(list(input$modesCOREupd, input$roundTerm),	{
 		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesCOREnum, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)$location
 		
 		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
@@ -82,18 +89,20 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$modesCOREbin, input$modesC
 			rownames(modesLOCtab)	<-	"Modes (W)"
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
-	})
+	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Uncore Power
-observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD, input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD),	{
 	req(DATA$dataALL$Uncore_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]
 	
-	modesNUM	=	nmodes(FILT/1000, bw = input$modesUNCOREbin, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)
-	updateNumericInput(inputId	=	"modesUNCOREnum",	value	=	modesNUM)
+	observeEvent(list(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
+		modesNUM	=	nmodes(FILT/1000, bw = input$modesUNCOREbin, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)
+		updateNumericInput(inputId	=	"modesUNCOREnum",	value	=	modesNUM)
+	})
 	
-	observeEvent(input$modesUNCOREupd,	{
+	observeEvent(list(input$modesUNCOREupd, input$roundTerm),	{
 		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesUNCOREnum, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)$location
 		
 		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
@@ -103,5 +112,5 @@ observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD, input$modesUNCOREbin, input$
 			rownames(modesLOCtab)	<-	"Modes (W)"
 			modesLOCtab
 		},	digits = input$roundTerm, rownames = TRUE)
-	})
+	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
