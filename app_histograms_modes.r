@@ -1,25 +1,37 @@
 if (!require(multimode))	install.packages('multimode')
 library(multimode)
 
+modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
+	modesLOC	=	locmodes(IN, mod0 = NUM, lowsup = LOW, uppsup = UPP)$location
+	modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
+	
+	colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
+	rownames(modesLOCtab)	<-	paste0("Modes (", UNIT, ")")
+	
+	return(modesLOCtab)
+}
+
 #	Temperature
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$CPU_Temp)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
+	modesNUM	<-	1
 	
 	observeEvent(list(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
-		modesNUM	=	nmodes(FILT, bw = input$modesTEMPbin, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)
-		updateNumericInput(inputId	=	"modesTEMPnum",	value	=	modesNUM)
+		if (is.numeric(c(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp)))	modesNUM	=	nmodes(FILT,
+			bw = input$modesTEMPbin,	lowsup = input$modesTEMPlow,	uppsup = input$modesTEMPupp)
+			
+		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesTEMPnum",	value	=	modesNUM)
 	})
-	
-	observeEvent(list(input$modesTEMPupd, input$roundTerm),	{
-		modesLOC	=	locmodes(FILT, mod0 = input$modesTEMPnum, lowsup = input$modesTEMPlow, uppsup = input$modesTEMPupp)$location
-		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
+
+	observeEvent(input$modesTEMPupd,	{
+		modesLOCtab	<-	modesTAB(FILT, "°C", input$modesTEMPnum, input$modesTEMPlow, input$modesTEMPupp)
 		
-		output$modesTEMP	=	renderTable({
-			colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
-			rownames(modesLOCtab)	<-	"Modes (°C)"
-			modesLOCtab
-		},	digits = input$roundTerm, rownames = TRUE)
+		observeEvent(input$roundTerm,	{
+			output$modesTEMP	=	renderTable({
+				modesLOCtab
+			},	digits = input$roundTerm, rownames = TRUE)
+		})
 	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
@@ -27,90 +39,94 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Frequency)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Frequency"]
+	modesNUM	<-	1
 	
 	observeEvent(list(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
-		modesNUM	=	nmodes(FILT, bw = input$modesFREQbin, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)
-		updateNumericInput(inputId	=	"modesFREQnum",	value	=	modesNUM)
+		if (is.numeric(c(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp)))	modesNUM	=	nmodes(FILT,
+			bw = input$modesFREQbin,	lowsup = input$modesFREQlow,	uppsup = input$modesFREQupp)
+			
+		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesFREQnum",	value	=	modesNUM)
 	})
-	
-	observeEvent(list(input$modesFREQupd, input$roundTerm),	{
-		modesLOC	=	locmodes(FILT, mod0 = input$modesFREQnum, lowsup = input$modesFREQlow, uppsup = input$modesFREQupp)$location
+
+	observeEvent(input$modesFREQupd,	{
+		modesLOCtab	<-	modesTAB(FILT, "MHz", input$modesFREQnum, input$modesFREQlow, input$modesFREQupp)
 		
-		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
-		
-		output$modesFREQ	=	renderTable({
-			colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
-			rownames(modesLOCtab)	<-	"Modes (MHz)"
-			modesLOCtab
-		},	digits = input$roundTerm, rownames = TRUE)
+		observeEvent(input$roundTerm,	{
+			output$modesFREQ	=	renderTable({
+				modesLOCtab
+			},	digits = input$roundTerm, rownames = TRUE)
+		})
 	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
-#	Socket Power
+#	Socket 
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Socket_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]
+	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]/1000
+	modesNUM	<-	1
 	
-	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp), {
-		modesNUM	=	nmodes(FILT/1000, bw = input$modesSOCKbin, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)
-		updateNumericInput(inputId	=	"modesSOCKnum",	value	=	modesNUM)
+	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
+		if (is.numeric(c(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp)))	modesNUM	=	nmodes(FILT,
+			bw = input$modesSOCKbin,	lowsup = input$modesSOCKlow,	uppsup = input$modesSOCKupp)
+			
+		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesSOCKnum",	value	=	modesNUM)
 	})
-	
-	observeEvent(list(input$modesSOCKupd, input$roundTerm),	{
-		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesSOCKnum, lowsup = input$modesSOCKlow, uppsup = input$modesSOCKupp)$location
+
+	observeEvent(input$modesSOCKupd,	{
+		modesLOCtab	<-	modesTAB(FILT, "W", input$modesSOCKnum, input$modesSOCKlow, input$modesSOCKupp)
 		
-		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
-		
-		output$modesSOCK	=	renderTable({
-			colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
-			rownames(modesLOCtab)	<-	"Modes (W)"
-			modesLOCtab
-		},	digits = input$roundTerm, rownames = TRUE)
+		observeEvent(input$roundTerm,	{
+			output$modesSOCK	=	renderTable({
+				modesLOCtab
+			},	digits = input$roundTerm, rownames = TRUE)
+		})
 	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Core Power
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Core_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]
+	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]/1000
+	modesNUM	<-	1
 	
 	observeEvent(list(input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
-		modesNUM	=	nmodes(FILT/1000, bw = input$modesCOREbin, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)
-		updateNumericInput(inputId	=	"modesCOREnum",	value	=	modesNUM)
+		if (is.numeric(c(input$modesCOREbin, input$modesCORElow, input$modesCOREupp)))	modesNUM	=	nmodes(FILT,
+			bw = input$modesCOREbin,	lowsup = input$modesCORElow,	uppsup = input$modesCOREupp)
+			
+		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesCOREnum",	value	=	modesNUM)
 	})
-	
-	observeEvent(list(input$modesCOREupd, input$roundTerm),	{
-		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesCOREnum, lowsup = input$modesCORElow, uppsup = input$modesCOREupp)$location
+
+	observeEvent(input$modesCOREupd,	{
+		modesLOCtab	<-	modesTAB(FILT, "W", input$modesCOREnum, input$modesCORElow, input$modesCOREupp)
 		
-		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
-		
-		output$modesCORE	=	renderTable({
-			colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
-			rownames(modesLOCtab)	<-	"Modes (W)"
-			modesLOCtab
-		},	digits = input$roundTerm, rownames = TRUE)
+		observeEvent(input$roundTerm,	{
+			output$modesCORE	=	renderTable({
+				modesLOCtab
+			},	digits = input$roundTerm, rownames = TRUE)
+		})
 	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
 #	Uncore Power
-observeEvent(list(input$dataSelLOAD, DATA$LOADLOAD),	{
+observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Uncore_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]
+	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]/1000
+	modesNUM	<-	1
 	
 	observeEvent(list(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
-		modesNUM	=	nmodes(FILT/1000, bw = input$modesUNCOREbin, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)
-		updateNumericInput(inputId	=	"modesUNCOREnum",	value	=	modesNUM)
+		if (is.numeric(c(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp)))	modesNUM	=	nmodes(FILT,
+			bw = input$modesUNCOREbin,	lowsup = input$modesUNCORElow,	uppsup = input$modesUNCOREupp)
+			
+		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesUNCOREnum",	value	=	modesNUM)
 	})
-	
-	observeEvent(list(input$modesUNCOREupd, input$roundTerm),	{
-		modesLOC	=	locmodes(FILT/1000, mod0 = input$modesUNCOREnum, lowsup = input$modesUNCORElow, uppsup = input$modesUNCOREupp)$location
+
+	observeEvent(input$modesUNCOREupd,	{
+		modesLOCtab	<-	modesTAB(FILT, "°C", input$modesUNCOREnum, input$modesUNCORElow, input$modesUNCOREupp)
 		
-		modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
-		
-		output$modesUNCORE	=	renderTable({
-			colnames(modesLOCtab)	<-	paste0("Loc ", 1:ncol(modesLOCtab))
-			rownames(modesLOCtab)	<-	"Modes (W)"
-			modesLOCtab
-		},	digits = input$roundTerm, rownames = TRUE)
+		observeEvent(input$roundTerm,	{
+			output$modesUNCORE	=	renderTable({
+				modesLOCtab
+			},	digits = input$roundTerm, rownames = TRUE)
+		})
 	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)

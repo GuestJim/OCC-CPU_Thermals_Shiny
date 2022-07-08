@@ -3,7 +3,6 @@ ifBRUSH	=	function(IN)	{
 	return(NULL)
 }
 
-
 tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
 	ns	<-	NS(id)
 	
@@ -194,7 +193,7 @@ GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI")	
 	)
 }
 
-modalUI	<-	function(id, MODES = VIEW$MODES, BIN.val, BIN.step, LOWER.val, UPPER.val)	{
+modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val)	{
 	ID	<-	id
 	ns	<-	NS(id)
 	
@@ -229,7 +228,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					),
 					plotOutput('graphHISTtemp',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTtemp", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('TEMP', TRUE,		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 95),
+					if (MODES)	modalUI('TEMP',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 95),
 					if (BRUSH)	tagList(
 						strong("Brush Stats"),
 						fixedRow(
@@ -250,7 +249,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					),
 					plotOutput('graphHISTfreq',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTfreq", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('FREQ', TRUE,		BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
+					if (MODES)	modalUI('FREQ',		BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
 					if (BRUSH)	tagList(
 						strong("Brush Stats"),
 						fixedRow(
@@ -270,7 +269,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					),
 					plotOutput('graphHISTsock',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTsock", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('SOCK', TRUE,		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 200),
+					if (MODES)	modalUI('SOCK',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 200),
 					if (BRUSH)	tagList(
 						strong("Brush Stats"),
 						fixedRow(
@@ -290,7 +289,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					),
 					plotOutput('graphHISTcore',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTcore", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('CORE', TRUE,		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 20),
+					if (MODES)	modalUI('CORE',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 20),
 					if (BRUSH)	tagList(
 						strong("Brush Stats"),
 						fixedRow(
@@ -310,7 +309,7 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					),
 					plotOutput('graphHISTuncore',	height=720,
 						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTuncore", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('UNCORE', TRUE,	BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 60),
+					if (MODES)	modalUI('UNCORE', BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 60),
 					if (BRUSH)	tagList(
 						strong("Brush Stats"),
 						fixedRow(
