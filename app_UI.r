@@ -114,85 +114,100 @@ tablecrossoutUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Tab
 	)
 }
 
-GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI")	{
+#	Graph and Brush Control, not zoomed graph
+graphUI	<-	function(id, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500)	{
+	ID	<-	id
+	ns	<-	NS(id)
+	
+	pasteBRUSH	<-	function(IN = NULL)	paste0("brush", ID, IN)
+	
+	tagList(
+		plotOutput(paste0("graph", ID),	height = HEIGHT,	dblclick	=	ifBRUSH(pasteBRUSH("dbl")),
+			brush	=	ifBRUSH(brushOpts(id	=	pasteBRUSH(), resetOnNew	=	TRUE, direction	=	"x"))),
+		if (BRUSH)	tagList(	strong("Click and Drag to Zoom Below"),
+			fixedRow(
+				column(3,	numericInput(inputId	=	pasteBRUSH("start"),
+					value = START, 	label	=	"Zoom Start (s)",	step	=	1)
+					),
+				column(3,	numericInput(inputId	=	pasteBRUSH("length"),
+					value = LENGTH,	label	=	"Zoom Length (s)",	step	=	1)
+					),
+				column(3,	actionButton(inputId	=	pasteBRUSH("update"), label = "Update Zoom"))
+			)
+		)
+	)
+}
+
+GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI", HEIGHT = 720)	{
 	ns	<-	NS(id)
 
 	if (!SHOW)	return(NULL)
-	BRUSHexpl	<-	NULL
-	BRUSHexpl	<-	strong("Click and Drag to Zoom Below")
 
 	tabPanel("Course Graphs",
 		tagList(
 			tabsetPanel(
 				tabPanel("Mean Frequency",
-					plotOutput('graphMEAN',	height=720,	dblclick	=	ifBRUSH("brushMEANdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushMEAN", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (BRUSH)	tagList(	BRUSHexpl,
-						fixedRow(
-							column(3,	numericInput(inputId	=	"brushMEANstart",
-								value = -300, 	label	=	"Zoom Start (s)",	step	=	1)
-								),
-							column(3,	numericInput(inputId	=	"brushMEANlength",
-								value = 7500,	label	=	"Zoom Length (s)",	step	=	1)
-								),
-							column(3,	actionButton(inputId	=	"brushMEANupdate", label = "Update Zoom"))
-						),
-						plotOutput('brushMEANzoom',	height=720)
-					)
+					graphUI('MEAN', BRUSH, HEIGHT),
+					plotOutput('brushMEANzoom',	height = HEIGHT)
 				),
 				tabPanel("Maximum Frequency",
-					plotOutput('graphMAX',	height=720,	dblclick	=	ifBRUSH("brushMAXdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushMAX", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (BRUSH)	tagList(	BRUSHexpl,
-						fixedRow(
-							column(3,	numericInput(inputId	=	"brushMAXstart",
-								value = -300,	 label	=	"Zoom Start (s)",	step	=	1)
-								),
-							column(3,	numericInput(inputId	=	"brushMAXlength",
-								value = 7500,	label	=	"Zoom Length (s)",	step	=	1)
-								),
-							column(3,	actionButton(inputId	=	"brushMAXupdate", label = "Update Zoom"))
-						),
-						plotOutput('brushMAXzoom',	height=720),
-					),
+					graphUI('MAX', BRUSH, HEIGHT),
+					plotOutput('brushMAXzoom',	height = HEIGHT),
 				),
 				tabPanel("Per-Thread Frequency",
-					plotOutput('graphFREQ',	height="auto",	dblclick	=	ifBRUSH("brushFREQdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushFREQ", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (BRUSH)	tagList(	BRUSHexpl,
-						fixedRow(
-							column(3,	numericInput(inputId	=	"brushFREQstart",
-								value = -300, 	label	=	"Zoom Start (s)",	step	=	1)		),
-							column(3,	numericInput(inputId	=	"brushFREQlength",
-								value = 7500,	label	=	"Zoom Length (s)",	step	=	1)	),
-							column(3,	actionButton(inputId	=	"brushFREQupdate", label = "Update Zoom")),
-						),
-						checkboxGroupInput('threadSEL',	label = "Threads Selected",	inline = TRUE),
-						# plotOutput('brushFREQzoom',	height="auto"),
-						uiOutput('brushFREQzoomFILT'),
-					)
+					graphUI('FREQ', BRUSH, HEIGHT = "auto"),
+					checkboxGroupInput('threadSEL',	label = "Threads Selected",	inline = TRUE),
+					uiOutput('brushFREQzoomFILT'),
 				),
 				tabPanel("Per-Core Power",
-					plotOutput('graphPOWER',	height="auto",	dblclick	=	ifBRUSH("brushPOWERdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushPOWER", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (BRUSH)	tagList(	BRUSHexpl,
-						fixedRow(
-							column(3,	numericInput(inputId	=	"brushPOWERstart",
-								value = -300, label	=	"Zoom Start (s)",	step	=	1)		),
-							column(3,	numericInput(inputId	=	"brushPOWERlength",
-								value = 7500,	label	=	"Zoom Length (s)",	step	=	1)	),
-							column(3,	actionButton(inputId	=	"brushPOWERupdate", label = "Update Zoom")),
-						),
-						checkboxGroupInput('coreSEL',	label = "Cores Selected",	inline = TRUE),
-						# plotOutput('brushPOWERzoom',	height="auto"),
-						uiOutput('brushPOWERzoomFILT'),
-					)
+					graphUI('POWER', BRUSH, HEIGHT = "auto"),
+					checkboxGroupInput('coreSEL',	label = "Cores Selected",	inline = TRUE),
+					uiOutput('brushPOWERzoomFILT'),
 				),
 			)
 		)
 	)
 }
 
+#	Histogram controls
+histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720)	{
+	ID	<-	tolower(id)
+	ns	<-	NS(id)
+	
+	graphHIST	<-	function(IN = NULL)	paste0('graphHIST', ID, IN)
+	
+	tagList(
+		fixedRow(
+		column(2, numericInput(graphHIST('BIN'),	label = "Bin Width",	min = 0,	value = BIN.val,	step = BIN.step)),
+		column(3, numericInput(graphHIST('MIN'),	label = "X-Minimum",	min = 0,	value = MIN.val)),
+		column(3, actionButton(inputId	=	graphHIST('UPD'),	label = "Update Histogram")),
+		...
+		),
+		plotOutput(graphHIST(),	height = HEIGHT,
+			brush	=	ifBRUSH(brushOpts(id	=	paste0("brushHIST", ID), resetOnNew	=	TRUE, direction	=	"x"))),
+	)
+}
+
+#	Histogram brush controls and table
+brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
+	ID	<-	tolower(id)
+	ns	<-	NS(id)
+	
+	brushHIST	<-	function(IN = NULL)	paste0('brushHIST', ID, IN)
+	
+	tagList(
+		strong("Brush Stats"),
+		fixedRow(
+			column(3, numericInput(brushHIST("MIN"),	label = paste0("Lower Limit (", UNIT, ")"),
+				value = NULL,	step = STEP,	min = 0,	max = LOWER.max)),
+			column(3, numericInput(brushHIST("MAX"),	label = paste0("Upper Limit (", UNIT, ")"),
+				value = NULL,	step = STEP,	min = 0,	max = UPPER.max))
+		),
+		tableOutput(paste0('graphHIST', ID, 'TAB'))
+	)
+}
+
+#	Modality controls and table
 modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val)	{
 	ID	<-	id
 	ns	<-	NS(id)
@@ -221,110 +236,56 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 		tagList(
 			tabsetPanel(
 				tabPanel("Temperature",
-					fixedRow(
-						column(2, numericInput('graphHISTtempBIN',	label = "Bin Width",	value = 1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTtempMIN',	label = "X-Minimum",	value = 0,	min = 0)),
-						column(3, actionButton(inputId	=	'graphHISTtempUPD',	label = "Update Histogram")),
-					),
-					plotOutput('graphHISTtemp',	height=720,
-						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTtemp", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('TEMP',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 95),
-					if (BRUSH)	tagList(
-						strong("Brush Stats"),
-						fixedRow(
-							column(3, numericInput('brushHISTtempMIN',	label = "Lower Limit (°C)",
-								value = NULL,	step = 1,	min = 0,	max = 115)),
-							column(3, numericInput('brushHISTtempMAX',	label = "Upper Limit (°C)",
-								value = NULL,	step = 1,	min = 0,	max = 115))
-						),
-						tableOutput('graphHISTtempTAB')
-					)
+					histUI('TEMP',	BIN.val = 1,	BIN.step = 0.1),
+					if (MODES)	modalUI('TEMP',	BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 95),
+					if (BRUSH)	brushUI('TEMP',	"°C",	STEP = 1,	LOWER.max = 115, UPPER.max = 115),
 				),
 				tabPanel("Frequency",
-					fixedRow(
-						column(2, numericInput('graphHISTfreqBIN',	label = "Bin Width",	value = 1,		min = 0)),
-						column(3, numericInput('graphHISTfreqMIN',	label = "X-Minimum",	value = 2000,	min = 0)),
-						column(3, actionButton(inputId	=	'graphHISTfreqUPD',	label = "Update Histogram")),
-						column(4, textInput('graphHISTfreqSPEC',	label = "Frequency Specs (MHz)")),
-					),
-					plotOutput('graphHISTfreq',	height=720,
-						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTfreq", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('FREQ',		BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
-					if (BRUSH)	tagList(
-						strong("Brush Stats"),
-						fixedRow(
-							column(3, numericInput('brushHISTfreqMIN',	label = "Lower Limit (MHz)",
-								value = NULL,	step = 100,	min = 0,	max = 6000)),
-							column(3, numericInput('brushHISTfreqMAX',	label = "Upper Limit (MHz)",
-								value = NULL,	step = 100,	min = 0,	max = 6000))
-						),
-						tableOutput('graphHISTfreqTAB')
-					)
+					histUI('FREQ',	BIN.val = 1,	BIN.step = 0.1, MIN.val = 2000,
+						column(4, textInput('graphHISTfreqSPEC',	label = "Frequency Specs (MHz)"))	),
+					if (MODES)	modalUI('FREQ',	BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
+					if (BRUSH)	brushUI('FREQ',	"MHz",	STEP = 100,	LOWER.max = 6000, UPPER.max = 6000),
 				),
 				tabPanel("Socket Power",
-					fixedRow(
-						column(2, numericInput('graphHISTsockBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTsockMIN',	label = "X-Minimum",	value = 0,		min = 0)),
-						column(3, actionButton(inputId	=	'graphHISTsockUPD',	label = "Update Histogram")),
-					),
-					plotOutput('graphHISTsock',	height=720,
-						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTsock", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('SOCK',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 200),
-					if (BRUSH)	tagList(
-						strong("Brush Stats"),
-						fixedRow(
-							column(3, numericInput('brushHISTsockMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 1,	min = 0,	max = 300)),
-							column(3, numericInput('brushHISTsockMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 1,	min = 0,	max = 300))
-						),
-						tableOutput('graphHISTsockTAB')
-					)
+					histUI('SOCK',	BIN.val = 0.1,	BIN.step = 0.1),
+					if (MODES)	modalUI('SOCK',	BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 200),
+					if (BRUSH)	brushUI('SOCK',	"W",	STEP = 1,	LOWER.max = 300, UPPER.max = 300),
 				),
 				tabPanel("Core Power",
-					fixedRow(
-						column(2, numericInput('graphHISTcoreBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTcoreMIN',	label = "X-Minimum",	value = 0,		min = 0)),
-						column(3, actionButton(inputId	=	'graphHISTcoreUPD',	label = "Update Histogram")),
-					),
-					plotOutput('graphHISTcore',	height=720,
-						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTcore", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('CORE',		BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 20),
-					if (BRUSH)	tagList(
-						strong("Brush Stats"),
-						fixedRow(
-							column(3, numericInput('brushHISTcoreMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300)),
-							column(3, numericInput('brushHISTcoreMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300))
-						),
-						tableOutput('graphHISTcoreTAB')
-					)
+					histUI('CORE',	BIN.val = 0.1,	BIN.step = 0.1),
+					if (MODES)	modalUI('CORE',	BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 20),
+					if (BRUSH)	brushUI('CORE',	"W",	STEP = 0.1,	LOWER.max = 300, UPPER.max = 300),
 				),
 				tabPanel("Uncore Power",
-					fixedRow(
-						column(2, numericInput('graphHISTuncoreBIN',	label = "Bin Width",	value = 0.1,	min = 0,	step = 0.1)),
-						column(3, numericInput('graphHISTuncoreMIN',	label = "X-Minimum",	value = 0,		min = 0)),
-						column(3, actionButton(inputId	=	'graphHISTuncoreUPD',	label = "Update Histogram")),
-					),
-					plotOutput('graphHISTuncore',	height=720,
-						brush	=	ifBRUSH(brushOpts(id	=	"brushHISTuncore", resetOnNew	=	TRUE, direction	=	"x"))),
-					if (MODES)	modalUI('UNCORE', BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 60),
-					if (BRUSH)	tagList(
-						strong("Brush Stats"),
-						fixedRow(
-							column(3, numericInput('brushHISTuncoreMIN',	label = "Lower Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300)),
-							column(3, numericInput('brushHISTuncoreMAX',	label = "Upper Limit (W)",
-								value = NULL,	step = 0.1,	min = 0,	max = 300))
-						),
-						tableOutput('graphHISTuncoreTAB')
-					)
+					histUI('UNCORE',	BIN.val = 0.1,	BIN.step = 0.1),
+					if (MODES)	modalUI('UNCORE',	BIN.val = 1,	BIN.step = 0.1, LOWER.val = 0,		UPPER.val = 60),
+					if (BRUSH)	brushUI('UNCORE',	"W",	STEP = 0.1,	LOWER.max = 300, UPPER.max = 300),
 				),
 			)
 		)
 	)
 }
+
+#	Time Series Graphs and brush
+tseriesUI	<-	function(id, HEIGHT = 480)	{
+	ID	<-	tolower(id)
+	ns	<-	NS(id)
+	
+	timeTEMP	<-	function(IN = NULL)	paste0('time', toupper(ID), IN)
+	brushTIME	<-	function(IN = NULL)	paste0('brushTIME', ID, IN)
+	
+	tagList(
+		plotOutput(timeTEMP('trend'),	height = HEIGHT),
+		# plotOutput(timeTEMP('trend'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('TRENDdbl')),
+			# brush	=	ifBRUSH(brushOpts(id	=	brushTIME('TREND'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		plotOutput(timeTEMP('seas'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('SEASdbl')),
+			brush	=	ifBRUSH(brushOpts(id	=	brushTIME('SEAS'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		# plotOutput(brushTIME('TREND'),	height = HEIGHT)
+		plotOutput(brushTIME('SEAS'),	height = HEIGHT),
+		actionButton(brushTIME('SEASapp'), "Apply zoom to Other Seasonal Graphs"),
+	)
+}
+
 TSERIEStabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Series UI")	{
 	ns	<-	NS(id)
 
@@ -333,43 +294,10 @@ TSERIEStabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Serie
 	tabPanel("Time Series",
 		tagList(
 			tabsetPanel(
-				tabPanel("Temperature",
-					plotOutput('timeTEMPtrend',	height=480),
-					# plotOutput('timeTEMPtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEtempTRENDdbl"),
-						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempTREND",	resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('timeTEMPseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEtempSEASdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEtempSEAS",	resetOnNew	=	TRUE, direction	=	"x"))),
-					# plotOutput('brushTIMEtempTREND',	height = 480),
-					plotOutput('brushTIMEtempSEAS',	height = 480),
-					actionButton('brushTIMEtempSEASapp', "Apply zoom to Other Seasonal Graphs"),
-				),
-				tabPanel("Frequency",
-					plotOutput('timeFREQtrend',	height=480),
-					# plotOutput('timeFREQtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEfreqTRENDdbl"),
-						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEfreqTREND", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('timeFREQseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEfreqSEASdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEfreqSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('brushTIMEfreqSEAS',	height = 480),
-					actionButton('brushTIMEfreqSEASapp', "Apply zoom to Other Seasonal Graphs"),
-				),
-				tabPanel("Socket Power",
-					plotOutput('timeSOCKtrend',	height=480),
-					# plotOutput('timeSOCKtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEsockTRENDdbl"),
-						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEsockTREND", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('timeSOCKseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEsockSEASdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEsockSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('brushTIMEsockSEAS',	height = 480),
-					actionButton('brushTIMEsockSEASapp', "Apply zoom to Other Seasonal Graphs"),
-				),
-				tabPanel("Core Power",
-					plotOutput('timeCOREtrend',	height=480),
-					# plotOutput('timeCOREtrend',	height=480,	dblclick	=	ifBRUSH("brushTIMEcoreTRENDdbl"),
-						# brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEcoreTREND", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('timeCOREseas',	height=480,	dblclick	=	ifBRUSH("brushTIMEcoreSEASdbl"),
-						brush	=	ifBRUSH(brushOpts(id	=	"brushTIMEcoreSEAS", resetOnNew	=	TRUE, direction	=	"x"))),
-					plotOutput('brushTIMEcoreSEAS',	height = 480),
-					actionButton('brushTIMEcoreSEASapp', "Apply zoom to Other Seasonal Graphs"),
-				),
+				tabPanel("Temperature",		tseriesUI('TEMP')	),
+				tabPanel("Frequency",		tseriesUI('FREQ')	),
+				tabPanel("Socket Power",	tseriesUI('SOCK')	),
+				tabPanel("Core Power",		tseriesUI('CORE')	),
 			)
 		)
 	)
