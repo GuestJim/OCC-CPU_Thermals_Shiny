@@ -329,7 +329,7 @@ ui	<-	fluidPage(
 		mainPanel(
 			fixedRow(
 				column(8, tableOutput('subTitle')),
-				column(4, actionButton('tutorial', "Show YouTube Tutorial"))
+				if (is.character(VIEW$YTlink))	column(4, actionButton('tutorial', "Show YouTube Tutorial"))
 				),
 			tabsetPanel(
 				tabPanel("Table",

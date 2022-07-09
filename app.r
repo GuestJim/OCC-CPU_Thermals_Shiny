@@ -18,6 +18,8 @@ app.BREAK	=	TRUE
 #	rather than using super-assignment and pushing variables to Global, I'm putting them into this environment
 #	this keeps DATA within the Shiny environment too, so when Shiny ends, the data is apparently removed, which I'm good with
 
+VIEW$YTlink	=	"LJwyCXedkYY"	#	ID string for YouTube tutorial video
+								#	if not a string, it will be disabled
 VIEW$MULTtab	=	TRUE	#	control if the tables should be separated or not
 VIEW$CROSStab	=	TRUE	#	control if Temperature Crossing tables are shown
 VIEW$DOWN	=	FALSE	#	control if it should be possible to download tables
@@ -61,9 +63,8 @@ server <- function(input, output, session) {
 		},	ignoreNULL = FALSE)
 	
 	observeEvent(input$tutorial,	{
-		YTlink	<-	"aXd1ll_lNag"
 		showModal(	modalDialog(
-			HTML(paste0('<iframe width="560" height="315" src="https://www.youtube.com/embed/', YTlink,'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><a href="https://www.youtube.com/watch?v=', YTlink, '" target="_blank">YouTube Link</a>')),
+			HTML(paste0('<iframe width="560" height="315" src="https://www.youtube.com/embed/', VIEW$YTlink,'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><a href="https://www.youtube.com/watch?v=', VIEW$YTlink, '" target="_blank">YouTube Link</a> (Some features may appear different)')),
 			title = "YouTube Tutorial Video",
 			easyClose = TRUE,	footer = modalButton("Close")	)	)
 	})
