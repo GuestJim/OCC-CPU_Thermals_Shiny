@@ -319,7 +319,8 @@ ui	<-	fluidPage(
 				tableUI("tableTAB", TRUE, SHOWmulti = VIEW$MULTtab, SHOWcross = VIEW$CROSStab),
 				tabPanel("Graphs",
 					numericInput('FREQ.COEF',	label	=	"Power-Frequency Coefficient",
-						value = 0.01,	min = 0.01,	max = 1,	step = 0.01),
+						value = GRAPH$FREQ.COEF,	min = 0,	max = GRAPH$FREQ.COEF * 10,	step = GRAPH$FREQ.COEF / 4),
+					actionButton('COEFupd',	label = "Apply Coefficient")
 				),
 				id		=	"Table Controls",
 				type	=	"pills"

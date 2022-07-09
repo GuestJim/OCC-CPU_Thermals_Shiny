@@ -54,7 +54,7 @@ GRAPH$FREQ_point	=	function(COEF = FREQ.COEF, MEAN = FALSE, MAX = FALSE, ALPHA =
 	if (MEAN)	{	return(
 		geom_point(
 			# data	=	IN,
-			aes(y	=	Frequency*COEF,	color	=	"Frequency"),
+			aes(y	=	Frequency / COEF,	color	=	"Frequency"),
 			alpha	=	ALPHA,
 			stat	=	"summary",
 			fun		=	mean,
@@ -64,7 +64,7 @@ GRAPH$FREQ_point	=	function(COEF = FREQ.COEF, MEAN = FALSE, MAX = FALSE, ALPHA =
 	if (MAX)	{	return(
 		geom_point(
 			# data	=	IN,
-			aes(y	=	Frequency*COEF,	color	=	"Frequency"),
+			aes(y	=	Frequency / COEF,	color	=	"Frequency"),
 			alpha	=	ALPHA,
 			stat	=	"summary",
 			fun		=	max,
@@ -73,7 +73,7 @@ GRAPH$FREQ_point	=	function(COEF = FREQ.COEF, MEAN = FALSE, MAX = FALSE, ALPHA =
 	}
 	return(	geom_point(
 				# data	=	IN,
-				aes(y	=	Frequency*COEF,	color	=	"Frequency"),
+				aes(y	=	Frequency / COEF,	color	=	"Frequency"),
 				alpha	=	ALPHA,
 				# color	=	"blue",
 				show.legend	=	TRUE
@@ -119,7 +119,7 @@ GRAPH$themeSCALES	=	function(COEF = FREQ.COEF){
 			expand		=	c(0.02, 0),
 			sec.axis	=	dup_axis(
 				name	=	"Frequency (MHz)",
-				labels	=	function(IN)	round(IN / COEF, 2)
+				labels	=	function(IN)	round(IN * COEF, 2)
 				)
 			),
 		GRAPH$COLORS

@@ -30,6 +30,8 @@ VIEW$BRUSH		=	TRUE	#	control if Zoomed/Single Graphs should be included or not
 
 source("app_functions.r", local	=	TRUE)
 
+GRAPH$FREQ.COEF	=	100		#	default value for the Power Frequency coefficient
+
 FILES		=	list.files(pattern = "*.env$|*.RData$",	recursive = FALSE)
 FILES.names	=	unlist(sapply(FILES, strsplit, "/"), use.names = FALSE)
 # FILES		=	setNames(FILES, FILES.names[grepl(".env|.RData", FILES.names)])
@@ -76,7 +78,8 @@ server <- function(input, output, session) {
 		DATA$maxCLK		=	nearCEIL(DATA$dataALL$Frequency,		500)
 		if	(!is.numeric(DATA$FREQ.COEF))	DATA$FREQ.COEF	=	signif(exp(round(log(DATA$maxPWR/DATA$maxCLK / 1000), 0)), 1)
 		
-		# if (DATA$FREQ.COEF < 1)	DATA$FREQ.COEF	<-	1 / DATA$FREQ.COEF
+		GRAPH$FREQ.COEF	<-	DATA$FREQ.COEF
+		if (GRAPH$FREQ.COEF < 1)	GRAPH$FREQ.COEF	<-	1 / GRAPH$FREQ.COEF
 		
 		DATA$warmMED	=	median(DATA$dataALL[DATA$dataALL$Period == "Warm-up", "CPU_Temp"])
 		updateCheckboxInput(inputId = "medOFFapply", label = paste0("Subtract Median Warm-up Temp (", DATA$warmMED, " °C)"))
@@ -85,7 +88,7 @@ server <- function(input, output, session) {
 		GRAPH$CAPTION	=	labs(caption = paste(GRAPH$CAPTION, collapse = "\n"))
 
 		updateNumericInput(		inputId	=	"FREQ.COEF",
-			value	=	DATA$FREQ.COEF)
+			value	=	GRAPH$FREQ.COEF)
 		updateNumericInput(		inputId	=	"graphHISTfreqMIN",
 			value	=	round(min(DATA$dataALL$Frequency)-500, -3))
 		if (exists("FREQspec", envir = DATA))	{

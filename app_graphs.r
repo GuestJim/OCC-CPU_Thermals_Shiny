@@ -50,22 +50,26 @@ GRAPH$facetPOWER	=	facet_grid(rows = vars(Core),	switch = "y", labeller	=
 		labeller(Core	=	function(IN) paste0("Core: ", IN))
 		)
 
-observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$FREQ.COEF) ,{
+observeEvent(input$COEFupd,	{
+	if (input$FREQ.COEF != 0)	GRAPH$FREQ.COEF	<-	input$FREQ.COEF
+	})
+
+observeEvent(list(input$dataSelLOAD, DATA$LOAD, input$COEFupd) ,{
 	output$graphMEAN	=	renderPlot({
 		req(DATA$dataALL)
-		GRAPH$graphMEAN(input$FREQ.COEF)
+		GRAPH$graphMEAN(GRAPH$FREQ.COEF)
 	})
 	output$graphMAX	=	renderPlot({
 		req(DATA$dataALL)
-		GRAPH$graphMAX(input$FREQ.COEF)
+		GRAPH$graphMAX(GRAPH$FREQ.COEF)
 	})
 	output$graphFREQ	=	renderPlot({
 		req(DATA$dataALL)
-		GRAPH$graphFREQ(input$FREQ.COEF) + GRAPH$facetFREQ
+		GRAPH$graphFREQ(GRAPH$FREQ.COEF) + GRAPH$facetFREQ
 	},	height = 720/3 * length(unique(DATA$dataALL$Thread))	)
 	output$graphPOWER	=	renderPlot({
 		req(DATA$dataALL)
-		GRAPH$graphPOWER(input$FREQ.COEF) + GRAPH$facetPOWER
+		GRAPH$graphPOWER(GRAPH$FREQ.COEF) + GRAPH$facetPOWER
 	},	height = 720/3 * length(unique(DATA$dataALL$Core))	)
 })
 
