@@ -57,7 +57,15 @@ server <- function(input, output, session) {
 			)
 		cbind(names(config), config)
 		},	ignoreNULL = FALSE)
-
+	
+	observeEvent(input$tutorial,	{
+		YTlink	<-	"aXd1ll_lNag"
+		showModal(	modalDialog(
+			HTML(paste0('<iframe width="560" height="315" src="https://www.youtube.com/embed/', YTlink,'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><a href="https://www.youtube.com/watch?v=', YTlink, '" target="_blank">YouTube Link</a>')),
+			title = "YouTube Tutorial Video",
+			easyClose = TRUE,	footer = modalButton("Close")	)	)
+	})
+	
 	output$subTitle	=	renderTable({TESTconfig()}, rownames = FALSE, colnames = FALSE, align = 'rl')
 	observeEvent(input$dataSelLOAD,	{
 		mergeENV(DATA, readRDS(input$dataSel))
@@ -67,7 +75,9 @@ server <- function(input, output, session) {
 		DATA$maxPWR		=	nearCEIL(DATA$dataALL$Socket_Energy,	5000)
 		DATA$maxCLK		=	nearCEIL(DATA$dataALL$Frequency,		500)
 		if	(!is.numeric(DATA$FREQ.COEF))	DATA$FREQ.COEF	=	signif(exp(round(log(DATA$maxPWR/DATA$maxCLK / 1000), 0)), 1)
-
+		
+		# if (DATA$FREQ.COEF < 1)	DATA$FREQ.COEF	<-	1 / DATA$FREQ.COEF
+		
 		DATA$warmMED	=	median(DATA$dataALL[DATA$dataALL$Period == "Warm-up", "CPU_Temp"])
 		updateCheckboxInput(inputId = "medOFFapply", label = paste0("Subtract Median Warm-up Temp (", DATA$warmMED, " °C)"))
 

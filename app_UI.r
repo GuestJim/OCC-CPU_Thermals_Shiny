@@ -18,11 +18,11 @@ tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
 		textInput("multiFREQperc",	label = "Percentiles (0 - 100)"),
 		textInput("multiFREQecdf",	label = "Specific Values (MHz)"),
 		hr(),
-		p("Socket Energy"),
+		p("Socket Power"),
 		textInput("multiSOCKperc",	label = "Percentiles (0 - 100)"),
 		textInput("multiSOCKecdf",	label = "Specific Values (W)"),
 		hr(),
-		p("Core Energy"),
+		p("Core Power"),
 		textInput("multiCOREperc",	label = "Percentiles (0 - 100)"),
 		textInput("multiCOREecdf",	label = "Specific Values (W)"),
 	)
@@ -188,6 +188,29 @@ histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720)	{
 	)
 }
 
+#	Modality controls and table
+modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val)	{
+	ID	<-	id
+	ns	<-	NS(id)
+	
+	pasteMODE	<-	function(IN = NULL)	paste0('modes', ID, IN)
+	
+	tagList(
+		fluidRow(	strong("Test Period Modality"),	actionButton(inputId = pasteMODE("upd"),	label = "Update Modes")	),
+		fixedRow(
+			column(2,	numericInput(pasteMODE("bin"),	label = "Bin Width",		min = 0,	value = BIN.val,	step = BIN.step)),
+			column(3,	numericInput(pasteMODE("low"),	label = "Lower Limit",		min = 0,	value = LOWER.val)),
+			column(3,	numericInput(pasteMODE("upp"),	label = "Upper Limit",		min = 0,	value = UPPER.val)),
+			# column(3,	numericInput(pasteMODE("num"),	label = "Number of Modes",	min = 1,	value = 1)),
+		),
+		fluidRow(
+			column(3, numericInput(pasteMODE("num"),	label = "Number of Modes",	min = 1,	value = 1)),
+			tableOutput(pasteMODE()),
+		),
+		HTML("<hr>")
+	)
+}
+
 #	Histogram brush controls and table
 brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
 	ID	<-	tolower(id)
@@ -204,26 +227,6 @@ brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
 				value = NULL,	step = STEP,	min = 0,	max = UPPER.max))
 		),
 		tableOutput(paste0('graphHIST', ID, 'TAB'))
-	)
-}
-
-#	Modality controls and table
-modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val)	{
-	ID	<-	id
-	ns	<-	NS(id)
-	
-	pasteMODE	<-	function(IN = NULL)	paste0('modes', ID, IN)
-	
-	tagList(
-		fluidRow(strong("Test Period Modality"),	actionButton(inputId = pasteMODE("upd"),	label = "Update Modes")),
-		tableOutput(pasteMODE()),
-		fixedRow(
-			column(2,	numericInput(pasteMODE("bin"),	label = "Bin Width",		min = 0,	value = BIN.val,	step = BIN.step)),
-			column(3,	numericInput(pasteMODE("low"),	label = "Lower Limit",		min = 0,	value = LOWER.val)),
-			column(3,	numericInput(pasteMODE("upp"),	label = "Upper Limit",		min = 0,	value = UPPER.val)),
-			column(3,	numericInput(pasteMODE("num"),	label = "Number of Modes",	min = 1,	value = 1)),
-		),
-		HTML("<hr>")
 	)
 }
 
@@ -323,7 +326,10 @@ ui	<-	fluidPage(
 			)
 		),
 		mainPanel(
-			tableOutput('subTitle'),
+			fixedRow(
+				column(8, tableOutput('subTitle')),
+				column(4, actionButton('tutorial', "Show YouTube Tutorial"))
+				),
 			tabsetPanel(
 				tabPanel("Table",
 					tabsetPanel(
