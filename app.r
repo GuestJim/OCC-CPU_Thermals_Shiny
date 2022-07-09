@@ -72,7 +72,6 @@ server <- function(input, output, session) {
 	output$subTitle	=	renderTable({TESTconfig()}, rownames = FALSE, colnames = FALSE, align = 'rl')
 	observeEvent(input$dataSelLOAD,	{
 		mergeENV(DATA, readRDS(input$dataSel))
-		#	I think <<- is needed so it places what is loaded into the environment created at the beginning of this script
 		DATA$LOAD	=	TRUE
 
 		DATA$maxPWR		=	nearCEIL(DATA$dataALL$Socket_Energy,	5000)
