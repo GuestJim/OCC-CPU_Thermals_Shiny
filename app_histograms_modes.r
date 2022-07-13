@@ -3,6 +3,7 @@ library(multimode)
 
 modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
 	modesLOC	=	locmodes(IN, mod0 = NUM, lowsup = LOW, uppsup = UPP)$location
+	test	<<-	modesLOC
 	modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
 	
 	colnames(modesLOCtab)	<-	paste0("Mode ", 1:ncol(modesLOCtab))
@@ -18,7 +19,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	modesNUM	<-	1
 	
 	observeEvent(list(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
-		if (is.numeric(c(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp)))	if (input$modesTEMPbin > 0)	{
+		if (all(!is.na(c(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp))))	if (input$modesTEMPbin > 0)	{
 			modesNUM	=	nmodes(FILT,
 				bw = input$modesTEMPbin,	lowsup = input$modesTEMPlow,	uppsup = input$modesTEMPupp)	}
 			
@@ -43,7 +44,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	modesNUM	<-	1
 	
 	observeEvent(list(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
-		if (is.numeric(c(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp)))	if (input$modesFREQbin > 0)	{
+		if (all(!is.na(c(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp))))	if (input$modesFREQbin > 0)	{
 			modesNUM	=	nmodes(FILT,
 				bw = input$modesFREQbin,	lowsup = input$modesFREQlow,	uppsup = input$modesFREQupp)	}
 			
@@ -68,7 +69,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	modesNUM	<-	1
 	
 	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
-		if (is.numeric(c(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp)))	if (input$modesSOCKbin > 0)	{
+		if (all(!is.na(c(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp))))	if (input$modesSOCKbin > 0)	{
 			modesNUM	=	nmodes(FILT,
 				bw = input$modesSOCKbin,	lowsup = input$modesSOCKlow,	uppsup = input$modesSOCKupp)	}
 			
@@ -93,7 +94,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	modesNUM	<-	1
 	
 	observeEvent(list(input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
-		if (is.numeric(c(input$modesCOREbin, input$modesCORElow, input$modesCOREupp)))	if (input$modesCOREbin > 0)	{
+		if (all(!is.na(c(input$modesCOREbin, input$modesCORElow, input$modesCOREupp))))	if (input$modesCOREbin > 0)	{
 			modesNUM	=	nmodes(FILT,
 				bw = input$modesCOREbin,	lowsup = input$modesCORElow,	uppsup = input$modesCOREupp)	}
 			
@@ -118,7 +119,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	modesNUM	<-	1
 	
 	observeEvent(list(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
-		if (is.numeric(c(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp)))	if (input$modesUNCOREbin > 0)	{
+		if (all(!is.na(c(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp))))	if (input$modesUNCOREbin > 0)	{
 			modesNUM	=	nmodes(FILT,
 				bw = input$modesUNCOREbin,	lowsup = input$modesUNCORElow,	uppsup = input$modesUNCOREupp)	}
 			
