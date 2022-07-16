@@ -1,22 +1,18 @@
 
 observeEvent(input$dataSelLOAD,	{
-	mmTEST	=	c(
-		min(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]),
-		max(DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"])
-	)
+	tempTEST	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
+	mmTEST	=	c(	min(tempTEST),	max(tempTEST)	)
 	updateNumericInput(inputId	=	"tableCROSStest",
 		min	=	floor(mmTEST[1]),	max	=	ceiling(mmTEST[2]),
-		value	=	mmTEST[2],
+		value	=	quantile(tempTEST, 0.25, names = FALSE),
 		label	=	paste0(c("Min: ", "Max: "), mmTEST, " °C", collapse = ", ")
 	)
 	
-	mmCOOL	=	c(
-		min(DATA$dataALL[DATA$dataALL$Period == "Cooldown", "CPU_Temp"]),
-		max(DATA$dataALL[DATA$dataALL$Period == "Cooldown", "CPU_Temp"])
-	)
+	tempCOOL	=	DATA$dataALL[DATA$dataALL$Period == "Cooldown", "CPU_Temp"]
+	mmCOOL	=	c(	min(tempCOOL),	max(tempCOOL)	)
 	updateNumericInput(inputId	=	"tableCROSScool",
 		min	=	floor(mmCOOL[1]),	max	=	ceiling(mmCOOL[2]),
-		value	=	mmCOOL[1],
+		value	=	quantile(tempCOOL, 0.75, names = FALSE),
 		label	=	paste0(c("Min: ", "Max: "), mmCOOL, " °C", collapse = ", ")
 	)
 })
