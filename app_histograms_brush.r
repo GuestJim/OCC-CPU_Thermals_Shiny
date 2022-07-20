@@ -1,5 +1,8 @@
 #	CPU_Temp
 brushHISTtemp	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
+observeEvent(input$dataSelLOAD,	{
+	brushHISTtemp$x			<-	c(-Inf, Inf)	;	output$graphHISTtempTAB	<-	NULL
+})
 
 observeEvent(input$graphHISTtempBIN,	{
 	if (input$graphHISTtempBIN == 0)	updateNumericInput(inputId = "graphHISTtempBIN",	value = 1)
@@ -28,7 +31,7 @@ GRAPH$graphHISTtempTAB	<-	reactive({
 	hold[, c(which(!numCOL), which(numCOL))]
 	})
 
-observeEvent(input$roundTerm, {
+observeEvent(list(input$roundTerm, brushHISTtemp$x), {
 	output$graphHISTtempTAB	<-	renderTable({	GRAPH$graphHISTtempTAB()	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
@@ -36,6 +39,7 @@ observeEvent(input$roundTerm, {
 #	Frequency
 brushHISTfreq	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
 observeEvent(input$dataSelLOAD, {
+	brushHISTfreq$x			<-	c(-Inf, Inf)	;	output$graphHISTfreqTAB	<-	NULL
 	if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
 })
 
@@ -66,13 +70,16 @@ GRAPH$graphHISTfreqTAB	<-	reactive({
 	hold[, c(which(!numCOL), which(numCOL))]
 	})
 
-observeEvent(input$roundTerm, {
+observeEvent(list(input$roundTerm, brushHISTfreq$x), {
 	output$graphHISTfreqTAB	<-	renderTable({	GRAPH$graphHISTfreqTAB()	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Socket_Energy
 brushHISTsock	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
+observeEvent(input$dataSelLOAD,	{
+	brushHISTsock$x			<-	c(-Inf, Inf)	;	output$graphHISTsockTAB	<-	NULL
+})
 
 observeEvent(input$graphHISTsockBIN,	{
 	if (input$graphHISTsockBIN == 0)	updateNumericInput(inputId = "graphHISTsockBIN",	value = 0.1)
@@ -99,14 +106,16 @@ GRAPH$graphHISTsockTAB	<-	reactive({
 	hold[, c(which(!numCOL), which(numCOL))]
 	})
 
-observeEvent(input$roundTerm, {
+observeEvent(list(input$roundTerm, brushHISTsock$x), {
 	output$graphHISTsockTAB	<-	renderTable({	GRAPH$graphHISTsockTAB()	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Core_Energy
 brushHISTcore	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
-
+observeEvent(input$dataSelLOAD,	{
+	brushHISTcore$x			<-	c(-Inf, Inf)	;	output$graphHISTcoreTAB	<-	NULL
+})
 observeEvent(input$graphHISTcoreBIN,	{
 	if (input$graphHISTcoreBIN == 0)	updateNumericInput(inputId = "graphHISTcoreBIN",	value = 0.1)
 })
@@ -134,13 +143,16 @@ GRAPH$graphHISTcoreTAB	<-	reactive({
 	hold[, c(which(!numCOL), which(numCOL))]
 	})
 
-observeEvent(input$roundTerm, {
+observeEvent(list(input$roundTerm, brushHISTcore$x), {
 	output$graphHISTcoreTAB	<-	renderTable({	GRAPH$graphHISTcoreTAB()	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Uncore_Energy
 brushHISTuncore	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
+observeEvent(input$dataSelLOAD,	{
+	brushHISTuncore$x			<-	c(-Inf, Inf)	;	output$graphHISTuncoreTAB	<-	NULL
+})
 
 observeEvent(input$graphHISTuncoreBIN,	{
 	if (input$graphHISTuncoreBIN == 0)	updateNumericInput(inputId = "graphHISTuncoreBIN",	value = 0.1)
@@ -169,7 +181,7 @@ GRAPH$graphHISTuncoreTAB	<-	reactive({
 	hold[, c(which(!numCOL), which(numCOL))]
 	})
 
-observeEvent(input$roundTerm, {
+observeEvent(list(input$roundTerm, brushHISTuncore$x), {
 	output$graphHISTuncoreTAB	<-	renderTable({	GRAPH$graphHISTuncoreTAB()	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
