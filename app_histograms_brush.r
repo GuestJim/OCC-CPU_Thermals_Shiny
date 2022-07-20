@@ -1,9 +1,40 @@
-#	CPU_Temp
-brushHISTtemp	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
+brushHISTtabBASE	<-	data.frame(cbind(
+		Type			=	c("Warm-up", "Test", "Cooldown"),
+		Unit			=	"%",
+		"Lower Limit"	=	"",
+		"Upper Limit"	=	"",
+		Difference		=	""
+		),	check.names = FALSE	)
+
+brushHISTtemp	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+brushHISTfreq	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+brushHISTsock	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+brushHISTcore	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+brushHISTuncore	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+
 observeEvent(input$dataSelLOAD,	{
-	brushHISTtemp$x			<-	c(-Inf, Inf)	;	output$graphHISTtempTAB	<-	NULL
+	brushHISTtabBASE$Type	<-	DATA$levsPER
+	brushHISTtemp$x			<-	NULL	;	output$graphHISTtempTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
+	brushHISTfreq$x			<-	NULL	;	output$graphHISTfreqTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
+	if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
+	brushHISTsock$x			<-	NULL	;	output$graphHISTsockTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
+	brushHISTcore$x			<-	NULL	;	output$graphHISTcoreTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
+	brushHISTuncore$x		<-	NULL	;	output$graphHISTuncoreTAB	<-	renderTable(brushHISTtabBASE, striped = TRUE)
 })
 
+brushHISTtabServer	<-	function(id, BRUSH)	{moduleServer(id, function(input, output, session)	{
+	if (!isTruthy(BRUSH))	return(brushHISTtabBASE)
+	if (diff(BRUSH) == 0 | any(is.infinite(BRUSH)))	return(brushHISTtabBASE)
+	
+	TAB				<-	tableECDF(DATA$dataALL, as.character(id), round(BRUSH))
+	TAB$Difference	<-	TAB[, 3] - TAB[, 2]	;	TAB$Unit	=	"%"
+
+	numCOL	=	sapply(TAB, is.numeric)
+	
+	return(TAB[, c(which(!numCOL), which(numCOL))])
+})}
+
+#	CPU_Temp
 observeEvent(input$graphHISTtempBIN,	{
 	if (input$graphHISTtempBIN == 0)	updateNumericInput(inputId = "graphHISTtempBIN",	value = 1)
 })
@@ -22,26 +53,16 @@ observeEvent(brushHISTtemp$x,	{
 	if (!is.na(brushHISTtemp$x[2]))	updateNumericInput(inputId = "brushHISTtempMAX",	value = round(brushHISTtemp$x[2]))
 })
 
-GRAPH$graphHISTtempTAB	<-	reactive({
-	if (diff(brushHISTtemp$x) == 0 | any(is.infinite(brushHISTtemp$x)))	return(NULL)
-	hold	<-	tableECDF(DATA$dataALL, "CPU_Temp", round(brushHISTtemp$x))
-	hold$Difference	=	hold[, 3] - hold[, 2]	;	hold$Unit	=	"%"
-
-	numCOL	=	sapply(hold, is.numeric)
-	hold[, c(which(!numCOL), which(numCOL))]
-	})
-
 observeEvent(list(input$roundTerm, brushHISTtemp$x), {
-	output$graphHISTtempTAB	<-	renderTable({	GRAPH$graphHISTtempTAB()	},
+	output$graphHISTtempTAB	<-	renderTable({	brushHISTtabServer("CPU_Temp", brushHISTtemp$x)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Frequency
-brushHISTfreq	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$dataSelLOAD, {
-	brushHISTfreq$x			<-	c(-Inf, Inf)	;	output$graphHISTfreqTAB	<-	NULL
-	if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
-})
+# observeEvent(input$dataSelLOAD, {
+	# brushHISTfreq$x			<-	NULL	;	output$graphHISTfreqTAB	<-	NULL
+	# if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
+# })
 
 observeEvent(input$graphHISTfreqBIN,	{
 	if (input$graphHISTfreqBIN == 0)	updateNumericInput(inputId = "graphHISTfreqBIN",	value = 1)
@@ -61,26 +82,12 @@ observeEvent(brushHISTfreq$x,	{
 	if (!is.na(brushHISTfreq$x[2]))	updateNumericInput(inputId = "brushHISTfreqMAX",	value = round(brushHISTfreq$x[2]))
 })
 
-GRAPH$graphHISTfreqTAB	<-	reactive({
-	if (diff(brushHISTfreq$x) == 0 | any(is.infinite(brushHISTfreq$x)))	return(NULL)
-	hold	<-	tableECDF(DATA$dataALL, "Frequency", round(brushHISTfreq$x))
-	hold$Difference	=	hold[, 3] - hold[, 2]	;	hold$Unit	=	"%"
-
-	numCOL	=	sapply(hold, is.numeric)
-	hold[, c(which(!numCOL), which(numCOL))]
-	})
-
 observeEvent(list(input$roundTerm, brushHISTfreq$x), {
-	output$graphHISTfreqTAB	<-	renderTable({	GRAPH$graphHISTfreqTAB()	},
+	output$graphHISTfreqTAB	<-	renderTable({	brushHISTtabServer("Frequency", brushHISTfreq$x)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Socket_Energy
-brushHISTsock	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$dataSelLOAD,	{
-	brushHISTsock$x			<-	c(-Inf, Inf)	;	output$graphHISTsockTAB	<-	NULL
-})
-
 observeEvent(input$graphHISTsockBIN,	{
 	if (input$graphHISTsockBIN == 0)	updateNumericInput(inputId = "graphHISTsockBIN",	value = 0.1)
 })
@@ -97,25 +104,12 @@ observeEvent(brushHISTsock$x,	{
 	if (!is.na(brushHISTsock$x[2]))	updateNumericInput(inputId = "brushHISTsockMAX",	value = round(brushHISTsock$x[2], 1))
 })
 
-GRAPH$graphHISTsockTAB	<-	reactive({
-	if (diff(brushHISTsock$x) == 0 | any(is.infinite(brushHISTsock$x)))	return(NULL)
-	hold	<-	tableECDF(DATA$dataALL, "Socket_Energy", round(brushHISTsock$x, 1))
-	hold$Difference	=	hold[, 3] - hold[, 2]	;	hold$Unit	=	"%"
-
-	numCOL	=	sapply(hold, is.numeric)
-	hold[, c(which(!numCOL), which(numCOL))]
-	})
-
 observeEvent(list(input$roundTerm, brushHISTsock$x), {
-	output$graphHISTsockTAB	<-	renderTable({	GRAPH$graphHISTsockTAB()	},
+	output$graphHISTsockTAB	<-	renderTable({	brushHISTtabServer("Socket_Energy", brushHISTsock$x)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Core_Energy
-brushHISTcore	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$dataSelLOAD,	{
-	brushHISTcore$x			<-	c(-Inf, Inf)	;	output$graphHISTcoreTAB	<-	NULL
-})
 observeEvent(input$graphHISTcoreBIN,	{
 	if (input$graphHISTcoreBIN == 0)	updateNumericInput(inputId = "graphHISTcoreBIN",	value = 0.1)
 })
@@ -134,26 +128,12 @@ observeEvent(brushHISTcore$x,	{
 	if (!is.na(brushHISTcore$x[2]))	updateNumericInput(inputId = "brushHISTcoreMAX",	value = round(brushHISTcore$x[2], 1))
 })
 
-GRAPH$graphHISTcoreTAB	<-	reactive({
-	if (diff(brushHISTcore$x) == 0 | any(is.infinite(brushHISTcore$x)))	return(NULL)
-	hold	<-	tableECDF(DATA$dataALL, "Core_Energy", round(brushHISTcore$x, 1))
-	hold$Difference	=	hold[, 3] - hold[, 2]	;	hold$Unit	=	"%"
-
-	numCOL	=	sapply(hold, is.numeric)
-	hold[, c(which(!numCOL), which(numCOL))]
-	})
-
 observeEvent(list(input$roundTerm, brushHISTcore$x), {
-	output$graphHISTcoreTAB	<-	renderTable({	GRAPH$graphHISTcoreTAB()	},
+	output$graphHISTcoreTAB	<-	renderTable({	brushHISTtabServer("Core_Energy", brushHISTcore$x)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Uncore_Energy
-brushHISTuncore	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$dataSelLOAD,	{
-	brushHISTuncore$x			<-	c(-Inf, Inf)	;	output$graphHISTuncoreTAB	<-	NULL
-})
-
 observeEvent(input$graphHISTuncoreBIN,	{
 	if (input$graphHISTuncoreBIN == 0)	updateNumericInput(inputId = "graphHISTuncoreBIN",	value = 0.1)
 })
@@ -172,16 +152,7 @@ observeEvent(brushHISTuncore$x,	{
 	if (!is.na(brushHISTuncore$x[2]))	updateNumericInput(inputId = "brushHISTuncoreMAX",	value = round(brushHISTuncore$x[2], 1))
 })
 
-GRAPH$graphHISTuncoreTAB	<-	reactive({
-	if (diff(brushHISTuncore$x) == 0 | any(is.infinite(brushHISTuncore$x)))	return(NULL)
-	hold	<-	tableECDF(DATA$dataALL, "Uncore_Energy", round(brushHISTuncore$x, 1))
-	hold$Difference	=	hold[, 3] - hold[, 2]	;	hold$Unit	=	"%"
-
-	numCOL	=	sapply(hold, is.numeric)
-	hold[, c(which(!numCOL), which(numCOL))]
-	})
-
 observeEvent(list(input$roundTerm, brushHISTuncore$x), {
-	output$graphHISTuncoreTAB	<-	renderTable({	GRAPH$graphHISTuncoreTAB()	},
+	output$graphHISTuncoreTAB	<-	renderTable({	brushHISTtabServer("Uncore_Energy", brushHISTuncore$x)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
