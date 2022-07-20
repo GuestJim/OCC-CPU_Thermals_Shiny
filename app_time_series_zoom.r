@@ -27,6 +27,7 @@
 # })
 
 #	The above can be used for zooming into a TREND graph, but I do not think this is as necessary, so it is disabled
+#	the above is also out of date
 
 #	Wipe zooms when new data loaded
 observeEvent(input$dataSelLOAD,	{
@@ -41,44 +42,35 @@ observeEvent(input$dataSelLOAD,	{
 	output$timeCOREtrendTAB		<-	NULL
 })
 
-#	Apply zoom from one graph to the others
-observeEvent(input$brushTIMEtempSEASapp,	{
-	brushFREQzoomSEAS$x	<-	brushTEMPzoomSEAS$x
-	brushSOCKzoomSEAS$x	<-	brushTEMPzoomSEAS$x
-	brushCOREzoomSEAS$x	<-	brushTEMPzoomSEAS$x
-	
-	brushFREQzoomSEAS$CHANGE	<-	TRUE
-	brushSOCKzoomSEAS$CHANGE	<-	TRUE
-	brushCOREzoomSEAS$CHANGE	<-	TRUE
-})
-observeEvent(input$brushTIMEfreqSEASapp,	{
-	brushTEMPzoomSEAS$x	<-	brushFREQzoomSEAS$x
-	brushSOCKzoomSEAS$x	<-	brushFREQzoomSEAS$x
-	brushCOREzoomSEAS$x	<-	brushFREQzoomSEAS$x
-	
-	brushTEMPzoomSEAS$CHANGE	<-	TRUE
-	brushSOCKzoomSEAS$CHANGE	<-	TRUE
-	brushCOREzoomSEAS$CHANGE	<-	TRUE
-})
-observeEvent(input$brushTIMEsockSEASapp,	{
-	brushTEMPzoomSEAS$x	<-	brushSOCKzoomSEAS$x
-	brushFREQzoomSEAS$x	<-	brushSOCKzoomSEAS$x
-	brushCOREzoomSEAS$x	<-	brushSOCKzoomSEAS$x
-	
-	brushTEMPzoomSEAS$CHANGE	<-	TRUE
-	brushFREQzoomSEAS$CHANGE	<-	TRUE
-	brushCOREzoomSEAS$CHANGE	<-	TRUE
-})
-observeEvent(input$brushTIMEcoreSEASapp,	{
-	brushTEMPzoomSEAS$x	<-	brushCOREzoomSEAS$x
-	brushFREQzoomSEAS$x	<-	brushCOREzoomSEAS$x
-	brushSOCKzoomSEAS$x	<-	brushCOREzoomSEAS$x
-	
-	brushTEMPzoomSEAS$CHANGE	<-	TRUE
-	brushFREQzoomSEAS$CHANGE	<-	TRUE
-	brushSOCKzoomSEAS$CHANGE	<-	TRUE
-})
+#	holder for all brushes
+brushSEAS	<-	reactiveValues(
+	TEMP	=	c(xmin = -Inf, xmax = Inf),
+	FREQ	=	c(xmin = -Inf, xmax = Inf),
+	SOCK	=	c(xmin = -Inf, xmax = Inf),
+	CORE	=	c(xmin = -Inf, xmax = Inf)
+)
 
+#	observers to update brushSEAS values
+observeEvent(input$brushTIMEtempSEAS,	brushSEAS$TEMP	<-	input$brushTIMEtempSEAS[c("xmin", "xmax")])
+observeEvent(input$brushTIMEfreqSEAS,	brushSEAS$FREQ	<-	input$brushTIMEfreqSEAS[c("xmin", "xmax")])
+observeEvent(input$brushTIMEsockSEAS,	brushSEAS$SOCK	<-	input$brushTIMEsockSEAS[c("xmin", "xmax")])
+observeEvent(input$brushTIMEcoreSEAS,	brushSEAS$CORE	<-	input$brushTIMEcoreSEAS[c("xmin", "xmax")])
+
+#	observers to change brushSEAS values when buttons are pressed
+observeEvent(input$brushTIMEtempSEASapp,	{	VAL	<-	brushSEAS$TEMP
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$brushTIMEfreqSEASapp,	{	VAL	<-	brushSEAS$FREQ
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$brushTIMEsockSEASapp,	{	VAL	<-	brushSEAS$SOCK
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$brushTIMEcoreSEASapp,	{	VAL	<-	brushSEAS$CORE
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+
+#	module for the Trend Min/Max tables
 trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
 	brushTREND		<-	list(
 		x	=	NULL,	FILTER	=	TRUE,
@@ -96,6 +88,19 @@ trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(in
 	return(brushTREND$TAB)
 })}
 
+#	module for the Zoomed Seasonal graphs
+seasPLOTServer	<-	function(id, BRUSH)	{moduleServer(id, function(input, output, session)	{
+	brushSEAS	<-	list(x = c(-Inf, Inf),	FILTER = TRUE)
+	if (is.null(BRUSH$xmin))	return(	TIME$timeSEAS(as.character(id), TS.df = TS.df)	)
+	
+	TS.df	<-	TIME$DF(as.character(id))
+	
+	brushSEAS$x	<-	c(BRUSH$xmin, BRUSH$xmax)
+	
+	TIME$timeSEAS(as.character(id), TS.df = TS.df) + coord_cartesian(xlim = brushSEAS$x,	expand = TRUE)
+})}
+
+
 #	CPU_Temp
 observeEvent(list(input$roundTerm, input$brushTIMEtempTREND),	{
 	output$timeTEMPtrendTAB	<-	renderTable(
@@ -103,35 +108,7 @@ observeEvent(list(input$roundTerm, input$brushTIMEtempTREND),	{
 		digits = input$roundTerm,	rownames = TRUE	)
 })
 
-brushTEMPzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
-observeEvent(input$brushTIMEtempSEAS, {
-	brush 		<- input$brushTIMEtempSEAS
-
-	brushTEMPzoomSEAS$x			<-	NULL
-	brushTEMPzoomSEAS$FILTER	<-	TRUE
-
-	brushTEMPzoomSEAS$x			<-	c(brush$xmin, brush$xmax)
-
-	brushTEMPzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(input$brushTIMEtempSEASdbl, {
-	brushTEMPzoomSEAS$x			<-	NULL
-	brushTEMPzoomSEAS$FILTER	<-	TRUE
-
-	brushTEMPzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(brushTEMPzoomSEAS$x,	{
-	req(brushTEMPzoomSEAS$CHANGE)
-	
-	TS.df	<-	TIME$DF("CPU_Temp")
-	output$brushTIMEtempSEAS	=	renderPlot({
-		TIME$timeSEAS("CPU_Temp", TS.df = TS.df) + 
-		coord_cartesian(xlim = brushTEMPzoomSEAS$x,	expand = TRUE)
-	})
-})
-
+observeEvent(brushSEAS$TEMP,	{	output$brushTIMEtempSEAS	=	renderPlot(	seasPLOTServer("CPU_Temp", brushSEAS$TEMP)	)	})
 
 #	Frequency
 observeEvent(list(input$roundTerm, input$brushTIMEfreqTREND),	{
@@ -140,35 +117,7 @@ observeEvent(list(input$roundTerm, input$brushTIMEfreqTREND),	{
 		digits = input$roundTerm,	rownames = TRUE	)
 })
 
-brushFREQzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
-observeEvent(input$brushTIMEfreqSEAS, {
-	brush 		<- input$brushTIMEfreqSEAS
-
-	brushFREQzoomSEAS$x			<-	NULL
-	brushFREQzoomSEAS$FILTER	<-	TRUE
-
-	brushFREQzoomSEAS$x			<-	c(brush$xmin, brush$xmax)
-
-	brushFREQzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(input$brushTIMEFREQSEASdbl, {
-	brushFREQzoomSEAS$x			<-	NULL
-	brushFREQzoomSEAS$FILTER	<-	TRUE
-
-	brushFREQzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(brushFREQzoomSEAS$x,	{
-	req(brushFREQzoomSEAS$CHANGE)
-	
-	TS.df	<-	TIME$DF("Frequency")
-	output$brushTIMEfreqSEAS	=	renderPlot({
-		TIME$timeSEAS("Frequency", TS.df = TS.df) + 
-		coord_cartesian(xlim = brushFREQzoomSEAS$x,	expand = TRUE)
-	})
-})
-
+observeEvent(brushSEAS$FREQ,	{	output$brushTIMEfreqSEAS	=	renderPlot(	seasPLOTServer("Frequency", brushSEAS$FREQ)	)	})
 
 #	Socket_Energy
 observeEvent(list(input$roundTerm, input$brushTIMEsockTREND),	{
@@ -177,35 +126,7 @@ observeEvent(list(input$roundTerm, input$brushTIMEsockTREND),	{
 		digits = input$roundTerm,	rownames = TRUE	)
 })
 
-brushSOCKzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
-observeEvent(input$brushTIMEsockSEAS, {
-	brush 		<- input$brushTIMEsockSEAS
-
-	brushSOCKzoomSEAS$x			<-	NULL
-	brushSOCKzoomSEAS$FILTER	<-	TRUE
-
-	brushSOCKzoomSEAS$x			<-	c(brush$xmin, brush$xmax)
-
-	brushSOCKzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(input$brushTIMESOCKSEASdbl, {
-	brushSOCKzoomSEAS$x			<-	NULL
-	brushSOCKzoomSEAS$FILTER	<-	TRUE
-
-	brushSOCKzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(brushSOCKzoomSEAS$x,	{
-	req(brushSOCKzoomSEAS$CHANGE)
-	
-	TS.df	<-	TIME$DF("Socket_Energy")
-	output$brushTIMEsockSEAS	=	renderPlot({
-		TIME$timeSEAS("Socket_Energy", TS.df = TS.df) + 
-		coord_cartesian(xlim = brushSOCKzoomSEAS$x,	expand = TRUE)
-	})
-})
-
+observeEvent(brushSEAS$SOCK,	{	output$brushTIMEsockSEAS	=	renderPlot(	seasPLOTServer("Socket_Energy", brushSEAS$SOCK)	)	})
 
 #	Core_Energy
 observeEvent(list(input$roundTerm, input$brushTIMEcoreTREND),	{
@@ -214,31 +135,4 @@ observeEvent(list(input$roundTerm, input$brushTIMEcoreTREND),	{
 		digits = input$roundTerm,	rownames = TRUE	)
 })
 
-brushCOREzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
-observeEvent(input$brushTIMEcoreSEAS, {
-	brush 		<- input$brushTIMEcoreSEAS
-
-	brushCOREzoomSEAS$x			<-	NULL
-	brushCOREzoomSEAS$FILTER	<-	TRUE
-
-	brushCOREzoomSEAS$x			<-	c(brush$xmin, brush$xmax)
-
-	brushCOREzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(input$brushTIMECORESEASdbl, {
-	brushCOREzoomSEAS$x			<-	NULL
-	brushCOREzoomSEAS$FILTER	<-	TRUE
-
-	brushCOREzoomSEAS$CHANGE	<-	TRUE
-})
-
-observeEvent(brushCOREzoomSEAS$x,	{
-	req(brushCOREzoomSEAS$CHANGE)
-	
-	TS.df	<-	TIME$DF("Core_Energy")
-	output$brushTIMEcoreSEAS	=	renderPlot({
-		TIME$timeSEAS("Core_Energy", TS.df = TS.df) + 
-		coord_cartesian(xlim = brushCOREzoomSEAS$x,	expand = TRUE)
-	})
-})
+observeEvent(brushSEAS$CORE,	{	output$brushTIMEcoreSEAS	=	renderPlot(	seasPLOTServer("Core_Energy", brushSEAS$CORE)	)	})
