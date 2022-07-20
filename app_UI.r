@@ -278,9 +278,10 @@ tseriesUI	<-	function(id, HEIGHT = 480)	{
 	brushTIME	<-	function(IN = NULL)	paste0('brushTIME', ID, IN)
 	
 	tagList(
-		plotOutput(timeTEMP('trend'),	height = HEIGHT),
-		# plotOutput(timeTEMP('trend'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('TRENDdbl')),
-			# brush	=	ifBRUSH(brushOpts(id	=	brushTIME('TREND'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		# plotOutput(timeTEMP('trend'),	height = HEIGHT),
+		plotOutput(timeTEMP('trend'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('TRENDdbl')),
+			brush	=	ifBRUSH(brushOpts(id	=	brushTIME('TREND'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		tableOutput(timeTEMP('trendTAB')),
 		plotOutput(timeTEMP('seas'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('SEASdbl')),
 			brush	=	ifBRUSH(brushOpts(id	=	brushTIME('SEAS'),	resetOnNew	=	TRUE, direction	=	"x"))),
 		# plotOutput(brushTIME('TREND'),	height = HEIGHT)

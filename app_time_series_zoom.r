@@ -34,6 +34,11 @@ observeEvent(input$dataSelLOAD,	{
 	output$brushTIMEfreqSEAS	=	NULL
 	output$brushTIMEsockSEAS	=	NULL
 	output$brushTIMEcoreSEAS	=	NULL
+	
+	output$timeTEMPtrendTAB		<-	NULL
+	output$timeFREQtrendTAB		<-	NULL
+	output$timeSOCKtrendTAB		<-	NULL
+	output$timeCOREtrendTAB		<-	NULL
 })
 
 #	Apply zoom from one graph to the others
@@ -75,6 +80,29 @@ observeEvent(input$brushTIMEcoreSEASapp,	{
 })
 
 #	CPU_Temp
+brushTEMPzoomTREND	=	reactiveValues(x = NULL,	FILTER = TRUE,	TAB = NULL)
+
+observeEvent(input$brushTIMEtempTREND, {
+	brush 		<- input$brushTIMEtempTREND
+	TS.df		<-	TIME$DF("CPU_Temp")
+
+	brushTEMPzoomTREND$x	<-	c(brush$xmin, brush$xmax)
+	brushTEMPzoomTREND$FILT	<-	!is.na(cut(TS.df$Index, brushTEMPzoomTREND$x, labels = FALSE, include.lowest = TRUE))
+	brushTEMPzoomTREND$TAB	<-	cbind(	"Minimum" = min(TS.df[brushTEMPzoomTREND$FILT, "Trend"],	na.rm = TRUE),
+										"Maximum" = max(TS.df[brushTEMPzoomTREND$FILT, "Trend"],	na.rm = TRUE)	)
+})
+
+observeEvent(input$brushTIMEtempTRENDdbl, {
+	brushTEMPzoomTREND$x		<-	NULL
+	brushTEMPzoomTREND$FILTER	<-	TRUE
+	brushTEMPzoomTREND$TAB		<-	cbind("Minimum" = "", "Maximum" = "")
+	# brushTEMPzoomTREND$TAB		<-	NULL
+})
+
+observeEvent(list(input$roundTerm, brushTEMPzoomTREND$TAB),	{
+	output$timeTEMPtrendTAB	<-	renderTable({	brushTEMPzoomTREND$TAB	},	digits = input$roundTerm)
+})
+
 brushTEMPzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
 observeEvent(input$brushTIMEtempSEAS, {
 	brush 		<- input$brushTIMEtempSEAS
