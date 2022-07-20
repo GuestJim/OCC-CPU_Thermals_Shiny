@@ -1,36 +1,33 @@
-brushHISTtabBASE	<-	data.frame(cbind(
+brushHIST	<-	reactiveValues(
+	TEMP	=	NULL,	FREQ	=	NULL,	SOCK	=	NULL,	CORE	=	NULL,	UNCORE	=	NULL,
+	TAB		=	data.frame(cbind(
 		Type			=	c("Warm-up", "Test", "Cooldown"),
 		Unit			=	"%",
 		"Lower Limit"	=	"",
 		"Upper Limit"	=	"",
 		Difference		=	""
 		),	check.names = FALSE	)
-
-brushHISTtemp	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
-brushHISTfreq	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
-brushHISTsock	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
-brushHISTcore	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
-brushHISTuncore	<-		reactiveValues(x = NULL,	FILTER	=	FALSE)
+)
 
 observeEvent(input$dataSelLOAD,	{
-	brushHISTtabBASE$Type	<-	DATA$levsPER
-	brushHISTtemp$x			<-	NULL	;	output$graphHISTtempTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
-	brushHISTfreq$x			<-	NULL	;	output$graphHISTfreqTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
-	if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
-	brushHISTsock$x			<-	NULL	;	output$graphHISTsockTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
-	brushHISTcore$x			<-	NULL	;	output$graphHISTcoreTAB		<-	renderTable(brushHISTtabBASE, striped = TRUE)
-	brushHISTuncore$x		<-	NULL	;	output$graphHISTuncoreTAB	<-	renderTable(brushHISTtabBASE, striped = TRUE)
+	brushHIST$TAB$Type	<-	DATA$levsPER
+	brushHIST$TEMP			<-	NULL	;	output$graphHISTtempTAB		<-	renderTable(brushHIST$TAB, striped = TRUE)
+	brushHIST$FREQ			<-	NULL	;	output$graphHISTfreqTAB		<-	renderTable(brushHIST$TAB, striped = TRUE)
+		if (exists("FREQspec", envir = DATA))	brushHIST$FREQ	<-	DATA$FREQspec
+	brushHIST$SOCK			<-	NULL	;	output$graphHISTsockTAB		<-	renderTable(brushHIST$TAB, striped = TRUE)
+	brushHIST$CORE			<-	NULL	;	output$graphHISTcoreTAB		<-	renderTable(brushHIST$TAB, striped = TRUE)
+	brushHIST$UNCORE		<-	NULL	;	output$graphHISTuncoreTAB	<-	renderTable(brushHIST$TAB, striped = TRUE)
 })
 
 brushHISTtabServer	<-	function(id, BRUSH)	{moduleServer(id, function(input, output, session)	{
-	if (!isTruthy(BRUSH))	return(brushHISTtabBASE)
-	if (diff(BRUSH) == 0 | any(is.infinite(BRUSH)))	return(brushHISTtabBASE)
-	
+	if (!isTruthy(BRUSH))	return(brushHIST$TAB)
+	if (diff(BRUSH) == 0 | any(is.infinite(BRUSH)))	return(brushHIST$TAB)
+
 	TAB				<-	tableECDF(DATA$dataALL, as.character(id), round(BRUSH))
 	TAB$Difference	<-	TAB[, 3] - TAB[, 2]	;	TAB$Unit	=	"%"
 
 	numCOL	=	sapply(TAB, is.numeric)
-	
+
 	return(TAB[, c(which(!numCOL), which(numCOL))])
 })}
 
@@ -39,51 +36,46 @@ observeEvent(input$graphHISTtempBIN,	{
 	if (input$graphHISTtempBIN == 0)	updateNumericInput(inputId = "graphHISTtempBIN",	value = 1)
 })
 observeEvent(input$brushHISTtemp,	{
-	brushHISTtemp$x		<-	c(input$brushHISTtemp$xmin, input$brushHISTtemp$xmax)
-	if (brushHISTtemp$x[1] <= 0)	brushHISTtemp$x[1]	<-	input$graphHISTtempBIN
+	brushHIST$TEMP		<-	c(input$brushHISTtemp$xmin, input$brushHISTtemp$xmax)
 },	priority = 10)
 observeEvent(list(input$brushHISTtempMIN, input$brushHISTtempMAX),	{
-	brushHISTtemp$x[1]		<-	min(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
-	brushHISTtemp$x[2]		<-	max(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
-	if (brushHISTtemp$x[1] <= 0)	brushHISTtemp$x[1]	<-	input$graphHISTtempBIN
-	if (any(is.na(brushHISTtemp$x)))	brushHISTtemp$x	<-	rep(remNA(brushHISTtemp$x), 2)
+	brushHIST$TEMP[1]		<-	min(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
+	brushHIST$TEMP[2]		<-	max(c(input$brushHISTtempMIN, input$brushHISTtempMAX),	na.rm = TRUE)
 },	ignoreInit = TRUE)
-observeEvent(brushHISTtemp$x,	{
-	if (!is.na(brushHISTtemp$x[1]))	updateNumericInput(inputId = "brushHISTtempMIN",	value = round(brushHISTtemp$x[1]))
-	if (!is.na(brushHISTtemp$x[2]))	updateNumericInput(inputId = "brushHISTtempMAX",	value = round(brushHISTtemp$x[2]))
+observeEvent(brushHIST$TEMP,	{
+	if (brushHIST$TEMP[1] <= 0)	brushHIST$TEMP[1]	<-	input$graphHISTtempBIN
+	if (any(is.na(brushHIST$TEMP)))	brushHIST$TEMP	<-	rep(remNA(brushHIST$TEMP), 2)
+
+	if (!is.na(brushHIST$TEMP[1]))	updateNumericInput(inputId = "brushHISTtempMIN",	value = round(brushHIST$TEMP[1]))
+	if (!is.na(brushHIST$TEMP[2]))	updateNumericInput(inputId = "brushHISTtempMAX",	value = round(brushHIST$TEMP[2]))
 })
 
-observeEvent(list(input$roundTerm, brushHISTtemp$x), {
-	output$graphHISTtempTAB	<-	renderTable({	brushHISTtabServer("CPU_Temp", brushHISTtemp$x)	},
+observeEvent(list(input$roundTerm, brushHIST$TEMP), {
+	output$graphHISTtempTAB	<-	renderTable({	brushHISTtabServer("CPU_Temp", brushHIST$TEMP)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
 #	Frequency
-# observeEvent(input$dataSelLOAD, {
-	# brushHISTfreq$x			<-	NULL	;	output$graphHISTfreqTAB	<-	NULL
-	# if (exists("FREQspec", envir = DATA))	brushHISTfreq$x	<-	DATA$FREQspec
-# })
-
 observeEvent(input$graphHISTfreqBIN,	{
 	if (input$graphHISTfreqBIN == 0)	updateNumericInput(inputId = "graphHISTfreqBIN",	value = 1)
 })
 observeEvent(input$brushHISTfreq,	{
-	brushHISTfreq$x		<-	c(input$brushHISTfreq$xmin, input$brushHISTfreq$xmax)
-	if (brushHISTfreq$x[1] <= 0)	brushHISTfreq$x[1]	<-	input$graphHISTfreqBIN
+	brushHIST$FREQ		<-	c(input$brushHISTfreq$xmin, input$brushHISTfreq$xmax)
 },	priority = 10)
 observeEvent(list(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	{
-	brushHISTfreq$x[1]		<-	min(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
-	brushHISTfreq$x[2]		<-	max(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
-	if (brushHISTfreq$x[1] <= 0)	brushHISTfreq$x[1]	<-	input$graphHISTfreqBIN
-	if (any(is.na(brushHISTfreq$x)))	brushHISTfreq$x	<-	rep(remNA(brushHISTfreq$x), 2)
+	brushHIST$FREQ[1]		<-	min(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
+	brushHIST$FREQ[2]		<-	max(c(input$brushHISTfreqMIN, input$brushHISTfreqMAX),	na.rm = TRUE)
 },	ignoreInit = TRUE)
-observeEvent(brushHISTfreq$x,	{
-	if (!is.na(brushHISTfreq$x[1]))	updateNumericInput(inputId = "brushHISTfreqMIN",	value = round(brushHISTfreq$x[1]))
-	if (!is.na(brushHISTfreq$x[2]))	updateNumericInput(inputId = "brushHISTfreqMAX",	value = round(brushHISTfreq$x[2]))
+observeEvent(brushHIST$FREQ,	{
+	if (brushHIST$FREQ[1] <= 0)	brushHIST$FREQ[1]	<-	input$graphHISTfreqBIN
+	if (any(is.na(brushHIST$FREQ)))	brushHIST$FREQ	<-	rep(remNA(brushHIST$FREQ), 2)
+
+	if (!is.na(brushHIST$FREQ[1]))	updateNumericInput(inputId = "brushHISTfreqMIN",	value = round(brushHIST$FREQ[1]))
+	if (!is.na(brushHIST$FREQ[2]))	updateNumericInput(inputId = "brushHISTfreqMAX",	value = round(brushHIST$FREQ[2]))
 })
 
-observeEvent(list(input$roundTerm, brushHISTfreq$x), {
-	output$graphHISTfreqTAB	<-	renderTable({	brushHISTtabServer("Frequency", brushHISTfreq$x)	},
+observeEvent(list(input$roundTerm, brushHIST$FREQ), {
+	output$graphHISTfreqTAB	<-	renderTable({	brushHISTtabServer("Frequency", brushHIST$FREQ)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
@@ -92,20 +84,22 @@ observeEvent(input$graphHISTsockBIN,	{
 	if (input$graphHISTsockBIN == 0)	updateNumericInput(inputId = "graphHISTsockBIN",	value = 0.1)
 })
 observeEvent(input$brushHISTsock,	{
-	brushHISTsock$x		<-	c(input$brushHISTsock$xmin, input$brushHISTsock$xmax)
-	if (brushHISTsock$x[1] <= 0)	brushHISTsock$x[1]	<-	input$graphHISTsockBIN
+	brushHIST$SOCK		<-	c(input$brushHISTsock$xmin, input$brushHISTsock$xmax)
 },	priority = 10)
 observeEvent(list(input$brushHISTsockMIN, input$brushHISTsockMAX),	{
-	brushHISTsock$x[1]		<-	min(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
-	brushHISTsock$x[2]		<-	max(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
+	brushHIST$SOCK[1]		<-	min(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
+	brushHIST$SOCK[2]		<-	max(c(input$brushHISTsockMIN, input$brushHISTsockMAX),	na.rm = TRUE)
 },	ignoreInit = TRUE)
-observeEvent(brushHISTsock$x,	{
-	if (!is.na(brushHISTsock$x[1]))	updateNumericInput(inputId = "brushHISTsockMIN",	value = round(brushHISTsock$x[1], 1))
-	if (!is.na(brushHISTsock$x[2]))	updateNumericInput(inputId = "brushHISTsockMAX",	value = round(brushHISTsock$x[2], 1))
+observeEvent(brushHIST$SOCK,	{
+	if (brushHIST$SOCK[1] <= 0)	brushHIST$SOCK[1]	<-	input$graphHISTsockBIN
+	if (any(is.na(brushHIST$SOCK)))	brushHIST$SOCK	<-	rep(remNA(brushHIST$SOCK), 2)
+
+	if (!is.na(brushHIST$SOCK[1]))	updateNumericInput(inputId = "brushHISTsockMIN",	value = round(brushHIST$SOCK[1], 1))
+	if (!is.na(brushHIST$SOCK[2]))	updateNumericInput(inputId = "brushHISTsockMAX",	value = round(brushHIST$SOCK[2], 1))
 })
 
-observeEvent(list(input$roundTerm, brushHISTsock$x), {
-	output$graphHISTsockTAB	<-	renderTable({	brushHISTtabServer("Socket_Energy", brushHISTsock$x)	},
+observeEvent(list(input$roundTerm, brushHIST$SOCK), {
+	output$graphHISTsockTAB	<-	renderTable({	brushHISTtabServer("Socket_Energy", brushHIST$SOCK)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
@@ -114,22 +108,22 @@ observeEvent(input$graphHISTcoreBIN,	{
 	if (input$graphHISTcoreBIN == 0)	updateNumericInput(inputId = "graphHISTcoreBIN",	value = 0.1)
 })
 observeEvent(input$brushHISTcore,	{
-	brushHISTcore$x		<-	c(input$brushHISTcore$xmin, input$brushHISTcore$xmax)
-	if (brushHISTcore$x[1] <= 0)	brushHISTcore$x[1]	<-	input$graphHISTcoreBIN
+	brushHIST$CORE		<-	c(input$brushHISTcore$xmin, input$brushHISTcore$xmax)
 },	priority = 10)
 observeEvent(list(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	{
-	brushHISTcore$x[1]		<-	min(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
-	brushHISTcore$x[2]		<-	max(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
-	if (brushHISTcore$x[1] <= 0)	brushHISTcore$x[1]	<-	input$graphHISTcoreBIN
-	if (any(is.na(brushHISTcore$x)))	brushHISTcore$x	<-	rep(remNA(brushHISTcore$x), 2)
+	brushHIST$CORE[1]		<-	min(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
+	brushHIST$CORE[2]		<-	max(c(input$brushHISTcoreMIN, input$brushHISTcoreMAX),	na.rm = TRUE)
 },	ignoreInit = TRUE)
-observeEvent(brushHISTcore$x,	{
-	if (!is.na(brushHISTcore$x[1]))	updateNumericInput(inputId = "brushHISTcoreMIN",	value = round(brushHISTcore$x[1], 1))
-	if (!is.na(brushHISTcore$x[2]))	updateNumericInput(inputId = "brushHISTcoreMAX",	value = round(brushHISTcore$x[2], 1))
+observeEvent(brushHIST$CORE,	{
+	if (brushHIST$CORE[1] <= 0)	brushHIST$CORE[1]	<-	input$graphHISTcoreBIN
+	if (any(is.na(brushHIST$CORE)))	brushHIST$CORE	<-	rep(remNA(brushHIST$CORE), 2)
+
+	if (!is.na(brushHIST$CORE[1]))	updateNumericInput(inputId = "brushHISTcoreMIN",	value = round(brushHIST$CORE[1], 1))
+	if (!is.na(brushHIST$CORE[2]))	updateNumericInput(inputId = "brushHISTcoreMAX",	value = round(brushHIST$CORE[2], 1))
 })
 
-observeEvent(list(input$roundTerm, brushHISTcore$x), {
-	output$graphHISTcoreTAB	<-	renderTable({	brushHISTtabServer("Core_Energy", brushHISTcore$x)	},
+observeEvent(list(input$roundTerm, brushHIST$CORE), {
+	output$graphHISTcoreTAB	<-	renderTable({	brushHISTtabServer("Core_Energy", brushHIST$CORE)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
@@ -138,21 +132,21 @@ observeEvent(input$graphHISTuncoreBIN,	{
 	if (input$graphHISTuncoreBIN == 0)	updateNumericInput(inputId = "graphHISTuncoreBIN",	value = 0.1)
 })
 observeEvent(input$brushHISTuncore,	{
-	brushHISTuncore$x		<-	c(input$brushHISTuncore$xmin, input$brushHISTuncore$xmax)
-	if (brushHISTuncore$x[1] <= 0)	brushHISTuncore$x[1]	<-	input$graphHISTuncoreBIN
+	brushHIST$UNCORE		<-	c(input$brushHISTuncore$xmin, input$brushHISTuncore$xmax)
 },	priority = 10)
 observeEvent(list(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	{
-	brushHISTuncore$x[1]		<-	min(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
-	brushHISTuncore$x[2]		<-	max(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
-	if (brushHISTuncore$x[1] <= 0)	brushHISTuncore$x[1]	<-	input$graphHISTuncoreBIN
-	if (any(is.na(brushHISTuncore$x)))	brushHISTuncore$x	<-	rep(remNA(brushHISTuncore$x), 2)
+	brushHIST$UNCORE[1]		<-	min(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
+	brushHIST$UNCORE[2]		<-	max(c(input$brushHISTuncoreMIN, input$brushHISTuncoreMAX),	na.rm = TRUE)
 },	ignoreInit = TRUE)
-observeEvent(brushHISTuncore$x,	{
-	if (!is.na(brushHISTuncore$x[1]))	updateNumericInput(inputId = "brushHISTuncoreMIN",	value = round(brushHISTuncore$x[1], 1))
-	if (!is.na(brushHISTuncore$x[2]))	updateNumericInput(inputId = "brushHISTuncoreMAX",	value = round(brushHISTuncore$x[2], 1))
+observeEvent(brushHIST$UNCORE,	{
+	if (brushHIST$UNCORE[1] <= 0)	brushHIST$UNCORE[1]	<-	input$graphHISTuncoreBIN
+	if (any(is.na(brushHIST$UNCORE)))	brushHIST$UNCORE	<-	rep(remNA(brushHIST$UNCORE), 2)
+
+	if (!is.na(brushHIST$UNCORE[1]))	updateNumericInput(inputId = "brushHISTuncoreMIN",	value = round(brushHIST$UNCORE[1], 1))
+	if (!is.na(brushHIST$UNCORE[2]))	updateNumericInput(inputId = "brushHISTuncoreMAX",	value = round(brushHIST$UNCORE[2], 1))
 })
 
-observeEvent(list(input$roundTerm, brushHISTuncore$x), {
-	output$graphHISTuncoreTAB	<-	renderTable({	brushHISTtabServer("Uncore_Energy", brushHISTuncore$x)	},
+observeEvent(list(input$roundTerm, brushHIST$UNCORE), {
+	output$graphHISTuncoreTAB	<-	renderTable({	brushHISTtabServer("Uncore_Energy", brushHIST$UNCORE)	},
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
