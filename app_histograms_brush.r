@@ -33,7 +33,6 @@ observeEvent(input$roundTerm, {
 		digits	=	input$roundTerm,	striped	=	TRUE)
 })
 
-
 #	Frequency
 brushHISTfreq	<-		reactiveValues(x = c(-Inf, Inf),	FILTER	=	FALSE)
 observeEvent(input$dataSelLOAD, {
@@ -57,7 +56,6 @@ observeEvent(brushHISTfreq$x,	{
 	if (!is.na(brushHISTfreq$x[1]))	updateNumericInput(inputId = "brushHISTfreqMIN",	value = round(brushHISTfreq$x[1]))
 	if (!is.na(brushHISTfreq$x[2]))	updateNumericInput(inputId = "brushHISTfreqMAX",	value = round(brushHISTfreq$x[2]))
 })
-
 
 GRAPH$graphHISTfreqTAB	<-	reactive({
 	if (diff(brushHISTfreq$x) == 0 | any(is.infinite(brushHISTfreq$x)))	return(NULL)
