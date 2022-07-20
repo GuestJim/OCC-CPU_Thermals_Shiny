@@ -16,7 +16,7 @@ modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$CPU_Temp)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
-	modesNUM	<-	1
+	modesNUM	<-	1	;	output$modesTEMP	<-	NULL
 	
 	observeEvent(list(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
 		if (all(!is.na(c(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp))))	if (input$modesTEMPbin > 0)	{
@@ -41,7 +41,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Frequency)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Frequency"]
-	modesNUM	<-	1
+	modesNUM	<-	1	;	output$modesFREQ	<-	NULL
 	
 	observeEvent(list(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
 		if (all(!is.na(c(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp))))	if (input$modesFREQbin > 0)	{
@@ -66,7 +66,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Socket_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]/1000
-	modesNUM	<-	1
+	modesNUM	<-	1	;	output$modesSOCK	<-	NULL
 	
 	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
 		if (all(!is.na(c(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp))))	if (input$modesSOCKbin > 0)	{
@@ -91,7 +91,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Core_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]/1000
-	modesNUM	<-	1
+	modesNUM	<-	1	;	output$modesCORE	<-	NULL
 	
 	observeEvent(list(input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
 		if (all(!is.na(c(input$modesCOREbin, input$modesCORElow, input$modesCOREupp))))	if (input$modesCOREbin > 0)	{
@@ -116,7 +116,7 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	req(DATA$dataALL$Uncore_Energy)
 	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]/1000
-	modesNUM	<-	1
+	modesNUM	<-	1	;	output$modesUNCORE	<-	NULL
 	
 	observeEvent(list(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
 		if (all(!is.na(c(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp))))	if (input$modesUNCOREbin > 0)	{
