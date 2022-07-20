@@ -79,28 +79,28 @@ observeEvent(input$brushTIMEcoreSEASapp,	{
 	brushSOCKzoomSEAS$CHANGE	<-	TRUE
 })
 
+trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
+	brushTREND		<-	list(
+		x	=	NULL,	FILTER	=	TRUE,
+		TAB	=	as.data.frame(matrix(c("", ""), nrow = 1, ncol = 2, dimnames = list(c(UNIT), c("Minimum", "Maximum"))))
+		)
+	if (is.null(BRUSH$xmin))	return(	brushTREND$TAB	)
+	
+	TS.df	<-	TIME$DF(as.character(id))
+	
+	brushTREND$x	<-	c(BRUSH$xmin, BRUSH$xmax)
+	brushTREND$FILT	<-	!is.na(cut(TS.df$Index, brushTREND$x, labels = FALSE, include.lowest = TRUE))
+	brushTREND$TAB$Minimum	<-	min(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
+	brushTREND$TAB$Maximum	<-	max(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
+	
+	return(brushTREND$TAB)
+})}
+
 #	CPU_Temp
-brushTEMPzoomTREND	=	reactiveValues(x = NULL,	FILTER = TRUE,	TAB = NULL)
-
-observeEvent(input$brushTIMEtempTREND, {
-	brush 		<- input$brushTIMEtempTREND
-	TS.df		<-	TIME$DF("CPU_Temp")
-
-	brushTEMPzoomTREND$x	<-	c(brush$xmin, brush$xmax)
-	brushTEMPzoomTREND$FILT	<-	!is.na(cut(TS.df$Index, brushTEMPzoomTREND$x, labels = FALSE, include.lowest = TRUE))
-	brushTEMPzoomTREND$TAB	<-	cbind(	"Minimum" = min(TS.df[brushTEMPzoomTREND$FILT, "Trend"],	na.rm = TRUE),
-										"Maximum" = max(TS.df[brushTEMPzoomTREND$FILT, "Trend"],	na.rm = TRUE)	)
-})
-
-observeEvent(input$brushTIMEtempTRENDdbl, {
-	brushTEMPzoomTREND$x		<-	NULL
-	brushTEMPzoomTREND$FILTER	<-	TRUE
-	brushTEMPzoomTREND$TAB		<-	cbind("Minimum" = "", "Maximum" = "")
-	# brushTEMPzoomTREND$TAB		<-	NULL
-})
-
-observeEvent(list(input$roundTerm, brushTEMPzoomTREND$TAB),	{
-	output$timeTEMPtrendTAB	<-	renderTable({	brushTEMPzoomTREND$TAB	},	digits = input$roundTerm)
+observeEvent(list(input$roundTerm, input$brushTIMEtempTREND),	{
+	output$timeTEMPtrendTAB	<-	renderTable(
+		trendTABServer("CPU_Temp", input$brushTIMEtempTREND, "°C"),
+		digits = input$roundTerm,	rownames = TRUE	)
 })
 
 brushTEMPzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
@@ -134,6 +134,12 @@ observeEvent(brushTEMPzoomSEAS$x,	{
 
 
 #	Frequency
+observeEvent(list(input$roundTerm, input$brushTIMEfreqTREND),	{
+	output$timeFREQtrendTAB	<-	renderTable(
+		trendTABServer("Frequency", input$brushTIMEfreqTREND, "MHz"),
+		digits = input$roundTerm,	rownames = TRUE	)
+})
+
 brushFREQzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
 observeEvent(input$brushTIMEfreqSEAS, {
 	brush 		<- input$brushTIMEfreqSEAS
@@ -165,6 +171,12 @@ observeEvent(brushFREQzoomSEAS$x,	{
 
 
 #	Socket_Energy
+observeEvent(list(input$roundTerm, input$brushTIMEsockTREND),	{
+	output$timeSOCKtrendTAB	<-	renderTable(
+		trendTABServer("Socket_Energy", input$brushTIMEsockTREND, "W"),
+		digits = input$roundTerm,	rownames = TRUE	)
+})
+
 brushSOCKzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
 observeEvent(input$brushTIMEsockSEAS, {
 	brush 		<- input$brushTIMEsockSEAS
@@ -196,6 +208,12 @@ observeEvent(brushSOCKzoomSEAS$x,	{
 
 
 #	Core_Energy
+observeEvent(list(input$roundTerm, input$brushTIMEcoreTREND),	{
+	output$timeCOREtrendTAB	<-	renderTable(
+		trendTABServer("Core_Energy", input$brushTIMEcoreTREND, "W"),
+		digits = input$roundTerm,	rownames = TRUE	)
+})
+
 brushCOREzoomSEAS	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
 observeEvent(input$brushTIMEcoreSEAS, {
 	brush 		<- input$brushTIMEcoreSEAS
