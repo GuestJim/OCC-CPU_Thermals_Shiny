@@ -81,7 +81,7 @@ trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(in
 	TS.df	<-	TIME$DF(as.character(id))
 	
 	brushTREND$x	<-	c(BRUSH$xmin, BRUSH$xmax)
-	brushTREND$FILT	<-	!is.na(cut(TS.df$Index, brushTREND$x, labels = FALSE, include.lowest = TRUE))
+	brushTREND$FILT	<-	cutWithin(TS.df$Index, brushTREND$x)
 	brushTREND$TAB$Minimum	<-	min(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
 	brushTREND$TAB$Maximum	<-	max(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
 	

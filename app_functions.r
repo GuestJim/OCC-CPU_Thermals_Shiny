@@ -15,6 +15,8 @@ sepCOL	=	function(aggOUT)	{
 
 remNA	=	function(IN)	IN[!is.na(IN)]
 
+cutWithin	=	function(IN, LIMS, ..., INCLUDE = TRUE)	!is.na(cut(IN,	LIMS,	labels = FALSE,	include.lowest = INCLUDE, ...))
+
 stats	=	function(DATA)	{
 	return(c(
 		Min		=	min(DATA),
