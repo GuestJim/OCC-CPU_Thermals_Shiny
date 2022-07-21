@@ -340,11 +340,10 @@ ui	<-	fluidPage(
 							tablemultoutUI("tableMULI", VIEW$MULTtab),
 						),
 						if (VIEW$CROSStab)	tabPanel("Temperature Crosses",
-							tablecrossoutUI("tableCRUS", VIEW$CROSStab)
+							tablecrossoutUI("tableCROS", VIEW$CROSStab)
 						)
 					)
 				),
-			# textOutput("test"),
 				GRAPHtabUI("graphTAB",	VIEW$GRAPHS,	VIEW$BRUSH),
 				HISTtabUI("histTAB",	VIEW$HIST,		VIEW$BRUSH,	VIEW$MODES),
 				TSERIEStabUI("histTAB",	VIEW$TSERIES,	VIEW$BRUSH),

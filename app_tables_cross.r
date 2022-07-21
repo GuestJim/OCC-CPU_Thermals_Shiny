@@ -1,4 +1,3 @@
-
 observeEvent(input$dataSelLOAD,	{
 	tempTEST	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
 	mmTEST	=	c(	min(tempTEST),	max(tempTEST)	)
