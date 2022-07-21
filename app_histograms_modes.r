@@ -3,7 +3,6 @@ library(multimode)
 
 modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
 	modesLOC	=	locmodes(IN, mod0 = NUM, lowsup = LOW, uppsup = UPP)$location
-	test	<<-	modesLOC
 	modesLOCtab	<-	t(data.frame(Modes = modesLOC[seq(1, length(modesLOC), by = 2)]))
 	
 	colnames(modesLOCtab)	<-	paste0("Mode ", 1:ncol(modesLOCtab))
