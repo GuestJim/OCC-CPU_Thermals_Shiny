@@ -52,6 +52,7 @@ source("app_UI.r", local = TRUE)
 
 # Define server logic to summarize and view selected dataset ----
 server <- function(input, output, session) {
+	setBookmarkExclude(c("dataSelLOAD", "brushHISTtempMIN", "brushMAXlength", "modesUNCOREbin", "graphHISTuncoreBIN", "brushPOWERstart", "brushFREQstart", "Table Controls", "graphHISTsockBIN", "graphHISTtempUPD", "listMEAS", "modesFREQlow", "graphHISTcoreMIN", "brushTIMEfreqSEASapp", "brushTIMEcoreSEASapp", "modesCORElow", "brushMAXupdate", "brushHISTuncoreMIN", "brushMEANupdate", "roundTerm", "modesFREQbin", "modesTEMPnum", "graphHISTfreqBIN", "graphHISTtempBIN", "graphHISTuncoreMIN", "brushHISTcoreMIN", "brushPOWERlength", "coreSEL", "brushPOWERupdate", "graphHISTuncoreUPD", "brushMEANlength", "modesFREQnum", "modesSOCKupp", "brushHISTsockMIN", "modesSOCKnum", "multiFREQperc", "graphHISTtempMIN", "COEFupd", "tableCROSSlim", "graphHISTsockMIN", "graphHISTsockUPD", "multiFREQecdf", "modesUNCOREupp", "engPOW", "multiSOCKperc", "multiSOCKecdf", "multiCOREperc", "Table", "modesFREQupd", "graphHISTfreqMIN", "brushMEANstart", "modesUNCOREupd", "threadSEL", "brushHISTfreqMIN", "brushFREQupdate", "listPERI", "FREQ.COEF", "modesTEMPupp", "modesSOCKlow", "brushHISTsockMAX", "modesCOREbin", "brushHISTuncoreMAX", "modesSOCKupd", "modesTEMPlow", "graphHISTcoreUPD", "modesUNCOREnum", "multiTEMPperc", "multiCOREecdf", "graphHISTfreqSPEC", "medOFFapply", "brushHISTtempMAX", "tabORDER", "brushHISTfreqMAX", "brushTIMEtempSEASapp", "listSTAT", "modesSOCKbin", "modesUNCORElow", "tableCROSScool", "brushTIMEsockSEASapp", "multiTEMPecdf", "modesTEMPupd", "tutorial", "brushFREQlength", "modesFREQupp", "brushMAXstart", "graphHISTfreqUPD", "brushHISTcoreMAX", "modesCOREupd", "graphHISTcoreBIN", "modesCOREupp", "tableCROSStest", "modesTEMPbin", "modesCOREnum"))
 	TESTconfig	=	eventReactive(input$dataSelLOAD, {
 		ifexist	=	function(IN, ENV = DATA)	{if (exists(IN, envir = ENV))	return(get(IN, envir = ENV))	;	return("")}
 		config	=	c(
@@ -124,4 +125,4 @@ server <- function(input, output, session) {
 }
 
 # Create Shiny app ----
-shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server, enableBookmarking = "url")

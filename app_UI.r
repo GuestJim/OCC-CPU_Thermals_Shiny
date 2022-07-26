@@ -307,10 +307,11 @@ TSERIEStabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Serie
 	)
 }
 
-ui	<-	fluidPage(
+ui	<-	ui <- function(request)	{fluidPage(
 	titlePanel("CPU Temperature Statistics and Graphs"),
 	sidebarLayout(
 		sidebarPanel(
+			# bookmarkButton(),
 			selectInput('dataSel',	label	=	"Data to Load",	selectize	=	FALSE,
 				# choices	=	setNames(FILES, gsub(".env|.RData", "", names(FILES))), selected	=	FILES[1]
 				choices	=	FILES, selected	=	FILES[1]
@@ -353,3 +354,4 @@ ui	<-	fluidPage(
 		)
 	)
 )
+}
