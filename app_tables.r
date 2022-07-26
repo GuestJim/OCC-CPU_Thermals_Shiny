@@ -21,7 +21,7 @@ TABLE$longSUM	<-	eventReactive(list(input$dataSelLOAD, DATA$LOAD, input$medOFFap
 
 	levels(holdSUM$Measurement)	=	unitCOL(levels(holdSUM$Measurement))
 	mJ2W(holdSUM)
-},	ignoreInit	=	TRUE)
+},	ignoreInit	=	FALSE)
 
 tableFILT	=	function(TAB)	{
 	filtCOL	=	TRUE
