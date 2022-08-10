@@ -1,0 +1,2 @@
+#possibly useful means of building, at least partially, the table
+expand.grid(Measurement = ordered(c("Temperature", "Frequency", "Socket Power", "Core Power", "Uncore Power")), Period = ordered(c("Warm-up", "Test", "Cooldown")))
