@@ -11,11 +11,6 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	
 	updateNumericInput(inputId	=	"brushPOWERstart",	value	=	-DATA$warm						)
 	updateNumericInput(inputId	=	"brushPOWERlength",	value	=	2 * DATA$duration + DATA$warm	)
-	
-	output$brushMEANzoom			<-	NULL
-	output$brushMAXzoom				<-	NULL
-	output$brushFREQzoomFILT		<-	NULL
-	output$brushPOWERzoomFILT		<-	NULL
 })
 
 #	Mean
