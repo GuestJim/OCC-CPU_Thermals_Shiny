@@ -31,10 +31,10 @@
 
 #	Wipe zooms when new data loaded
 observeEvent(input$dataSelLOAD,	{
-	output$brushTIMEtempSEAS	=	NULL
-	output$brushTIMEfreqSEAS	=	NULL
-	output$brushTIMEsockSEAS	=	NULL
-	output$brushTIMEcoreSEAS	=	NULL
+	output$brushTIMEtempSEAS	<-	NULL
+	output$brushTIMEfreqSEAS	<-	NULL
+	output$brushTIMEsockSEAS	<-	NULL
+	output$brushTIMEcoreSEAS	<-	NULL
 	
 	output$timeTEMPtrendTAB		<-	NULL
 	output$timeFREQtrendTAB		<-	NULL
