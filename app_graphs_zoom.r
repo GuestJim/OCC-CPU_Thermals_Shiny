@@ -11,15 +11,18 @@ observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
 	
 	updateNumericInput(inputId	=	"brushPOWERstart",	value	=	-DATA$warm						)
 	updateNumericInput(inputId	=	"brushPOWERlength",	value	=	2 * DATA$duration + DATA$warm	)
+	
+	output$brushMEANzoom		<-	NULL
+	output$brushMAXzoom			<-	NULL
+	output$brushFREQzoomFILT	<-	NULL
+	output$brushPOWERzoomFILT	<-	NULL
 })
 
 #	Mean
 graphMEANzoom	=	reactive({
-	output$brushMEANzoom	=	renderPlot({
-		GRAPH$graphMEAN(GRAPH$FREQ.COEF) + 
-		coord_cartesian(xlim = brushMEANzoom$x,	expand = FALSE) +
-		labs(subtitle = paste0("X: ", paste(round(brushMEANzoom$x, 2), collapse = " to "), " (s)")	)
-	})
+	GRAPH$graphMEAN(GRAPH$FREQ.COEF) + 
+	coord_cartesian(xlim = brushMEANzoom$x,	expand = FALSE) +
+	labs(subtitle = paste0("X: ", paste(round(brushMEANzoom$x, 2), collapse = " to "), " (s)")	)
 })
 
 brushMEANzoom	=	reactiveValues(x = c(-Inf, Inf),	y = c(-Inf, Inf),	FILTER	=	TRUE)
@@ -34,14 +37,14 @@ observeEvent(input$COEFupd,	{
 		updateNumericInput(inputId	=	"brushMEANstart",	value	=	round(	brushMEANzoom$x[1], 		2)	)
 		updateNumericInput(inputId	=	"brushMEANlength",	value	=	round(	abs(diff(brushMEANzoom$x)),	2)	)
 		
-		graphMEANzoom()
+		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
 	})
 
 	observeEvent(input$brushMEANupdate,	{
 		req(DATA$dataALL)
 		brushMEANzoom$x	=	c(input$brushMEANstart, input$brushMEANstart + input$brushMEANlength)
 		
-		graphMEANzoom()
+		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
 	})
 
 	observeEvent(input$brushMEANdbl,	{
@@ -51,18 +54,16 @@ observeEvent(input$COEFupd,	{
 		updateNumericInput(inputId	=	"brushMEANstart",	value	=	brushMEANzoom$x[1])
 		updateNumericInput(inputId	=	"brushMEANlength",	value	=	brushMEANzoom$x[2] - brushMEANzoom$x[1])
 			
-		graphMEANzoom()
+		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
 	})
 },	ignoreNULL = FALSE)
 
 
 #	Max
 graphMAXzoom	=	reactive({
-	output$brushMAXzoom	=	renderPlot({
-		GRAPH$graphMAX(GRAPH$FREQ.COEF) + 
-		coord_cartesian(xlim = brushMAXzoom$x,	expand = FALSE) +
-		labs(subtitle = paste0("X: ", paste(round(brushMAXzoom$x, 2), collapse = " to "), " (s)")	)
-	})
+	GRAPH$graphMAX(GRAPH$FREQ.COEF) + 
+	coord_cartesian(xlim = brushMAXzoom$x,	expand = FALSE) +
+	labs(subtitle = paste0("X: ", paste(round(brushMAXzoom$x, 2), collapse = " to "), " (s)")	)
 })
 
 brushMAXzoom	=	reactiveValues(x = c(-Inf, Inf),	y = c(-Inf, Inf),	FILTER	=	TRUE)
@@ -77,14 +78,14 @@ observeEvent(input$COEFupd,	{
 		updateNumericInput(inputId	=	"brushMAXstart",	value	=	round(	brushMAXzoom$x[1], 		2)	)
 		updateNumericInput(inputId	=	"brushMAXlength",	value	=	round(	abs(diff(brushMAXzoom$x)),	2)	)
 		
-		graphMAXzoom()
+		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
 	})
 
 	observeEvent(input$brushMAXupdate,	{
 		req(DATA$dataALL)
 		brushMAXzoom$x	=	c(input$brushMAXstart, input$brushMAXstart + input$brushMAXlength)
 		
-		graphMAXzoom()
+		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
 	})
 
 	observeEvent(input$brushMAXdbl,	{
@@ -94,7 +95,7 @@ observeEvent(input$COEFupd,	{
 		updateNumericInput(inputId	=	"brushMAXstart",	value	=	brushMAXzoom$x[1])
 		updateNumericInput(inputId	=	"brushMAXlength",	value	=	brushMAXzoom$x[2] - brushMAXzoom$x[1])
 			
-		graphMAXzoom()
+		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
 	})
 },	ignoreNULL = FALSE)
 
@@ -121,7 +122,7 @@ observeEvent(list(input$COEFupd, brushFREQzoom$x), {
 		req(input$threadSEL)
 		output$brushFREQzoomFILT	<-	renderUI({	hold[as.numeric(input$threadSEL) + 1]	})
 	})
-})
+},	priority = -5	)
 
 brushFREQzoom	=	reactiveValues(x = c(min(DATA$dataALL$Time), max(DATA$dataALL$Time)),	y = c(-Inf, Inf),	FILTER	=	FALSE)
 observeEvent(input$COEFupd,	{
@@ -178,7 +179,7 @@ observeEvent(list(input$COEFupd, brushPOWERzoom$x), {
 		req(input$coreSEL)
 		output$brushPOWERzoomFILT	<-	renderUI({	hold[as.numeric(input$coreSEL) + 1]	})
 	})
-})
+},	priority = -5	)
 
 brushPOWERzoom	=	reactiveValues(x = c(min(DATA$dataALL$Time), max(DATA$dataALL$Time)),	y = c(-Inf, Inf),	FILTER	=	FALSE)
 observeEvent(input$COEFupd,	{
