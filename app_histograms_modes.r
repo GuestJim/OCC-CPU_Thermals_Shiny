@@ -11,127 +11,79 @@ modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
 	return(modesLOCtab)
 }
 
-#	Temperature
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL$CPU_Temp)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
-	modesNUM	<-	1	;	output$modesTEMP	<-	NULL
+modesNUMserver	<-	function(id, IN, BIN, LOW, UPP)	{
+	if	(any(is.na(c(BIN, LOW, UPP))))	return(NULL)
+	if	(BIN < 0)						return(NULL)
+	if	(is.null(IN))					return(NULL)
+	modesNUM	<-	nmodes(IN,	bw = BIN,	lowsup = LOW,	uppsup = UPP)
 	
-	observeEvent(list(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp),	{
-		if (all(!is.na(c(input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp))))	if (input$modesTEMPbin > 0)	{
-			modesNUM	=	nmodes(FILT,
-				bw = input$modesTEMPbin,	lowsup = input$modesTEMPlow,	uppsup = input$modesTEMPupp)	}
-			
-		if (is.numeric(modesNUM)) updateNumericInput(inputId	=	"modesTEMPnum",	value	=	modesNUM)
-	})
+	if (is.numeric(modesNUM))	updateNumericInput(inputId = paste0("modes", as.character(id), "num"),	value = modesNUM)
+}
+#	with moduleServer I cannot get this to work, but as a normal function I can
+FILT		<-	reactiveValues()
+observeEvent(input$dataSelLOAD,	{
+	# req(DATA$dataALL)
+	FILT$CPU_Temp		<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
+	FILT$Frequency		<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Frequency"]
+	FILT$Socket_Energy	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]/1000
+	FILT$Core_Energy	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]/1000
+	FILT$Uncore_Energy	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]/1000
+	
+	output$modesTEMP	<-	NULL
+	output$modesFREQ	<-	NULL
+	output$modesSOCK	<-	NULL
+	output$modesCORE	<-	NULL
+	output$modesUNCORE	<-	NULL
 
-	observeEvent(input$modesTEMPupd,	{
-		modesLOCtab	<-	modesTAB(FILT, "°C", input$modesTEMPnum, input$modesTEMPlow, input$modesTEMPupp)
-		
-		observeEvent(input$roundTerm,	{
-			output$modesTEMP	=	renderTable({
-				modesLOCtab
-			},	digits = input$roundTerm, rownames = TRUE)
-		})
-	},	ignoreInit = TRUE)
+	observe(	modesNUMserver("TEMP",		FILT$CPU_Temp,		input$modesTEMPbin, input$modesTEMPlow, input$modesTEMPupp)	)
+	observe(	modesNUMserver("FREQ",		FILT$Frequency,		input$modesFREQbin, input$modesFREQlow, input$modesFREQupp)	)
+	observe(	modesNUMserver("SOCK",		FILT$Socket_Energy,	input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp)	)
+	observe(	modesNUMserver("CORE",		FILT$Core_Energy,	input$modesCOREbin, input$modesCORElow, input$modesCOREupp)	)
+	observe(	modesNUMserver("UNCORE",	FILT$Uncore_Energy,	input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp)	)
+# },	priority	=	5	)
+})
+
+#	Temperature
+observeEvent(input$modesTEMPupd,	{
+	modesLOCtab	<-	modesTAB(FILT$CPU_Temp, "°C", input$modesTEMPnum, input$modesTEMPlow, input$modesTEMPupp)
+	
+	observeEvent(input$roundTerm,	{
+		output$modesTEMP	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
+	})
 },	ignoreInit = TRUE)
 
 #	Frequency
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL$Frequency)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Frequency"]
-	modesNUM	<-	1	;	output$modesFREQ	<-	NULL
+observeEvent(input$modesFREQupd,	{
+	modesLOCtab	<-	modesTAB(FILT$Frequncy, "MHz", input$modesFREQnum, input$modesFREQlow, input$modesFREQupp)
 	
-	observeEvent(list(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp),	{
-		if (all(!is.na(c(input$modesFREQbin, input$modesFREQlow, input$modesFREQupp))))	if (input$modesFREQbin > 0)	{
-			modesNUM	=	nmodes(FILT,
-				bw = input$modesFREQbin,	lowsup = input$modesFREQlow,	uppsup = input$modesFREQupp)	}
-			
-		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesFREQnum",	value	=	modesNUM)
+	observeEvent(input$roundTerm,	{
+		output$modesFREQ	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
 	})
-
-	observeEvent(input$modesFREQupd,	{
-		modesLOCtab	<-	modesTAB(FILT, "MHz", input$modesFREQnum, input$modesFREQlow, input$modesFREQupp)
-		
-		observeEvent(input$roundTerm,	{
-			output$modesFREQ	=	renderTable({
-				modesLOCtab
-			},	digits = input$roundTerm, rownames = TRUE)
-		})
-	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
-#	Socket 
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL$Socket_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Socket_Energy"]/1000
-	modesNUM	<-	1	;	output$modesSOCK	<-	NULL
+#	Socket Energy
+observeEvent(input$modesSOCKupd,	{
+	modesLOCtab	<-	modesTAB(FILT$Socket_Energy, "W", input$modesSOCKnum, input$modesSOCKlow, input$modesSOCKupp)
 	
-	observeEvent(list(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp),	{
-		if (all(!is.na(c(input$modesSOCKbin, input$modesSOCKlow, input$modesSOCKupp))))	if (input$modesSOCKbin > 0)	{
-			modesNUM	=	nmodes(FILT,
-				bw = input$modesSOCKbin,	lowsup = input$modesSOCKlow,	uppsup = input$modesSOCKupp)	}
-			
-		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesSOCKnum",	value	=	modesNUM)
+	observeEvent(input$roundTerm,	{
+		output$modesSOCK	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
 	})
-
-	observeEvent(input$modesSOCKupd,	{
-		modesLOCtab	<-	modesTAB(FILT, "W", input$modesSOCKnum, input$modesSOCKlow, input$modesSOCKupp)
-		
-		observeEvent(input$roundTerm,	{
-			output$modesSOCK	=	renderTable({
-				modesLOCtab
-			},	digits = input$roundTerm, rownames = TRUE)
-		})
-	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
-#	Core Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL$Core_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Core_Energy"]/1000
-	modesNUM	<-	1	;	output$modesCORE	<-	NULL
+#	Core Energy
+observeEvent(input$modesCOREupd,	{
+	modesLOCtab	<-	modesTAB(FILT$Core_Energy, "W", input$modesCOREnum, input$modesCORElow, input$modesCOREupp)
 	
-	observeEvent(list(input$modesCOREbin, input$modesCORElow, input$modesCOREupp),	{
-		if (all(!is.na(c(input$modesCOREbin, input$modesCORElow, input$modesCOREupp))))	if (input$modesCOREbin > 0)	{
-			modesNUM	=	nmodes(FILT,
-				bw = input$modesCOREbin,	lowsup = input$modesCORElow,	uppsup = input$modesCOREupp)	}
-			
-		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesCOREnum",	value	=	modesNUM)
+	observeEvent(input$roundTerm,	{
+		output$modesCORE	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
 	})
-
-	observeEvent(input$modesCOREupd,	{
-		modesLOCtab	<-	modesTAB(FILT, "W", input$modesCOREnum, input$modesCORElow, input$modesCOREupp)
-		
-		observeEvent(input$roundTerm,	{
-			output$modesCORE	=	renderTable({
-				modesLOCtab
-			},	digits = input$roundTerm, rownames = TRUE)
-		})
-	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
 
-#	Uncore Power
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL$Uncore_Energy)
-	FILT	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "Uncore_Energy"]/1000
-	modesNUM	<-	1	;	output$modesUNCORE	<-	NULL
+#	Uncore Energy
+observeEvent(input$modesUNCOREupd,	{
+	modesLOCtab	<-	modesTAB(FILT$Uncore_Energy, "W", input$modesUNCOREnum, input$modesUNCORElow, input$modesUNCOREupp)
 	
-	observeEvent(list(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp),	{
-		if (all(!is.na(c(input$modesUNCOREbin, input$modesUNCORElow, input$modesUNCOREupp))))	if (input$modesUNCOREbin > 0)	{
-			modesNUM	=	nmodes(FILT,
-				bw = input$modesUNCOREbin,	lowsup = input$modesUNCORElow,	uppsup = input$modesUNCOREupp)	}
-			
-		if (is.numeric(modesNUM))	updateNumericInput(inputId	=	"modesUNCOREnum",	value	=	modesNUM)
+	observeEvent(input$roundTerm,	{
+		output$modesUNCORE	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
 	})
-
-	observeEvent(input$modesUNCOREupd,	{
-		modesLOCtab	<-	modesTAB(FILT, "°C", input$modesUNCOREnum, input$modesUNCORElow, input$modesUNCOREupp)
-		
-		observeEvent(input$roundTerm,	{
-			output$modesUNCORE	=	renderTable({
-				modesLOCtab
-			},	digits = input$roundTerm, rownames = TRUE)
-		})
-	},	ignoreInit = TRUE)
 },	ignoreInit = TRUE)
