@@ -1,5 +1,4 @@
 *.env
-*.RData
 * - Old.*
 @Old
 *.dcf
