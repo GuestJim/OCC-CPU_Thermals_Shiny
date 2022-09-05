@@ -55,12 +55,16 @@ FREQspec_line	=	function(FREQ	=	DATA$FREQspec)	{
 	)
 }
 
-graphHISTServer	<-	function(id, TYPE, TITLE, X.name, X.break, FILL.unit, FILL.mid, FILL.limits, FILL.breaks, COEF = 1, LINES = FALSE)	{moduleServer(id, function(input, output, session)	{
+graphHISTServer	<-	function(id, TYPE, TITLE, X.name, X.break, FILL.unit, FILL.mid, FILL.limits, FILL.breaks, COEF = 1, LINES = FALSE, BINval = 1)	{moduleServer(id, function(input, output, session)	{
 
-		output$graphHIST	=	renderPlot({
-			GRAPH$graphHIST(TYPE,	TITLE,	X.name,	X.break,	X.limits = c(input$MIN, NA),	FILL.unit,	FILL.mid,	FILL.limits,	FILL.breaks,	binWID = input$BIN,	COEF) +
-			if (LINES)	{	FREQspec_line(	to.NUM(input$SPEC)	)	}
-		})	%>% bindEvent(list(input$dataSelLOAD, input$UPD))
+	observeEvent(input$BIN,	{
+		if (input$BIN == 0)	updateNumericInput(inputId = "BIN",	value = BINval)
+	})
+
+	output$graphHIST	=	renderPlot({
+		GRAPH$graphHIST(TYPE,	TITLE,	X.name,	X.break,	X.limits = c(input$MIN, NA),	FILL.unit,	FILL.mid,	FILL.limits,	FILL.breaks,	binWID = input$BIN,	COEF) +
+		if (LINES)	{	FREQspec_line(	to.NUM(input$SPEC)	)	}
+	})	%>% bindEvent(list(input$dataSelLOAD, input$UPD))
 })}
 
 graphHISTlineServer	<-	function(id, SPECdata = NULL, UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
@@ -104,7 +108,8 @@ observeEvent(input$dataSelLOAD,	{
 		FILL.mid	=	80,
 		FILL.limits	=	c(0, nearCEIL(DATA$maxPWR/1000 + 1, 30)),
 		FILL.breaks	=	seq(0, nearCEIL(DATA$maxPWR/1000 + 1, 30), by = 30),
-		COEF		=	1/1000	)
+		COEF		=	1/1000,
+		BINval		=	0.1	)
 
 	graphHISTServer('CORE',
 		TYPE		=	"Core_Energy",
@@ -115,7 +120,8 @@ observeEvent(input$dataSelLOAD,	{
 		FILL.mid	=	3,
 		FILL.limits	=	c(0, nearCEIL(DATA$dataALL$Core_Energy/1000, 3)),
 		FILL.breaks	=	seq(0, nearCEIL(DATA$dataALL$Core_Energy/1000, 5), by = 3),
-		COEF		=	1/1000	)
+		COEF		=	1/1000,
+		BINval		=	0.1	)
 
 	graphHISTServer('UNCORE',
 		TYPE		=	"Uncore_Energy",
@@ -126,8 +132,9 @@ observeEvent(input$dataSelLOAD,	{
 		FILL.mid	=	30,
 		FILL.limits	=	c(0, nearCEIL(DATA$dataALL$Uncore_Energy/1000, 5)),
 		FILL.breaks	=	seq(0, nearCEIL(DATA$dataALL$Uncore_Energy/1000, 5), by = 15),
-		COEF		=	1/1000	)
+		COEF		=	1/1000,
+		BINval		=	0.1	)
 })
 
-# if (VIEW$BRUSH)	source("app_histograms_brush.r", local = TRUE)
+if (VIEW$BRUSH)	source("app_histograms_brush.r", local = TRUE)
 if (VIEW$MODES)	source("app_histograms_modes.r", local = TRUE)

@@ -229,12 +229,12 @@ brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
 	tagList(
 		strong("Brush Stats"),
 		fixedRow(
-			column(3, numericInput(ns("MIN"),	label = paste0("Lower Limit (", UNIT, ")"),
+			column(3, numericInput(ns("brushMIN"),	label = paste0("Lower Limit (", UNIT, ")"),
 				value = NULL,	step = STEP,	min = 0,	max = LOWER.max)),
-			column(3, numericInput(ns("MAX"),	label = paste0("Upper Limit (", UNIT, ")"),
+			column(3, numericInput(ns("brushMAX"),	label = paste0("Upper Limit (", UNIT, ")"),
 				value = NULL,	step = STEP,	min = 0,	max = UPPER.max))
 		),
-		tableOutput(paste0('graphHIST', ID, 'TAB'))
+		tableOutput(ns('brushHISTtab'))
 	)
 }
 

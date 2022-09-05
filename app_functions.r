@@ -68,7 +68,7 @@ tableECDF	<-	function(IN, COL, listECDF, engPOW = "W", valOFF = 0)	{
 	if (any(is.null(listECDF), listECDF == ""))	return(NULL) 
 	
 	INdata	<-	IN[[COL]]
-		if (grepl("Energy", COL)	&	engPOW == "W")	{
+	if (grepl("Energy", COL)	&	engPOW == "W")	{
 		INdata	<-	INdata/1000
 		COL		<-	gsub("Energy",	"Power",	COL)
 	}
