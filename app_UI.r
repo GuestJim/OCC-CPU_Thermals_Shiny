@@ -178,21 +178,21 @@ GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI", 
 }
 
 #	Histogram controls
-histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720)	{
+histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720, LAB = NULL)	{
 	ID	<-	tolower(id)
 	ns	<-	NS(id)
 	
-	graphHIST	<-	function(IN = NULL)	paste0('graphHIST', ID, IN)
+	# graphHIST	<-	function(IN = NULL)	paste0('graphHIST', ID, IN)
 	
 	tagList(
 		fixedRow(
-		column(2, numericInput(graphHIST('BIN'),	label = "Bin Width",	min = 0,	value = BIN.val,	step = BIN.step)),
-		column(3, numericInput(graphHIST('MIN'),	label = "X-Minimum",	min = 0,	value = MIN.val)),
-		column(3, actionButton(inputId	=	graphHIST('UPD'),	label = "Update Histogram")),
-		...
+			column(2, numericInput(ns('BIN'),	label = "Bin Width",	min = 0,	value = BIN.val,	step = BIN.step)),
+			column(3, numericInput(ns('MIN'),	label = "X-Minimum",	min = 0,	value = MIN.val)),
+			column(3, actionButton(inputId	=	ns('UPD'),	label = "Update Histogram")),
+			if (!is.null(LAB))	column(4, textInput(ns('SPEC'),	label = LAB))
 		),
-		plotOutput(graphHIST(),	height = HEIGHT,
-			brush	=	ifBRUSH(brushOpts(id	=	paste0("brushHIST", ID), resetOnNew	=	TRUE, direction	=	"x"))),
+		plotOutput(ns('graphHIST'),	height = HEIGHT,
+			brush	=	ifBRUSH(brushOpts(id	=	ns('brushHIST'), resetOnNew	=	TRUE, direction	=	"x"))),
 	)
 }
 
@@ -229,9 +229,9 @@ brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
 	tagList(
 		strong("Brush Stats"),
 		fixedRow(
-			column(3, numericInput(brushHIST("MIN"),	label = paste0("Lower Limit (", UNIT, ")"),
+			column(3, numericInput(ns("MIN"),	label = paste0("Lower Limit (", UNIT, ")"),
 				value = NULL,	step = STEP,	min = 0,	max = LOWER.max)),
-			column(3, numericInput(brushHIST("MAX"),	label = paste0("Upper Limit (", UNIT, ")"),
+			column(3, numericInput(ns("MAX"),	label = paste0("Upper Limit (", UNIT, ")"),
 				value = NULL,	step = STEP,	min = 0,	max = UPPER.max))
 		),
 		tableOutput(paste0('graphHIST', ID, 'TAB'))
@@ -252,8 +252,8 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 					if (BRUSH)	brushUI('TEMP',	"°C",	STEP = 1,	LOWER.max = 115, UPPER.max = 115),
 				),
 				tabPanel("Frequency",
-					histUI('FREQ',	BIN.val = 1,	BIN.step = 0.1, MIN.val = 2000,
-						column(4, textInput('graphHISTfreqSPEC',	label = "Frequency Specs (MHz)"))	),
+					histUI('FREQ',	BIN.val = 1,	BIN.step = 0.1, MIN.val = 2000,	LAB = "Frequency Specs (MHz)"),
+						# column(4, textInput('SPEC',	label = "Frequency Specs (MHz)"))	),
 					if (MODES)	modalUI('FREQ',	BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
 					if (BRUSH)	brushUI('FREQ',	"MHz",	STEP = 100,	LOWER.max = 6000, UPPER.max = 6000),
 				),

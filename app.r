@@ -28,7 +28,7 @@ VIEW$GRAPHS		=	TRUE	#	control if Graphs should be included or not
 VIEW$HIST		=	TRUE	#	control if Histograms should be included or not
 VIEW$MODES		=	TRUE	#	control if the Modality controls should be included
 VIEW$TSERIES	=	TRUE	#	control if Time Series graphs should be included or not
-VIEW$BRUSH		=	TRUE	#	control if Zoomed/Single Graphs should be included or not
+VIEW$BRUSH		=	FALSE	#	control if Zoomed/Single Graphs should be included or not
 
 source("app_functions.r", local	=	TRUE)
 
@@ -92,11 +92,11 @@ server <- function(input, output, session) {
 			value	=	GRAPH$FREQ.COEF)
 		updateNumericInput(		inputId	=	"graphHISTfreqMIN",
 			value	=	round(min(DATA$dataALL$Frequency)-500, -3))
-		if (exists("FREQspec", envir = DATA))	{
-			updateTextInput(	inputId	=	"graphHISTfreqSPEC",	value	=	"")
-			if (!is.null(DATA$FREQspec))	updateTextInput(	inputId	=	"graphHISTfreqSPEC",
-				value	=	paste(paste0(DATA$FREQspec, " MHz"), collapse = ", ")	)
-		}
+		# if (exists("FREQspec", envir = DATA))	{
+			# updateTextInput(	inputId	=	"graphHISTfreqSPEC",	value	=	"")
+			# if (!is.null(DATA$FREQspec))	updateTextInput(	inputId	=	"graphHISTfreqSPEC",
+				# value	=	paste(paste0(DATA$FREQspec, " MHz"), collapse = ", ")	)
+		# }
 
 		updateCheckboxGroupInput(	inputId	=	"listPERI",
 			choices		=	DATA$levsPER,		selected	=	DATA$levsPER		)
