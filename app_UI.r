@@ -198,22 +198,19 @@ histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720, LAB = 
 
 #	Modality controls and table
 modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test Period")	{
-	ID	<-	id
 	ns	<-	NS(id)
 	
-	pasteMODE	<-	function(IN = NULL)	paste0('modes', ID, IN)
-	
 	tagList(
-		fluidRow(	strong(paste0(PER, " Modality")),	actionButton(inputId = pasteMODE("upd"),	label = "Update Modes")	),
+		fluidRow(	strong(paste0(PER, " Modality")),	actionButton(inputId = ns("modeUPD"),	label = "Update Modes")	),
 		fixedRow(
-			column(2,	numericInput(pasteMODE("bin"),	label = "Bin Width",		min = 0,	value = BIN.val,	step = BIN.step)),
-			column(3,	numericInput(pasteMODE("low"),	label = "Lower Limit",		min = 0,	value = LOWER.val)),
-			column(3,	numericInput(pasteMODE("upp"),	label = "Upper Limit",		min = 0,	value = UPPER.val)),
+			column(2,	numericInput(ns("modeBIN"),	label = "Bin Width",		min = 0,	value = BIN.val,	step = BIN.step)),
+			column(3,	numericInput(ns("modeLOW"),	label = "Lower Limit",		min = 0,	value = LOWER.val)),
+			column(3,	numericInput(ns("modeUPP"),	label = "Upper Limit",		min = 0,	value = UPPER.val)),
 			# column(3,	numericInput(pasteMODE("num"),	label = "Number of Modes",	min = 1,	value = 1)),
 		),
 		fluidRow(
-			column(3, numericInput(pasteMODE("num"),	label = "Number of Modes",	min = 1,	value = 1)),
-			tableOutput(pasteMODE()),
+			column(3, numericInput(ns("modeNUM"),	label = "Number of Modes",	min = 1,	value = 1)),
+			tableOutput(ns("modeTAB")),
 		),
 		HTML("<hr>")
 	)
