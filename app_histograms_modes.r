@@ -48,6 +48,14 @@ observeEvent(input$dataSelLOAD,	{
 	output$modeSOCK		<-	NULL
 	output$modeCORE		<-	NULL
 	output$modeUNCORE	<-	NULL
+	# observeEvent(input$roundTerm,	{
+		# output$modesFREQ	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
+		# modesLOCServer('TEMP',		"CPU_Temp",			"°C",	input$roundTerm)
+		# modesLOCServer('FREQ',		"Frequency",		"MHz",	input$roundTerm)
+		# modesLOCServer('SOCK',		"Socket_Energy",	"W",	input$roundTerm,	1/1000)
+		# modesLOCServer('CORE',		"Core_Energy",		"W",	input$roundTerm,	1/1000)
+		# modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	input$roundTerm,	1/1000)
+	# })
 })
 
 observeEvent(input$"TEMP-modeUPD",		{	modesLOC	<-	modesLOCServer('TEMP',	"CPU_Temp",	"°C")
