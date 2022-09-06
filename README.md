@@ -87,3 +87,18 @@ In this case the features include:
         *   mouse brush on Seasonal graph to create zoomed in graph
         *   button to apply Seasonal zoom for current graph to other Seasonal-zoom graphs
 
+Noticed something funny and rather annoying about the documentation concerning [NS()](https://shiny.rstudio.com/reference/shiny/1.7.0/NS.html): The article on [modularizing Shiny code](https://shiny.rstudio.com/articles/modules.html) that involve the function all use "id" as the object passed to it, but this is not the function's "id" argument; it is the "namespace" argument.
+When given just "namespace" the function returns another function, with this one expecting an "id" value.
+In other words, the examples should be more along the lines of:
+
+***ns <- NS(namespace)***
+
+***ns("id")***
+
+Something else I noticed is you can explicitly call a value from a namespace by appending a prefix appropriately.
+This means you can access values from outside a namespace, without having to explicitly pass them out of a function.
+To call a UI input object, it looks like the followering, with "namespace" and "id" referring to the NS() arguments:
+
+***input$"namespace-id"***
+
+The quotes are necessary as the "-" will break the value selection otherwise.
