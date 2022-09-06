@@ -210,7 +210,8 @@ modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test Per
 		),
 		fluidRow(
 			column(3, numericInput(ns("modeNUM"),	label = "Number of Modes",	min = 1,	value = 1)),
-			tableOutput(ns("modeTAB")),
+			# tableOutput(ns("modeTAB")),
+			tableOutput(paste0("mode", as.character(id))),
 		),
 		HTML("<hr>")
 	)
