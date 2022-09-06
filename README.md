@@ -102,3 +102,5 @@ To call a UI input object, it looks like the followering, with "namespace" and "
 ***input$"namespace-id"***
 
 The quotes are necessary as the "-" will break the value selection otherwise.
+I have not gotten this to work with output objects.
+Still, accessing inputs is valuable as that allowed me to solve an issue.
