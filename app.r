@@ -4,7 +4,7 @@ library(shiny)
 # runApp()
 # options(shiny.error = browser)
 # options(shiny.reactlog = TRUE)
-options(shiny.maxRequestSize = 100*1024^2)
+# options(shiny.maxRequestSize = 100*1024^2)
 options(encoding = 'UTF-8')
 #	Shiny has a normal limit of 5 MB, so this raises it to 100 MB
 
