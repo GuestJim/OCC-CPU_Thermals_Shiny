@@ -102,5 +102,5 @@ To call a UI input object, it looks like the followering, with "namespace" and "
 ***input$"namespace-id"***
 
 The quotes are necessary as the "-" will break the value selection otherwise.
-I have not gotten this to work with output objects.
-Still, accessing inputs is valuable as that allowed me to solve an issue.
+This works with both inputs and outputs (though my initial attempt with outputs did fail for some reason), which is quite handy.
+By pulling objects out of a namespace, you can have access to other objects, not within the namespace, such as the numericInput I use for controlling rounding.
