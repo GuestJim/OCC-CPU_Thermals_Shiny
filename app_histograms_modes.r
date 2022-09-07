@@ -43,11 +43,17 @@ observeEvent(input$dataSelLOAD,	{
 	modesNUMServer('CORE',		"Core_Energy",		1/1000)
 	modesNUMServer('UNCORE',	"Uncore_Energy",	1/1000)
 	
-	output$modeTEMP		<-	NULL
-	output$modeFREQ		<-	NULL
-	output$modeSOCK		<-	NULL
-	output$modeCORE		<-	NULL
-	output$modeUNCORE	<-	NULL
+	output$"TEMP-modeTAB"		<-	NULL
+	output$"FREQ-modeTAB"		<-	NULL
+	output$"SOCK-modeTAB"		<-	NULL
+	output$"CORE-modeTAB"		<-	NULL
+	output$"UNCORE-modeTAB"		<-	NULL
+	
+	# output$modeTEMP		<-	NULL
+	# output$modeFREQ		<-	NULL
+	# output$modeSOCK		<-	NULL
+	# output$modeCORE		<-	NULL
+	# output$modeUNCORE	<-	NULL
 	# observeEvent(input$roundTerm,	{
 		# output$modesFREQ	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
 		# modesLOCServer('TEMP',		"CPU_Temp",			"°C",	input$roundTerm)
@@ -60,30 +66,30 @@ observeEvent(input$dataSelLOAD,	{
 
 observeEvent(input$"TEMP-modeUPD",		{	modesLOC	<-	modesLOCServer('TEMP',	"CPU_Temp",	"°C")
 	observeEvent(input$roundTerm,	{
-		output$modeTEMP	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
+		output$"TEMP-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
 	})
 },	ignoreInit = TRUE)
 
 observeEvent(input$"FREQ-modeUPD",		{	modesLOC	<-	modesLOCServer('FREQ',	"Frequency",	"MHz")
 	observeEvent(input$roundTerm,	{
-		output$modeFREQ	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
+		output$"FREQ-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
 	})
 },	ignoreInit = TRUE)
 
 observeEvent(input$"SOCK-modeUPD",		{	modesLOC	<-	modesLOCServer('SOCK',	"Socket_Energy",	"W",	1/1000)
 	observeEvent(input$roundTerm,	{
-		output$modeSOCK	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
+		output$"SOCK-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
 	})
 },	ignoreInit = TRUE)
 
 observeEvent(input$"CORE-modeUPD",		{	modesLOC	<-	modesLOCServer('CORE',	"Core_Energy",	"W",	1/1000)
 	observeEvent(input$roundTerm,	{
-		output$modeCORE	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
+		output$"CORE-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
 	})
 },	ignoreInit = TRUE)
 
 observeEvent(input$"UNCORE-modeUPD",	{	modesLOC	<-	modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	1/1000)
 	observeEvent(input$roundTerm,	{
-		output$modeUNCORE	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
+		output$"UNCORE-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
 	})
 },	ignoreInit = TRUE)
