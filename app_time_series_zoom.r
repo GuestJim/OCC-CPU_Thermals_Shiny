@@ -1,86 +1,12 @@
-# brushTEMPzoomTREND	=	reactiveValues(x = NULL,	FILTER	=	TRUE,	CHANGE	=	FALSE)
-# observeEvent(input$brushTIMEtempTREND, {	req(DATA$dataALL)
-	# brush 		<- input$brushTIMEtempTREND
-	# brushFILT	<-	setNames(brush[grep("panelvar", names(brush))], brush$mapping[grep("panelvar", names(brush$mapping))]	)
-
-	# brushTEMPzoomTREND$x		<-	NULL
-	# brushTEMPzoomTREND$FILTER	<-	TRUE
-
-	# brushTEMPzoomTREND$x	<-	c(brush$xmin, brush$xmax)
-
-	# brushTEMPzoomTREND$CHANGE	<-	TRUE
-# })
-
-# observeEvent(list(input$brushTIMEtempTRENDdbl, input$dataSelLOAD), {
-	# brushTEMPzoomTREND$x		<-	NULL
-	# brushTEMPzoomTREND$FILTER	<-	TRUE
-
-	# brushTEMPzoomSEAS$CHANGE	<-	TRUE
-# })
-
-# observeEvent(list(input$brushTIMEtempTREND, input$brushTIMEtempTRENDdbl),	{
-	# req(DATA$dataALL, brushTEMPzoomTREND$CHANGE)
-	# output$brushTIMEtempTREND	=	renderPlot({
-		# TIME$timeTREND("CPU_Temp", TS.df = TS.df) + 
-		# coord_cartesian(xlim = brushTEMPzoomTREND$x,	expand = FALSE)
-	# })
-# })
-
-#	The above can be used for zooming into a TREND graph, but I do not think this is as necessary, so it is disabled
-#	the above is also out of date
-
-#	Wipe zooms when new data loaded
-observeEvent(input$dataSelLOAD,	{
-	output$brushTIMEtempSEAS	=	NULL
-	output$brushTIMEfreqSEAS	=	NULL
-	output$brushTIMEsockSEAS	=	NULL
-	output$brushTIMEcoreSEAS	=	NULL
-	
-	output$timeTEMPtrendTAB		<-	NULL
-	output$timeFREQtrendTAB		<-	NULL
-	output$timeSOCKtrendTAB		<-	NULL
-	output$timeCOREtrendTAB		<-	NULL
-})
-
-#	holder for all brushes
-brushSEAS	<-	reactiveValues(
-	TEMP	=	c(xmin = -Inf, xmax = Inf),
-	FREQ	=	c(xmin = -Inf, xmax = Inf),
-	SOCK	=	c(xmin = -Inf, xmax = Inf),
-	CORE	=	c(xmin = -Inf, xmax = Inf)
-)
-
-#	observers to update brushSEAS values
-observeEvent(input$brushTIMEtempSEAS,	brushSEAS$TEMP	<-	input$brushTIMEtempSEAS[c("xmin", "xmax")])
-observeEvent(input$brushTIMEfreqSEAS,	brushSEAS$FREQ	<-	input$brushTIMEfreqSEAS[c("xmin", "xmax")])
-observeEvent(input$brushTIMEsockSEAS,	brushSEAS$SOCK	<-	input$brushTIMEsockSEAS[c("xmin", "xmax")])
-observeEvent(input$brushTIMEcoreSEAS,	brushSEAS$CORE	<-	input$brushTIMEcoreSEAS[c("xmin", "xmax")])
-
-#	observers to change brushSEAS values when buttons are pressed
-observeEvent(input$brushTIMEtempSEASapp,	{	VAL	<-	brushSEAS$TEMP
-	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
-	})
-observeEvent(input$brushTIMEfreqSEASapp,	{	VAL	<-	brushSEAS$FREQ
-	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
-	})
-observeEvent(input$brushTIMEsockSEASapp,	{	VAL	<-	brushSEAS$SOCK
-	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
-	})
-observeEvent(input$brushTIMEcoreSEASapp,	{	VAL	<-	brushSEAS$CORE
-	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
-	})
-
-#	module for the Trend Min/Max tables
-trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
+# module for the Trend Min/Max tables
+TSbrushTABServer	<-	function(id, TS.df,	UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
 	brushTREND		<-	list(
 		x	=	NULL,	FILTER	=	TRUE,
 		TAB	=	as.data.frame(matrix(c("", ""), nrow = 1, ncol = 2, dimnames = list(c(UNIT), c("Minimum", "Maximum"))))
 		)
-	if (is.null(BRUSH$xmin))	return(	brushTREND$TAB	)
+	if (is.null(input$trendBRUSH$xmin))	return(	brushTREND$TAB	)
 	
-	TS.df	<-	TIME$DF(as.character(id))
-	
-	brushTREND$x	<-	c(BRUSH$xmin, BRUSH$xmax)
+	brushTREND$x	<-	c(input$trendBRUSH$xmin, input$trendBRUSH$xmax)
 	brushTREND$FILT	<-	cutWithin(TS.df$Index, brushTREND$x)
 	brushTREND$TAB$Minimum	<-	min(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
 	brushTREND$TAB$Maximum	<-	max(TS.df[brushTREND$FILT, "Trend"],	na.rm = TRUE)
@@ -88,51 +14,43 @@ trendTABServer	<-	function(id, BRUSH, UNIT = NULL)	{moduleServer(id, function(in
 	return(brushTREND$TAB)
 })}
 
-#	module for the Zoomed Seasonal graphs
-seasPLOTServer	<-	function(id, BRUSH)	{moduleServer(id, function(input, output, session)	{
-	brushSEAS	<-	list(x = c(-Inf, Inf),	FILTER = TRUE)
-	if (is.null(BRUSH$xmin))	return(	TIME$timeSEAS(as.character(id), TS.df = TS.df)	)
-	
-	TS.df	<-	TIME$DF(as.character(id))
-	
-	brushSEAS$x	<-	c(BRUSH$xmin, BRUSH$xmax)
-	
-	TIME$timeSEAS(as.character(id), TS.df = TS.df) + coord_cartesian(xlim = brushSEAS$x,	expand = TRUE)
+output$"TEMP-TStrendTAB"	<-	renderTable(	TSbrushTABServer('TEMP', TS.list()$TEMP, "°C"),	digits = reactive(input$roundTerm),	rownames = TRUE)
+output$"FREQ-TStrendTAB"	<-	renderTable(	TSbrushTABServer('FREQ', TS.list()$FREQ, "MHz"),	digits = reactive(input$roundTerm),	rownames = TRUE)
+output$"SOCK-TStrendTAB"	<-	renderTable(	TSbrushTABServer('SOCK', TS.list()$SOCK, "W"),	digits = reactive(input$roundTerm),	rownames = TRUE)
+output$"CORE-TStrendTAB"	<-	renderTable(	TSbrushTABServer('CORE', TS.list()$CORE, "W"),	digits = reactive(input$roundTerm),	rownames = TRUE)
+
+
+#	creating holder for Seasonal brushes
+brushSEAS	<-	reactiveValues(	TEMP = NULL,	FREQ = NULL,	SOCK = NULL,	CORE = NULL,	UNCORE = NULL	)
+
+#	observers to update brushSEAS values
+observeEvent(input$"TEMP-TSseasBRUSH",	brushSEAS$TEMP	<-	input$"TEMP-TSseasBRUSH"[c("xmin", "xmax")])
+observeEvent(input$"FREQ-TSseasBRUSH",	brushSEAS$FREQ	<-	input$"FREQ-TSseasBRUSH"[c("xmin", "xmax")])
+observeEvent(input$"SOCK-TSseasBRUSH",	brushSEAS$SOCK	<-	input$"SOCK-TSseasBRUSH"[c("xmin", "xmax")])
+observeEvent(input$"CORE-TSseasBRUSH",	brushSEAS$CORE	<-	input$"CORE-TSseasBRUSH"[c("xmin", "xmax")])
+
+#	watches buttons and applies the correct limits to appropriate graphs
+observeEvent(input$"TEMP-TSseasBRUSHapp",	{	VAL	<-	brushSEAS$TEMP
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$"FREQ-TSseasBRUSHapp",	{	VAL	<-	brushSEAS$FREQ
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$"SOCK-TSseasBRUSHapp",	{	VAL	<-	brushSEAS$SOCK
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+observeEvent(input$"CORE-TSseasBRUSHapp",	{	VAL	<-	brushSEAS$CORE
+	brushSEAS$TEMP	<-	VAL	;	brushSEAS$FREQ	<-	VAL	;	brushSEAS$SOCK	<-	VAL	;	brushSEAS$CORE	<-	VAL
+	})
+
+
+TSbrushZOOMServer	<-	function(id, TYPE, TS.df, LIMS = NULL)	{moduleServer(id, function(input, output, session)	{
+	output$TSseasBRUSHgraph	<-	renderPlot(	
+		graphSEAS(TYPE, TS.df) + coord_cartesian(xlim = unlist(	LIMS()[c("xmin", "xmax")]	))
+	)
 })}
 
-
-#	CPU_Temp
-observeEvent(list(input$roundTerm, input$brushTIMEtempTREND),	{
-	output$timeTEMPtrendTAB	<-	renderTable(
-		trendTABServer("CPU_Temp", input$brushTIMEtempTREND, "°C"),
-		digits = input$roundTerm,	rownames = TRUE	)
-})
-
-observeEvent(brushSEAS$TEMP,	{	output$brushTIMEtempSEAS	=	renderPlot(	seasPLOTServer("CPU_Temp", brushSEAS$TEMP)	)	})
-
-#	Frequency
-observeEvent(list(input$roundTerm, input$brushTIMEfreqTREND),	{
-	output$timeFREQtrendTAB	<-	renderTable(
-		trendTABServer("Frequency", input$brushTIMEfreqTREND, "MHz"),
-		digits = input$roundTerm,	rownames = TRUE	)
-})
-
-observeEvent(brushSEAS$FREQ,	{	output$brushTIMEfreqSEAS	=	renderPlot(	seasPLOTServer("Frequency", brushSEAS$FREQ)	)	})
-
-#	Socket_Energy
-observeEvent(list(input$roundTerm, input$brushTIMEsockTREND),	{
-	output$timeSOCKtrendTAB	<-	renderTable(
-		trendTABServer("Socket_Energy", input$brushTIMEsockTREND, "W"),
-		digits = input$roundTerm,	rownames = TRUE	)
-})
-
-observeEvent(brushSEAS$SOCK,	{	output$brushTIMEsockSEAS	=	renderPlot(	seasPLOTServer("Socket_Energy", brushSEAS$SOCK)	)	})
-
-#	Core_Energy
-observeEvent(list(input$roundTerm, input$brushTIMEcoreTREND),	{
-	output$timeCOREtrendTAB	<-	renderTable(
-		trendTABServer("Core_Energy", input$brushTIMEcoreTREND, "W"),
-		digits = input$roundTerm,	rownames = TRUE	)
-})
-
-observeEvent(brushSEAS$CORE,	{	output$brushTIMEcoreSEAS	=	renderPlot(	seasPLOTServer("Core_Energy", brushSEAS$CORE)	)	})
+TSbrushZOOMServer('TEMP',	"CPU_Temp",			TS.list()$TEMP,	reactive(brushSEAS$TEMP))
+TSbrushZOOMServer('FREQ',	"Frequency",		TS.list()$FREQ,	reactive(brushSEAS$FREQ))
+TSbrushZOOMServer('SOCK',	"Socket_Energy",	TS.list()$SOCK,	reactive(brushSEAS$SOCK))
+TSbrushZOOMServer('CORE',	"Core_Energy",		TS.list()$CORE,	reactive(brushSEAS$CORE))

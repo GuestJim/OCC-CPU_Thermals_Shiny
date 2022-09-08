@@ -277,22 +277,21 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 
 #	Time Series Graphs and brush
 tseriesUI	<-	function(id, HEIGHT = 480)	{
-	ID	<-	tolower(id)
 	ns	<-	NS(id)
 	
-	timeTEMP	<-	function(IN = NULL)	paste0('time', toupper(ID), IN)
-	brushTIME	<-	function(IN = NULL)	paste0('brushTIME', ID, IN)
+	# timeTEMP	<-	function(IN = NULL)	paste0('time', toupper(ID), IN)
+	# brushTIME	<-	function(IN = NULL)	paste0('brushTIME', ID, IN)
 	
 	tagList(
-		# plotOutput(timeTEMP('trend'),	height = HEIGHT),
-		plotOutput(timeTEMP('trend'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('TRENDdbl')),
-			brush	=	ifBRUSH(brushOpts(id	=	brushTIME('TREND'),	resetOnNew	=	TRUE, direction	=	"x"))),
-		tableOutput(timeTEMP('trendTAB')),
-		plotOutput(timeTEMP('seas'),	height = HEIGHT,	dblclick	=	ifBRUSH(brushTIME('SEASdbl')),
-			brush	=	ifBRUSH(brushOpts(id	=	brushTIME('SEAS'),	resetOnNew	=	TRUE, direction	=	"x"))),
-		# plotOutput(brushTIME('TREND'),	height = HEIGHT)
-		plotOutput(brushTIME('SEAS'),	height = HEIGHT),
-		actionButton(brushTIME('SEASapp'), "Apply zoom to Other Seasonal Graphs"),
+		# plotOutput(ns('TStrend'),	height = HEIGHT),
+		plotOutput(ns('TStrend'),	height = HEIGHT,	dblclick	=	ifBRUSH(ns('TStrendBRUSHdbl')),
+			brush	=	ifBRUSH(brushOpts(id	=	ns('trendBRUSH'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		tableOutput(ns('TStrendTAB')),
+		plotOutput(ns('TSseas'),	height = HEIGHT,	dblclick	=	ifBRUSH(ns('TSseasBRUSHdbl')),
+			brush	=	ifBRUSH(brushOpts(id	=	ns('TSseasBRUSH'),	resetOnNew	=	TRUE, direction	=	"x"))),
+		# plotOutput(ns('TSseasBRUSHgraph'),	height = HEIGHT)
+		plotOutput(ns('TSseasBRUSHgraph'),	height = HEIGHT),
+		actionButton(ns('TSseasBRUSHapp'), "Apply zoom to Other Seasonal Graphs"),
 	)
 }
 
