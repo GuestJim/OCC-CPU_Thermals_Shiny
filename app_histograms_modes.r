@@ -36,6 +36,7 @@ modesLOCServer	<-	function(id, TYPE, UNIT, COEF = 1)	{moduleServer(id, function(
 	as.data.frame(TAB())
 })}
 
+#	calling the functions to calculate number of modes whenever new data is loaded, and clearing the tables
 observeEvent(input$dataSelLOAD,	{
 	modesNUMServer('TEMP',		"CPU_Temp")
 	modesNUMServer('FREQ',		"Frequency")
@@ -48,22 +49,9 @@ observeEvent(input$dataSelLOAD,	{
 	output$"SOCK-modeTAB"		<-	NULL
 	output$"CORE-modeTAB"		<-	NULL
 	output$"UNCORE-modeTAB"		<-	NULL
-	
-	# output$modeTEMP		<-	NULL
-	# output$modeFREQ		<-	NULL
-	# output$modeSOCK		<-	NULL
-	# output$modeCORE		<-	NULL
-	# output$modeUNCORE	<-	NULL
-	# observeEvent(input$roundTerm,	{
-		# output$modesFREQ	=	renderTable({	modesLOCtab	},	digits = input$roundTerm, rownames = TRUE)
-		# modesLOCServer('TEMP',		"CPU_Temp",			"°C",	input$roundTerm)
-		# modesLOCServer('FREQ',		"Frequency",		"MHz",	input$roundTerm)
-		# modesLOCServer('SOCK',		"Socket_Energy",	"W",	input$roundTerm,	1/1000)
-		# modesLOCServer('CORE',		"Core_Energy",		"W",	input$roundTerm,	1/1000)
-		# modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	input$roundTerm,	1/1000)
-	# })
 })
 
+#	Mode tables updated by their respective buttons, and tables react to roundTerm
 observeEvent(input$"TEMP-modeUPD",		{	modesLOC	<-	modesLOCServer('TEMP',	"CPU_Temp",	"°C")
 	observeEvent(input$roundTerm,	{
 		output$"TEMP-modeTAB"	=	renderTable({	modesLOC	},	digits = input$roundTerm, rownames = TRUE)
