@@ -1,9 +1,9 @@
-brushHISTclearServer	<-	function(id)	{moduleServer(id, function(input, output, session)	{
+brushHISTclearServer	<-	function(name)	{moduleServer(name, function(input, output, session)	{
 	updateNumericInput(inputId = "brushMIN",	value = NA)	;	updateNumericInput(inputId = "brushMAX",	value = NA)
 	output$brushHISTtab	<-	renderTable({	TAB	},	striped = TRUE)
 })}
 
-brushHISTtabServer	<-	function(id, TYPE, r = 0, roundTerm)	{moduleServer(id, function(input, output, session)	{
+brushHISTtabServer	<-	function(name, TYPE, r = 0, roundTerm)	{moduleServer(name, function(input, output, session)	{
 	BRUSH	<-	reactiveValues(xMIN = NULL,	xMAX = NULL)
 	TAB		=	data.frame(cbind(
 		Type			=	c("Warm-up", "Test", "Cooldown"),

@@ -55,7 +55,7 @@ FREQspec_line	=	function(FREQ	=	DATA$FREQspec)	{
 	)
 }
 
-graphHISTServer	<-	function(id, TYPE, TITLE, X.name, X.break, FILL.unit, FILL.mid, FILL.limits, FILL.breaks, COEF = 1, LINES = FALSE, BINval = 1)	{moduleServer(id, function(input, output, session)	{
+graphHISTServer	<-	function(name, TYPE, TITLE, X.name, X.break, FILL.unit, FILL.mid, FILL.limits, FILL.breaks, COEF = 1, LINES = FALSE, BINval = 1)	{moduleServer(name, function(input, output, session)	{
 
 	observeEvent(input$BIN,	{
 		if (input$BIN == 0)	updateNumericInput(inputId = "BIN",	value = BINval)
@@ -67,7 +67,7 @@ graphHISTServer	<-	function(id, TYPE, TITLE, X.name, X.break, FILL.unit, FILL.mi
 	})	%>% bindEvent(list(input$dataSelLOAD, input$UPD))
 })}
 
-graphHISTlineServer	<-	function(id, SPECdata = NULL, UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
+graphHISTlineServer	<-	function(name, SPECdata = NULL, UNIT = NULL)	{moduleServer(name, function(input, output, session)	{
 	if (exists("FREQspec", envir = DATA))	{
 		updateTextInput(	inputId	=	'SPEC',	value	=	"")
 		if (!is.null(SPECdata))	updateTextInput(	inputId	=	'SPEC',

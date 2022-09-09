@@ -63,7 +63,7 @@ graphSEAS	<-	function(TYPE, TS.df)	{
 	geom_line(aes(y = Seasonal + median(Trend, na.rm = TRUE), color = TIME$COLORsets[[TYPE]]), show.legend = FALSE)
 }
 
-TSgraphServer	<-	function(id, TYPE, TS.df, DELT = DATA$duration)	{moduleServer(id, function(input, output, session)	{
+TSgraphServer	<-	function(name, TYPE, TS.df, DELT = DATA$duration)	{moduleServer(name, function(input, output, session)	{
 	output$TStrend	<-	renderPlot(graphTREND(TYPE, TS.df))
 	output$TSseas	<-	renderPlot(graphSEAS(TYPE, TS.df))
 })}

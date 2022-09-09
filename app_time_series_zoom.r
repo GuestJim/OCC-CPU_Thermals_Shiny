@@ -1,5 +1,5 @@
 # module for the Trend Min/Max tables
-TSbrushTABServer	<-	function(id, TS.df,	UNIT = NULL)	{moduleServer(id, function(input, output, session)	{
+TSbrushTABServer	<-	function(name, TS.df,	UNIT = NULL)	{moduleServer(name, function(input, output, session)	{
 	brushTREND		<-	list(
 		x	=	NULL,	FILTER	=	TRUE,
 		TAB	=	as.data.frame(matrix(c("", ""), nrow = 1, ncol = 2, dimnames = list(c(UNIT), c("Minimum", "Maximum"))))
@@ -44,7 +44,7 @@ observeEvent(input$"CORE-TSseasBRUSHapp",	{	VAL	<-	brushSEAS$CORE
 	})
 
 
-TSbrushZOOMServer	<-	function(id, TYPE, TS.df, LIMS = NULL)	{moduleServer(id, function(input, output, session)	{
+TSbrushZOOMServer	<-	function(name, TYPE, TS.df, LIMS = NULL)	{moduleServer(name, function(input, output, session)	{
 	output$TSseasBRUSHgraph	<-	renderPlot(	
 		graphSEAS(TYPE, TS.df) + coord_cartesian(xlim = unlist(	LIMS()[c("xmin", "xmax")]	))
 	)

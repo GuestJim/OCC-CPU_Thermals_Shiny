@@ -11,7 +11,7 @@ modesTAB	<-	function(IN, UNIT, NUM, LOW, UPP)	{
 	return(modesLOCtab)
 }
 
-modesNUMServer	<-	function(id, TYPE, COEF = 1)	{moduleServer(id, function(input, output, session)	{
+modesNUMServer	<-	function(name, TYPE, COEF = 1)	{moduleServer(name, function(input, output, session)	{
 	FILT	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, TYPE] * COEF
 
 	observeEvent(list(input$modeBIN, input$modeLOW, input$modeUPP),	{
@@ -24,7 +24,7 @@ modesNUMServer	<-	function(id, TYPE, COEF = 1)	{moduleServer(id, function(input,
 	})
 })}
 
-modesLOCServer	<-	function(id, TYPE, UNIT, COEF = 1)	{moduleServer(id, function(input, output, session)	{
+modesLOCServer	<-	function(name, TYPE, UNIT, COEF = 1)	{moduleServer(name, function(input, output, session)	{
 	FILT	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, TYPE] * COEF
 
 	TAB	<-	eventReactive(input$modeUPD,	{

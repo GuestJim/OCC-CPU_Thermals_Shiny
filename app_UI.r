@@ -3,8 +3,8 @@ ifBRUSH	=	function(IN)	{
 	return(NULL)
 }
 
-tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
-	ns	<-	NS(id)
+tablemultUI	<-	function(name, SHOW = TRUE, ..., label = "Multi Table UI")	{
+	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
 	
@@ -28,8 +28,8 @@ tablemultUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table UI")	{
 	)
 }
 
-tablecrossUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Table UI")	{
-	ns	<-	NS(id)
+tablecrossUI	<-	function(name, SHOW = TRUE, ..., label = "Temperature Cross Table UI")	{
+	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
 	
@@ -45,8 +45,8 @@ tablecrossUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Table 
 	)
 }
 
-tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, SHOWcross = TRUE, ..., label = "Table UI")	{
-	ns	<-	NS(id)
+tableUI	<-	function(name, SHOW = TRUE, SHOWmulti = TRUE, SHOWcross = TRUE, ..., label = "Table UI")	{
+	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
 	
@@ -75,8 +75,8 @@ tableUI	<-	function(id, SHOW = TRUE, SHOWmulti = TRUE, SHOWcross = TRUE, ..., la
 	tabPanel("Table",	out)
 }
 
-tablemultoutUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table Outputs")	{
-	ns	<-	NS(id)
+tablemultoutUI	<-	function(name, SHOW = TRUE, ..., label = "Multi Table Outputs")	{
+	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
 	
@@ -100,8 +100,8 @@ tablemultoutUI	<-	function(id, SHOW = TRUE, ..., label = "Multi Table Outputs")	
 	)
 }
 
-tablecrossoutUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Table Outputs")	{
-	ns	<-	NS(id)
+tablecrossoutUI	<-	function(name, SHOW = TRUE, ..., label = "Temperature Cross Table Outputs")	{
+	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
 	
@@ -115,9 +115,9 @@ tablecrossoutUI	<-	function(id, SHOW = TRUE, ..., label = "Temperature Cross Tab
 }
 
 #	Graph and Brush Control, not zoomed graph
-graphUI	<-	function(id, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500)	{
-	ID	<-	id
-	ns	<-	NS(id)
+graphUI	<-	function(name, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500)	{
+	ID	<-	name
+	ns	<-	NS(name)
 	
 	pasteBRUSH	<-	function(IN = NULL)	paste0("brush", ID, IN)
 	
@@ -138,8 +138,8 @@ graphUI	<-	function(id, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500)	{
 	)
 }
 
-GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI", HEIGHT = 720)	{
-	ns	<-	NS(id)
+GRAPHtabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI", HEIGHT = 720)	{
+	ns	<-	NS(name)
 
 	if (!SHOW)	return(NULL)
 
@@ -178,12 +178,9 @@ GRAPHtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI", 
 }
 
 #	Histogram controls
-histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720, LAB = NULL)	{
-	ID	<-	tolower(id)
-	ns	<-	NS(id)
-	
-	# graphHIST	<-	function(IN = NULL)	paste0('graphHIST', ID, IN)
-	
+histUI	<-	function(name, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720, LAB = NULL)	{
+	ns	<-	NS(name)
+		
 	tagList(
 		fixedRow(
 			column(2, numericInput(ns('BIN'),	label = "Bin Width",	min = 0,	value = BIN.val,	step = BIN.step)),
@@ -197,8 +194,8 @@ histUI	<-	function(id, BIN.val, BIN.step, MIN.val = 0, ..., HEIGHT = 720, LAB = 
 }
 
 #	Modality controls and table
-modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test Period")	{
-	ns	<-	NS(id)
+modalUI	<-	function(name, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test Period")	{
+	ns	<-	NS(name)
 	
 	tagList(
 		fluidRow(	strong(paste0(PER, " Modality")),	actionButton(inputId = ns("modeUPD"),	label = "Update Modes")	),
@@ -218,12 +215,9 @@ modalUI	<-	function(id, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test Per
 }
 
 #	Histogram brush controls and table
-brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
-	ID	<-	tolower(id)
-	ns	<-	NS(id)
-	
-	brushHIST	<-	function(IN = NULL)	paste0('brushHIST', ID, IN)
-	
+brushUI	<-	function(name, UNIT, STEP, LOWER.max, UPPER.max)	{
+	ns	<-	NS(name)
+
 	tagList(
 		strong("Brush Stats"),
 		fixedRow(
@@ -236,8 +230,8 @@ brushUI	<-	function(id, UNIT, STEP, LOWER.max, UPPER.max)	{
 	)
 }
 
-HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = "Histograms UI")	{
-	ns	<-	NS(id)
+HISTtabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = "Histograms UI")	{
+	ns	<-	NS(name)
 
 	if (!SHOW)	return(NULL)
 
@@ -276,11 +270,8 @@ HISTtabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label = 
 }
 
 #	Time Series Graphs and brush
-tseriesUI	<-	function(id, HEIGHT = 480)	{
-	ns	<-	NS(id)
-	
-	# timeTEMP	<-	function(IN = NULL)	paste0('time', toupper(ID), IN)
-	# brushTIME	<-	function(IN = NULL)	paste0('brushTIME', ID, IN)
+tseriesUI	<-	function(name, HEIGHT = 480)	{
+	ns	<-	NS(name)
 	
 	tagList(
 		# plotOutput(ns('TStrend'),	height = HEIGHT),
@@ -295,8 +286,8 @@ tseriesUI	<-	function(id, HEIGHT = 480)	{
 	)
 }
 
-TSERIEStabUI	<-	function(id, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Series UI")	{
-	ns	<-	NS(id)
+TSERIEStabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Series UI")	{
+	ns	<-	NS(name)
 
 	if (!SHOW)	return(NULL)
 
