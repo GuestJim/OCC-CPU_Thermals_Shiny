@@ -51,7 +51,7 @@ tablePERC	<-	function(IN, COL, listPERC, engPOW = "W", valOFF = 0)	{
 	if (any(is.null(listPERC), listPERC == 100, listPERC == 0, listPERC == ""))	return(NULL) 
 	
 	INdata	<-	IN[[COL]]
-	if (grepl("Energy", COL)	&	engPOW == "W")	{
+	if (!is.null(engPOW))	if (grepl("Energy", COL)	&	engPOW == "W")	{
 		INdata	<-	INdata/1000
 		COL		<-	gsub("Energy",	"Power",	COL)
 	}
@@ -68,7 +68,7 @@ tableECDF	<-	function(IN, COL, listECDF, engPOW = "W", valOFF = 0)	{
 	if (any(is.null(listECDF), listECDF == ""))	return(NULL) 
 	
 	INdata	<-	IN[[COL]]
-	if (grepl("Energy", COL)	&	engPOW == "W")	{
+	if (!is.null(engPOW))	if (grepl("Energy", COL)	&	engPOW == "W")	{
 		INdata	<-	INdata/1000
 		COL		<-	gsub("Energy",	"Power",	COL)
 	}

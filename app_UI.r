@@ -3,28 +3,13 @@ ifBRUSH	=	function(IN)	{
 	return(NULL)
 }
 
-tablemultUI	<-	function(name, SHOW = TRUE, ..., label = "Multi Table UI")	{
+tableCUSTinUI	<-	function(name, TYPE, UNIT, ...)	{
 	ns	<-	NS(name)
 	
-	if (!SHOW)	return(NULL)
-	
 	tagList(
-		tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-		p("CPU Temp"),
-		textInput("multiTEMPperc",	label = "Percentiles (0 - 100)"),
-		textInput("multiTEMPecdf",	label = "Specific Values (°C)"),
-		hr(),
-		p("Frequency"),
-		textInput("multiFREQperc",	label = "Percentiles (0 - 100)"),
-		textInput("multiFREQecdf",	label = "Specific Values (MHz)"),
-		hr(),
-		p("Socket Power"),
-		textInput("multiSOCKperc",	label = "Percentiles (0 - 100)"),
-		textInput("multiSOCKecdf",	label = "Specific Values (W)"),
-		hr(),
-		p("Core Power"),
-		textInput("multiCOREperc",	label = "Percentiles (0 - 100)"),
-		textInput("multiCOREecdf",	label = "Specific Values (W)"),
+		p(TYPE),
+		textInput(ns("PERC"),	label = "Percentiles (0-100)"),
+		textInput(ns("ECDF"),	label = paste0("Specific Values (", UNIT, ")")),
 	)
 }
 
@@ -69,34 +54,27 @@ tableUI	<-	function(name, SHOW = TRUE, SHOWmulti = TRUE, SHOWcross = TRUE, ..., 
 		tabPanel("Table", 
 			tabsetPanel(
 				tabPanel("Controls", out),
-				if (SHOWmulti)	tabPanel("Custom Stats", tablemultUI("tableMULTI")),
-				if (SHOWcross)	tabPanel("Temp. Crosses", tablecrossUI("tableCROSS")),
+				if (SHOWmulti)	tabPanel("Custom Stats", 
+					tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+					tableCUSTinUI("TEMP", "CPU Temp",		"°C"),	hr(),
+					tableCUSTinUI("FREQ", "Frequency",		"MHz"),	hr(),
+					tableCUSTinUI("SOCK", "Socket Power",	"W"),	hr(),
+					tableCUSTinUI("CORE", "Core Power",		"W"),
+				),
+				if (SHOWcross)	tabPanel("Temp. Crosses",
+					tablecrossUI("tableCROSS")),
 				)	)	)
 	tabPanel("Table",	out)
 }
 
-tablemultoutUI	<-	function(name, SHOW = TRUE, ..., label = "Multi Table Outputs")	{
+tableCUSToutUI	<-	function(name, SHOW = TRUE)	{
 	ns	<-	NS(name)
 	
-	if (!SHOW)	return(NULL)
-	
 	tagList(
-		fixedRow(
-			column(6,	tableOutput("tableTEMPperc")),
-			column(6,	tableOutput("tableTEMPecdf"))
-		),
-		fixedRow(
-			column(6,	tableOutput("tableFREQperc")),
-			column(6,	tableOutput("tableFREQecdf"))
-		),
-		fixedRow(
-			column(6,	tableOutput("tableSOCKperc")),
-			column(6,	tableOutput("tableSOCKecdf"))
-		),
-		fixedRow(
-			column(6,	tableOutput("tableCOREperc")),
-			column(6,	tableOutput("tableCOREecdf"))
-		),
+		fluidRow(
+			column(6,	tableOutput(ns("PERCtab"))),
+			column(6,	tableOutput(ns("ECDFtab"))),
+		)
 	)
 }
 
@@ -334,7 +312,12 @@ ui	<-	ui <- function(request)	{fluidPage(
 					tabsetPanel(
 						tabPanel("Summary Stats",
 							tableOutput("tableSUMM"),
-							tablemultoutUI("tableMULI", VIEW$MULTtab),
+							if (VIEW$MULTtab)	tagList(
+								tableCUSToutUI("TEMP"),
+								tableCUSToutUI("FREQ"),
+								tableCUSToutUI("SOCK"),
+								tableCUSToutUI("CORE"),
+							),
 						),
 						if (VIEW$CROSStab)	tabPanel("Temperature Crosses",
 							tablecrossoutUI("tableCROS", VIEW$CROSStab)
