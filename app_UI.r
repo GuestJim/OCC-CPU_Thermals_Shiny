@@ -131,33 +131,10 @@ GRAPHtabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI"
 	tabPanel("Course Graphs",
 		tagList(
 			tabsetPanel(
-				tabPanel("Mean Frequency",
-					graphUI('MEAN', BRUSH, HEIGHT),
-					# plotOutput('brushMEANzoom',	height = HEIGHT)
-				),
-				tabPanel("Maximum Frequency",
-					graphUI('MAX', BRUSH, HEIGHT),
-					# plotOutput('brushMAXzoom',	height = HEIGHT),
-				),
-				tabPanel("Per-Thread Frequency",
-					graphUI('THREAD', BRUSH, HEIGHT = "auto", SELECT = TRUE),
-					# graphUI('FREQ', BRUSH, HEIGHT = "auto", SELECT = TRUE),
-					# fluidRow(
-						# column(9,	checkboxGroupInput('threadSEL',	label = "Threads Selected",	inline = TRUE)),
-						# column(3,	actionButton('threadSELapply',	label = "Apply"),
-									# helpText('Must be pressed before zoom-graphs appear')),
-					# ),
-					# uiOutput('brushFREQzoomFILT'),
-				),
-				tabPanel("Per-Core Power",
-					graphUI('POWER', BRUSH, HEIGHT = "auto", SELECT = TRUE),
-					# fluidRow(
-						# column(9,	checkboxGroupInput('coreSEL',	label = "Cores Selected",	inline = TRUE)),
-						# column(3,	actionButton('coreSELapply',	label = "Apply"),
-									# helpText('Must be pressed before zoom-graphs appear')),
-					# ),
-					# uiOutput('brushPOWERzoomFILT'),
-				),
+				tabPanel("Mean Frequency",		graphUI('MEAN',	BRUSH, HEIGHT),	),
+				tabPanel("Maximum Frequency",	graphUI('MAX',	BRUSH, HEIGHT),	),
+				tabPanel("Per-Thread Frequency",	graphUI('THREAD',	BRUSH, HEIGHT = "auto", SELECT = TRUE),	),
+				tabPanel("Per-Core Power",			graphUI('POWER',	BRUSH, HEIGHT = "auto", SELECT = TRUE),	),
 			)
 		)
 	)
@@ -304,7 +281,8 @@ ui	<-	ui <- function(request)	{fluidPage(
 				tabPanel("Graphs",
 					numericInput('FREQ.COEF',	label	=	"Power-Frequency Coefficient",
 						value = GRAPH$FREQ.COEF,	min = 0,	max = GRAPH$FREQ.COEF * 10,	step = GRAPH$FREQ.COEF / 4),
-					actionButton('COEFupd',	label = "Apply Coefficient")
+					actionButton('COEFupd',	label = "Apply Coefficient"),
+					if (VIEW$BRUSH)	helpText("Applying a coefficient will wipe the zoom graphs and brushes")
 				),
 				id		=	"Table Controls",
 				type	=	"pills"

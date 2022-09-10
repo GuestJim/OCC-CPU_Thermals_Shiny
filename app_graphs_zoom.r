@@ -1,4 +1,4 @@
-graphZOOMServer	<-	function(name, GRAPH, height = 720)	{
+graphZOOMServer	<-	function(name, GRAPH)	{
 	WARM	<-	DATA$warm	;	DURATION	<-	DATA$duration
 	moduleServer(name, function(input, output, session)	{
 		updateNumericInput(inputId	=	"start",	value = -WARM)
