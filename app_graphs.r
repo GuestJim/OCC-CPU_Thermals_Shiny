@@ -47,16 +47,20 @@ GRAPH$facetPOWER	=	facet_grid(rows = vars(Core),	switch = "y", labeller	=
 		labeller(Core	=	function(IN) paste0("Core: ", IN))
 		)
 
-observeEvent(input$COEFupd,	{
-	if (input$FREQ.COEF != 0)	GRAPH$FREQ.COEF	<-	input$FREQ.COEF
-	})
+observeEvent(input$COEFupd,	{	if (input$FREQ.COEF != 0)	GRAPH$FREQ.COEF	<-	input$FREQ.COEF	})
+#	fewer headaches keeping GRAPH$FREQ.COEF a traditional object than a headache
+
+graphServer	<-	function(name, GRAPH, ...)	{	moduleServer(name, function(input, output, session)	{
+	output$graph	<-	renderPlot(	GRAPH,	...)
+})}
+#	really just so namespacing can be used, instead of explicitly named objects
 
 observeEvent(list(input$dataSelLOAD, input$COEFupd),	{
-	output$graphMEAN	=	renderPlot({	GRAPH$graphMEAN(GRAPH$FREQ.COEF)	})
-	output$graphMAX		=	renderPlot({	GRAPH$graphMAX(GRAPH$FREQ.COEF)		})
-	output$graphTHREAD	=	renderPlot({	GRAPH$graphFREQ(GRAPH$FREQ.COEF) + GRAPH$facetFREQ		},
+	graphServer("MEAN",		GRAPH$graphMEAN(GRAPH$FREQ.COEF))
+	graphServer("MAX",		GRAPH$graphMAX(GRAPH$FREQ.COEF))
+	graphServer("THREAD",	GRAPH$graphFREQ(GRAPH$FREQ.COEF) + GRAPH$facetFREQ,
 		height = 720/3 * length(unique(DATA$dataALL$Thread))	)
-	output$graphPOWER	=	renderPlot({	GRAPH$graphPOWER(GRAPH$FREQ.COEF) + GRAPH$facetPOWER	},
+	graphServer("POWER",	GRAPH$graphPOWER(GRAPH$FREQ.COEF) + GRAPH$facetPOWER,
 		height = 720/3 * length(unique(DATA$dataALL$Core))	)
 })
 

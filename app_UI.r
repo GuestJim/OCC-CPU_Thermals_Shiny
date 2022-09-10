@@ -97,7 +97,7 @@ graphUI	<-	function(name, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500, SELE
 	ns	<-	NS(name)
 	
 	tagList(
-		plotOutput(paste0("graph", as.character(name)),	height = HEIGHT,	dblclick	=	ifBRUSH(ns("graphBRUSHdbl")),
+		plotOutput(ns('graph'),	height = HEIGHT,	dblclick	=	ifBRUSH(ns("graphBRUSHdbl")),
 			brush	=	ifBRUSH(brushOpts(id	=	ns("graphBRUSH"), resetOnNew	=	TRUE, direction	=	"x"))),
 		if (BRUSH)	tagList(	strong("Click and Drag to Zoom Below"),
 			textOutput(ns('test')),
