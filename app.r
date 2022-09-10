@@ -106,14 +106,14 @@ server <- function(input, output, session) {
 		updateCheckboxGroupInput(	inputId	=	"listSTAT",
 			choices		=	names(stats(0)),	selected	=	names(stats(0))		)
 
-		updateCheckboxGroupInput(	inputId	=	"threadSEL",
-			choiceValues	=	unique(DATA$dataALL$Thread),
-			choiceNames		=	paste0("Thread ", unique(DATA$dataALL$Thread)),
-			selected	=	unique(DATA$dataALL$Thread),	inline = TRUE)
-		updateCheckboxGroupInput(	inputId	=	"coreSEL",
-			choiceValues	=	unique(DATA$dataALL$Core),
-			choiceNames		=	paste0("Core ", unique(DATA$dataALL$Core)),
-			selected	=	unique(DATA$dataALL$Core),	inline = TRUE)
+		# updateCheckboxGroupInput(	inputId	=	"threadSEL",
+			# choiceValues	=	unique(DATA$dataALL$Thread),
+			# choiceNames		=	paste0("Thread ", unique(DATA$dataALL$Thread)),
+			# selected	=	unique(DATA$dataALL$Thread),	inline = TRUE)
+		# updateCheckboxGroupInput(	inputId	=	"coreSEL",
+			# choiceValues	=	unique(DATA$dataALL$Core),
+			# choiceNames		=	paste0("Core ", unique(DATA$dataALL$Core)),
+			# selected	=	unique(DATA$dataALL$Core),	inline = TRUE)
 
 	},	label = "Data Loading",	priority	=	10)
 

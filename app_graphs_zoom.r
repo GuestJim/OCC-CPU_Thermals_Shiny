@@ -1,206 +1,80 @@
-observeEvent(list(input$dataSelLOAD, DATA$LOAD),	{
-	req(DATA$dataALL)
-	updateNumericInput(inputId	=	"brushMEANstart",	value	=	-DATA$warm						)
-	updateNumericInput(inputId	=	"brushMEANlength",	value	=	2 * DATA$duration + DATA$warm	)
+graphZOOMServer	<-	function(name, GRAPH, height = 720)	{
+	WARM	<-	DATA$warm	;	DURATION	<-	DATA$duration
+	moduleServer(name, function(input, output, session)	{
+		updateNumericInput(inputId	=	"start",	value = -WARM)
+		updateNumericInput(inputId	=	"length",	value = 2 * DURATION + WARM)
 
-	updateNumericInput(inputId	=	"brushMAXstart",	value	=	-DATA$warm						)
-	updateNumericInput(inputId	=	"brushMAXlength",	value	=	2 * DATA$duration + DATA$warm	)
+		brush	<-	reactiveVal(NA)
+		
+		observeEvent(input$graphBRUSH,	{
+			brush(	unlist(input$graphBRUSH[c("xmin", "xmax")])	)
 
-	updateNumericInput(inputId	=	"brushFREQstart",	value	=	-DATA$warm						)
-	updateNumericInput(inputId	=	"brushFREQlength",	value	=	2 * DATA$duration + DATA$warm	)
+			updateNumericInput(inputId	=	"start",	value = round(	brush()[[1]]				, 2)	)
+			updateNumericInput(inputId	=	"length",	value = round(	brush()[[2]] - brush()[[1]]	, 2)	)
+		},	ignoreInit = TRUE	)
 
-	updateNumericInput(inputId	=	"brushPOWERstart",	value	=	-DATA$warm						)
-	updateNumericInput(inputId	=	"brushPOWERlength",	value	=	2 * DATA$duration + DATA$warm	)
+		observeEvent(input$update,	{
+			brush(	c(input$start, input$length + input$start)	)
+		})
+		
+		output$graphZOOM	<-	renderPlot({
+			if (!anyNA(brush()))	{
+				GRAPH +
+				coord_cartesian(xlim = brush(),	expand = FALSE) +
+				labs(subtitle = paste0("X: ", paste(round(brush(), 2), collapse = " to "), " (s)")	)
+			}
+		}	)
+		
+		if (!anyNA(brush()))	return(brush())
+})}
 
-	output$brushMEANzoom		<-	NULL
-	output$brushMAXzoom			<-	NULL
-	output$brushFREQzoomFILT	<-	NULL
-	output$brushPOWERzoomFILT	<-	NULL
-})
+graphSELECTServer	<-	function(name, GRAPH, TYPE,	HEIGHT = 480)	{
+	WARM <- DATA$warm	;	DURATION <- DATA$duration	;	COEF <- reactive(GRAPH$FREQ.COEF)
+	IN <- DATA$dataALL	;	THREAD <- unique(DATA$dataALL$Thread)	;	CORE <- unique(DATA$dataALL$Core)
+	moduleServer(name, function(input, output, session)	{
+		updateNumericInput(inputId	=	"start",	value = -WARM)
+		updateNumericInput(inputId	=	"length",	value = 2 * DURATION + WARM)
+		
+		if (TYPE == "Thread")	SELECTION	=	setNames(THREAD,	paste0("Thread ", THREAD))
+		if (TYPE == "Core")		SELECTION	=	setNames(CORE,		paste0("Core ", CORE))
+		updateCheckboxGroupInput(inputId = "SEL",	choices = SELECTION,	selected = SELECTION,
+			label = paste0(TYPE, " Selected"), inline = TRUE)
+		
 
-#	Mean
-graphMEANzoom	=	reactive({
-	GRAPH$graphMEAN(GRAPH$FREQ.COEF) +
-	coord_cartesian(xlim = brushMEANzoom$x,	expand = FALSE) +
-	labs(subtitle = paste0("X: ", paste(round(brushMEANzoom$x, 2), collapse = " to "), " (s)")	)
-})
+		brush	<-	reactiveVal(NA)
+		
+		observeEvent(input$graphBRUSH,	{
+			brush(	unlist(input$graphBRUSH[c("xmin", "xmax")])	)
 
-brushMEANzoom	=	reactiveValues(x = c(-Inf, Inf),	y = c(-Inf, Inf),	FILTER	=	TRUE)
-observeEvent(input$COEFupd,	{
-	observeEvent(input$brushMEAN, {
-		req(DATA$dataALL)
-		brush 		<- input$brushMEAN
+			updateNumericInput(inputId	=	"start",	value = round(	brush()[[1]]				, 2)	)
+			updateNumericInput(inputId	=	"length",	value = round(	brush()[[2]] - brush()[[1]]	, 2)	)
+		},	ignoreInit = TRUE	)
 
-		brushMEANzoom$x			<-	NULL
-		if (!is.null(brush)) 	brushMEANzoom$x			<-	c(brush$xmin, brush$xmax)
-
-		updateNumericInput(inputId	=	"brushMEANstart",	value	=	round(	brushMEANzoom$x[1], 		2)	)
-		updateNumericInput(inputId	=	"brushMEANlength",	value	=	round(	abs(diff(brushMEANzoom$x)),	2)	)
-
-		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
-	})
-
-	observeEvent(input$brushMEANupdate,	{
-		req(DATA$dataALL)
-		brushMEANzoom$x	=	c(input$brushMEANstart, input$brushMEANstart + input$brushMEANlength)
-
-		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
-	})
-
-	observeEvent(input$brushMEANdbl,	{
-		brush 		<-	input$brushMEANdbl
-		brushMEANzoom$x			<-	c(min(DATA$dataALL$Time), max(DATA$dataALL$Time))
-
-		updateNumericInput(inputId	=	"brushMEANstart",	value	=	brushMEANzoom$x[1])
-		updateNumericInput(inputId	=	"brushMEANlength",	value	=	brushMEANzoom$x[2] - brushMEANzoom$x[1])
-
-		output$brushMEANzoom	=	renderPlot({	graphMEANzoom()	})
-	})
-},	ignoreNULL = FALSE)
-
-
-#	Max
-graphMAXzoom	=	reactive({
-	GRAPH$graphMAX(GRAPH$FREQ.COEF) +
-	coord_cartesian(xlim = brushMAXzoom$x,	expand = FALSE) +
-	labs(subtitle = paste0("X: ", paste(round(brushMAXzoom$x, 2), collapse = " to "), " (s)")	)
-})
-
-brushMAXzoom	=	reactiveValues(x = c(-Inf, Inf),	y = c(-Inf, Inf),	FILTER	=	TRUE)
-observeEvent(input$COEFupd,	{
-	observeEvent(input$brushMAX, {
-		req(DATA$dataALL)
-		brush 		<- input$brushMAX
-
-		brushMAXzoom$x			<-	NULL
-		if (!is.null(brush)) 	brushMAXzoom$x			<-	c(brush$xmin, brush$xmax)
-
-		updateNumericInput(inputId	=	"brushMAXstart",	value	=	round(	brushMAXzoom$x[1], 		2)	)
-		updateNumericInput(inputId	=	"brushMAXlength",	value	=	round(	abs(diff(brushMAXzoom$x)),	2)	)
-
-		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
-	})
-
-	observeEvent(input$brushMAXupdate,	{
-		req(DATA$dataALL)
-		brushMAXzoom$x	=	c(input$brushMAXstart, input$brushMAXstart + input$brushMAXlength)
-
-		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
-	})
-
-	observeEvent(input$brushMAXdbl,	{
-		brush 		<-	input$brushMAXdbl
-		brushMAXzoom$x			<-	c(min(DATA$dataALL$Time), max(DATA$dataALL$Time))
-
-		updateNumericInput(inputId	=	"brushMAXstart",	value	=	brushMAXzoom$x[1])
-		updateNumericInput(inputId	=	"brushMAXlength",	value	=	brushMAXzoom$x[2] - brushMAXzoom$x[1])
-
-		output$brushMAXzoom	=	renderPlot({	graphMAXzoom()	})
-	})
-},	ignoreNULL = FALSE)
-
-
-#	Frequency per Thread
-graphFREQfilt	=	function(FILT, FREQ.COEF, CROP.x = NULL)	{
-	GRAPH$graphFREQ(FREQ.COEF, FILT) +
-	coord_cartesian(xlim = CROP.x,	expand = FALSE) +
-	labs(subtitle = paste0("X: ", paste(round(CROP.x, 2), collapse = " to "), " (s)")	)
-}
-
-observeEvent(list(input$COEFupd, brushFREQzoom$x, input$threadSELapply), {
-	req(brushFREQzoom$FILTER)
-	hold	<-	lapply(unique(DATA$dataALL$Thread), function(i) {
-		tagList(
-			strong(paste0("Thread: ", i)),
-			renderPlot({
-				graphFREQfilt(DATA$dataALL$Thread == i, GRAPH$FREQ.COEF, brushFREQzoom$x)
-				}, height = 480)
+		observeEvent(input$update,	{
+			brush(	c(input$start, input$length + input$start)	)
+		})
+		
+		hold	<-	lapply(SELECTION, function(i)	{
+			tagList(
+				strong(paste0(TYPE, ": ", i)),
+				renderPlot({
+					GRAPH(IN[, TYPE] == i) +
+					coord_cartesian(xlim = brush(),	expand = FALSE) +
+					labs(subtitle = paste0("X: ", paste(round(brush(), 2), collapse = " to "), " (s)")	)
+				},	height = HEIGHT)
 			)
 		})
-
-	output$brushFREQzoomFILT	<-	renderUI({	hold[as.numeric(isolate(input$threadSEL)) + 1]	})
-},	priority = -5	)
-
-brushFREQzoom	=	reactiveValues(x = c(min(DATA$dataALL$Time), max(DATA$dataALL$Time)),	y = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$COEFupd,	{
-	observeEvent(input$brushFREQ, {
-		req(DATA$dataALL)
-		brush 		<- input$brushFREQ
-
-		brushFREQzoom$x			<-	NULL
-		if (!is.null(brush)) 	brushFREQzoom$x			<-	c(brush$xmin, brush$xmax)
-
-		updateNumericInput(inputId	=	"brushFREQstart",	value	=	round(	brushFREQzoom$x[1], 		2)	)
-		updateNumericInput(inputId	=	"brushFREQlength",	value	=	round(	abs(diff(brushFREQzoom$x)),	2)	)
-
-		brushFREQzoom$FILTER	<-	TRUE
-	})
-
-	observeEvent(input$brushFREQupdate,	{
-		req(DATA$dataALL)
-		brushFREQzoom$x	=	c(input$brushFREQstart, input$brushFREQstart + input$brushFREQlength)
-
-		brushFREQzoom$FILTER	<-	TRUE
-	})
-
-	observeEvent(input$brushFREQdbl,	{
-		brush 		<-	input$brushFREQdbl
-		brushFREQzoom$x			<-	c(min(DATA$dataALL$Time), max(DATA$dataALL$Time))
-
-		updateNumericInput(inputId	=	"brushFREQstart",	value	=	brushFREQzoom$x[1])
-		updateNumericInput(inputId	=	"brushFREQlength",	value	=	brushFREQzoom$x[2] - brushFREQzoom$x[1])
-
-		brushFREQzoom$FILTER	<-	TRUE
-	})
-},	ignoreNULL = FALSE)
-
-#	Power per Core
-graphPOWERfilt	=	function(FILT, FREQ.COEF, CROP.x = NULL)	{
-	GRAPH$graphPOWER(FREQ.COEF, FILT) +
-	coord_cartesian(xlim = CROP.x,	expand = FALSE) +
-	labs(subtitle = paste0("X: ", paste(round(CROP.x, 2), collapse = " to "), " (s)")	)
-}
-
-observeEvent(list(input$COEFupd, brushPOWERzoom$x, input$coreSELapply), {
-	req(brushPOWERzoom$FILTER)
-	hold	<-	lapply(unique(DATA$dataALL$Core), function(i) {
-		tagList(
-			strong(paste0("Core: ", i)),
-			renderPlot({
-				graphPOWERfilt(DATA$dataALL$Core == i, GRAPH$FREQ.COEF, brushPOWERzoom$x)
-				}, height = 480)
-			)
+		observeEvent(input$SELapply,	{
+			output$graphZOOM	<-	renderUI(	hold[as.numeric(isolate(input$SEL)) + 1]	)
 		})
+		
+		if (!anyNA(brush()))	return(brush())
+})}
 
-	output$brushPOWERzoomFILT	<-	renderUI({	hold[as.numeric(isolate(input$coreSEL)) + 1]	})
-},	priority = -5	)
-
-brushPOWERzoom	=	reactiveValues(x = c(min(DATA$dataALL$Time), max(DATA$dataALL$Time)),	y = c(-Inf, Inf),	FILTER	=	FALSE)
-observeEvent(input$COEFupd,	{
-	observeEvent(input$brushPOWER, {
-		req(DATA$dataALL)
-		brush 		<- input$brushPOWER
-
-		brushPOWERzoom$x			<-	NULL
-		if (!is.null(brush)) 	brushPOWERzoom$x			<-	c(brush$xmin, brush$xmax)
-
-		updateNumericInput(inputId	=	"brushPOWERstart",	value	=	round(	brushPOWERzoom$x[1], 		2)	)
-		updateNumericInput(inputId	=	"brushPOWERlength",	value	=	round(	abs(diff(brushPOWERzoom$x)),	2)	)
-		brushPOWERzoom$FILTER	<-	TRUE
-	})
-
-	observeEvent(input$brushPOWERupdate,	{
-		req(DATA$dataALL)
-		brushPOWERzoom$x	=	c(input$brushPOWERstart, input$brushPOWERstart + input$brushPOWERlength)
-		brushPOWERzoom$FILTER	<-	TRUE
-	})
-
-	observeEvent(input$brushPOWERdbl,	{
-		brush 		<-	input$brushPOWERdbl
-		brushPOWERzoom$x			<-	c(min(DATA$dataALL$Time), max(DATA$dataALL$Time))
-
-		updateNumericInput(inputId	=	"brushPOWERstart",	value	=	brushPOWERzoom$x[1])
-		updateNumericInput(inputId	=	"brushPOWERlength",	value	=	brushPOWERzoom$x[2] - brushPOWERzoom$x[1])
-		brushPOWERzoom$FILTER	<-	TRUE
-	})
-},	ignoreNULL = FALSE)
+observeEvent(list(input$dataSelLOAD, input$COEFupd),	{
+	graphZOOMServer("MEAN",		GRAPH$graphMEAN(GRAPH$FREQ.COEF))
+	graphZOOMServer("MAX",		GRAPH$graphMAX(GRAPH$FREQ.COEF))
+	
+	graphSELECTServer("THREAD",		function(FILT)	{GRAPH$graphFREQ(GRAPH$FREQ.COEF, FILT)},	"Thread",	HEIGHT = 480)
+	graphSELECTServer("POWER",		function(FILT)	{GRAPH$graphPOWER(GRAPH$FREQ.COEF, FILT)},	"Core",		HEIGHT = 480)
+},	ignoreInit = TRUE	)

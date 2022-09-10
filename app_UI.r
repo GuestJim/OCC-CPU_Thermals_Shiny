@@ -93,25 +93,32 @@ tablecrossoutUI	<-	function(name, SHOW = TRUE, ..., label = "Temperature Cross T
 }
 
 #	Graph and Brush Control, not zoomed graph
-graphUI	<-	function(name, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500)	{
-	ID	<-	name
+graphUI	<-	function(name, BRUSH, HEIGHT = 720, START = -300, LENGTH = 7500, SELECT = FALSE)	{
 	ns	<-	NS(name)
 	
-	pasteBRUSH	<-	function(IN = NULL)	paste0("brush", ID, IN)
-	
 	tagList(
-		plotOutput(paste0("graph", ID),	height = HEIGHT,	dblclick	=	ifBRUSH(pasteBRUSH("dbl")),
-			brush	=	ifBRUSH(brushOpts(id	=	pasteBRUSH(), resetOnNew	=	TRUE, direction	=	"x"))),
+		plotOutput(paste0("graph", as.character(name)),	height = HEIGHT,	dblclick	=	ifBRUSH(ns("graphBRUSHdbl")),
+			brush	=	ifBRUSH(brushOpts(id	=	ns("graphBRUSH"), resetOnNew	=	TRUE, direction	=	"x"))),
 		if (BRUSH)	tagList(	strong("Click and Drag to Zoom Below"),
+			textOutput(ns('test')),
 			fixedRow(
-				column(3,	numericInput(inputId	=	pasteBRUSH("start"),
+				column(3,	numericInput(inputId	=	ns("start"),
 					value = START, 	label	=	"Zoom Start (s)",	step	=	1)
 					),
-				column(3,	numericInput(inputId	=	pasteBRUSH("length"),
+				column(3,	numericInput(inputId	=	ns("length"),
 					value = LENGTH,	label	=	"Zoom Length (s)",	step	=	1)
 					),
-				column(3,	actionButton(inputId	=	pasteBRUSH("update"), label = "Update Zoom"))
-			)
+				column(3,	actionButton(inputId	=	ns("update"), label = "Update Zoom"))
+			),
+			if (!SELECT)	plotOutput(ns('graphZOOM'),	height = HEIGHT),
+			if (SELECT)		tagList(
+				fluidRow(
+					column(9,	checkboxGroupInput(ns('SEL'),	label = "Selected",	inline = TRUE)),
+					column(3,	actionButton(ns('SELapply'),	label = "Apply"),
+								helpText('Must be pressed before zoom-graphs appear')),
+				),
+				uiOutput(ns('graphZOOM'))
+			),
 		)
 	)
 }
@@ -126,29 +133,30 @@ GRAPHtabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, ..., label = "Graphs UI"
 			tabsetPanel(
 				tabPanel("Mean Frequency",
 					graphUI('MEAN', BRUSH, HEIGHT),
-					plotOutput('brushMEANzoom',	height = HEIGHT)
+					# plotOutput('brushMEANzoom',	height = HEIGHT)
 				),
 				tabPanel("Maximum Frequency",
 					graphUI('MAX', BRUSH, HEIGHT),
-					plotOutput('brushMAXzoom',	height = HEIGHT),
+					# plotOutput('brushMAXzoom',	height = HEIGHT),
 				),
 				tabPanel("Per-Thread Frequency",
-					graphUI('FREQ', BRUSH, HEIGHT = "auto"),
-					fluidRow(
-						column(9,	checkboxGroupInput('threadSEL',	label = "Threads Selected",	inline = TRUE)),
-						column(3,	actionButton('threadSELapply',	label = "Apply"),
-									helpText('Must be pressed before zoom-graphs appear')),
-					),
-					uiOutput('brushFREQzoomFILT'),
+					graphUI('THREAD', BRUSH, HEIGHT = "auto", SELECT = TRUE),
+					# graphUI('FREQ', BRUSH, HEIGHT = "auto", SELECT = TRUE),
+					# fluidRow(
+						# column(9,	checkboxGroupInput('threadSEL',	label = "Threads Selected",	inline = TRUE)),
+						# column(3,	actionButton('threadSELapply',	label = "Apply"),
+									# helpText('Must be pressed before zoom-graphs appear')),
+					# ),
+					# uiOutput('brushFREQzoomFILT'),
 				),
 				tabPanel("Per-Core Power",
-					graphUI('POWER', BRUSH, HEIGHT = "auto"),
-					fluidRow(
-						column(9,	checkboxGroupInput('coreSEL',	label = "Cores Selected",	inline = TRUE)),
-						column(3,	actionButton('coreSELapply',	label = "Apply"),
-									helpText('Must be pressed before zoom-graphs appear')),
-					),
-					uiOutput('brushPOWERzoomFILT'),
+					graphUI('POWER', BRUSH, HEIGHT = "auto", SELECT = TRUE),
+					# fluidRow(
+						# column(9,	checkboxGroupInput('coreSEL',	label = "Cores Selected",	inline = TRUE)),
+						# column(3,	actionButton('coreSELapply',	label = "Apply"),
+									# helpText('Must be pressed before zoom-graphs appear')),
+					# ),
+					# uiOutput('brushPOWERzoomFILT'),
 				),
 			)
 		)
