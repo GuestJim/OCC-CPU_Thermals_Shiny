@@ -171,7 +171,6 @@ modalUI	<-	function(name, BIN.val, BIN.step, LOWER.val, UPPER.val, PER = "Test P
 		fluidRow(
 			column(3, numericInput(ns("modeNUM"),	label = "Number of Modes",	min = 1,	value = 1)),
 			tableOutput(ns("modeTAB")),
-			# tableOutput(paste0("mode", as.character(id))),
 		),
 		HTML("<hr>")
 	)
@@ -208,7 +207,6 @@ HISTtabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, MODES = TRUE, ..., label 
 				),
 				tabPanel("Frequency",
 					histUI('FREQ',	BIN.val = 1,	BIN.step = 0.1, MIN.val = 2000,	LAB = "Frequency Specs (MHz)"),
-						# column(4, textInput('SPEC',	label = "Frequency Specs (MHz)"))	),
 					if (MODES)	modalUI('FREQ',	BIN.val = 100,	BIN.step = 1,	LOWER.val = 2000,	UPPER.val = 6000),
 					if (BRUSH)	brushUI('FREQ',	"MHz",	STEP = 100,	LOWER.max = 6000, UPPER.max = 6000),
 				),
@@ -237,13 +235,11 @@ tseriesUI	<-	function(name, HEIGHT = 480)	{
 	ns	<-	NS(name)
 	
 	tagList(
-		# plotOutput(ns('TStrend'),	height = HEIGHT),
 		plotOutput(ns('TStrend'),	height = HEIGHT,	dblclick	=	ifBRUSH(ns('TStrendBRUSHdbl')),
 			brush	=	ifBRUSH(brushOpts(id	=	ns('trendBRUSH'),	resetOnNew	=	TRUE, direction	=	"x"))),
 		tableOutput(ns('TStrendTAB')),
 		plotOutput(ns('TSseas'),	height = HEIGHT,	dblclick	=	ifBRUSH(ns('TSseasBRUSHdbl')),
 			brush	=	ifBRUSH(brushOpts(id	=	ns('TSseasBRUSH'),	resetOnNew	=	TRUE, direction	=	"x"))),
-		# plotOutput(ns('TSseasBRUSHgraph'),	height = HEIGHT)
 		plotOutput(ns('TSseasBRUSHgraph'),	height = HEIGHT),
 		actionButton(ns('TSseasBRUSHapp'), "Apply zoom to Other Seasonal Graphs"),
 	)
@@ -272,7 +268,6 @@ ui	<-	ui <- function(request)	{fluidPage(
 		sidebarPanel(
 			# bookmarkButton(),
 			selectInput('dataSel',	label	=	"Data to Load",	selectize	=	FALSE,
-				# choices	=	setNames(FILES, gsub(".env|.RData", "", names(FILES))), selected	=	FILES[1]
 				choices	=	FILES, selected	=	FILES[1]
 			),
 			actionButton(inputId	=	"dataSelLOAD",	label	=	"Load Selected Data"),

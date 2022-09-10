@@ -29,7 +29,7 @@ graphZOOMServer	<-	function(name, GRAPH)	{
 })}
 
 graphSELECTServer	<-	function(name, GRAPH, TYPE,	HEIGHT = 480)	{
-	WARM <- DATA$warm	;	DURATION <- DATA$duration	;	COEF <- reactive(GRAPH$FREQ.COEF)
+	WARM <- DATA$warm	;	DURATION <- DATA$duration
 	IN <- DATA$dataALL	;	THREAD <- unique(DATA$dataALL$Thread)	;	CORE <- unique(DATA$dataALL$Core)
 	moduleServer(name, function(input, output, session)	{
 		updateNumericInput(inputId	=	"start",	value = -WARM)
