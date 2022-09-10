@@ -24,16 +24,20 @@ modesNUMServer	<-	function(name, TYPE, COEF = 1)	{moduleServer(name, function(in
 	})
 })}
 
-modesLOCServer	<-	function(name, TYPE, UNIT, COEF = 1)	{moduleServer(name, function(input, output, session)	{
-	FILT	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, TYPE] * COEF
+modesLOCServer	<-	function(name, TYPE, UNIT, COEF = 1)	{roundTerm <- reactive(input$roundTerm)
+	moduleServer(name, function(input, output, session)	{
+		FILT	<-	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, TYPE] * COEF
 
-	TAB	<-	eventReactive(input$modeUPD,	{
-		NULL
-		if	(isTruthy(FILT))	modesTAB(FILT, UNIT, input$modeNUM, input$modeLOW, input$modeUPP)
-	})
-	
-	# output$modeTAB	=	renderTable({	as.data.frame(TAB())	},	digits = roundTerm, rownames = TRUE)
-	as.data.frame(TAB())
+		TAB	<-	eventReactive(input$modeUPD,	{
+			NULL
+			if	(isTruthy(FILT))	modesTAB(FILT, UNIT, input$modeNUM, input$modeLOW, input$modeUPP)
+		})
+		
+		output$modeTAB	=	renderTable({	as.data.frame(TAB())	},	digits = reactive(roundTerm()), rownames = TRUE)
+})}
+
+modesCLEARServer	<-	function(name)	{	moduleServer(name, function(input, output, session){
+	output$modeTAB	<-	NULL
 })}
 
 #	calling the functions to calculate number of modes whenever new data is loaded, and clearing the tables
@@ -44,30 +48,11 @@ observeEvent(input$dataSelLOAD,	{
 	modesNUMServer('CORE',		"Core_Energy",		1/1000)
 	modesNUMServer('UNCORE',	"Uncore_Energy",	1/1000)
 	
-	output$"TEMP-modeTAB"		<-	NULL
-	output$"FREQ-modeTAB"		<-	NULL
-	output$"SOCK-modeTAB"		<-	NULL
-	output$"CORE-modeTAB"		<-	NULL
-	output$"UNCORE-modeTAB"		<-	NULL
+	lapply(c('TEMP', 'FREQ', 'SOCK', 'CORE', 'UNCORE'), modesCLEARServer)
 })
-
 #	Mode tables updated by their respective buttons, and tables react to roundTerm
-observeEvent(input$"TEMP-modeUPD",		{	modesLOC	<-	modesLOCServer('TEMP',	"CPU_Temp",	"°C")
-	output$"TEMP-modeTAB"	=	renderTable({	modesLOC	},	digits = reactive(input$roundTerm), rownames = TRUE)
-},	ignoreInit = TRUE)
-
-observeEvent(input$"FREQ-modeUPD",		{	modesLOC	<-	modesLOCServer('FREQ',	"Frequency",	"MHz")
-	output$"FREQ-modeTAB"	=	renderTable({	modesLOC	},	digits = reactive(input$roundTerm), rownames = TRUE)
-},	ignoreInit = TRUE)
-
-observeEvent(input$"SOCK-modeUPD",		{	modesLOC	<-	modesLOCServer('SOCK',	"Socket_Energy",	"W",	1/1000)
-	output$"SOCK-modeTAB"	=	renderTable({	modesLOC	},	digits = reactive(input$roundTerm), rownames = TRUE)
-},	ignoreInit = TRUE)
-
-observeEvent(input$"CORE-modeUPD",		{	modesLOC	<-	modesLOCServer('CORE',	"Core_Energy",	"W",	1/1000)
-	output$"CORE-modeTAB"	=	renderTable({	modesLOC	},	digits = reactive(input$roundTerm), rownames = TRUE)
-},	ignoreInit = TRUE)
-
-observeEvent(input$"UNCORE-modeUPD",	{	modesLOC	<-	modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	1/1000)
-	output$"UNCORE-modeTAB"	=	renderTable({	modesLOC	},	digits = reactive(input$roundTerm), rownames = TRUE)
-},	ignoreInit = TRUE)
+observeEvent(input$"TEMP-modeUPD",	{	modesLOCServer('TEMP',		"CPU_Temp",		"°C")	},	ignoreInit = TRUE)
+observeEvent(input$"FREQ-modeUPD",	{	modesLOCServer('FREQ',		"Frequency",	"MHz")	},	ignoreInit = TRUE)
+observeEvent(input$"SOCK-modeUPD",		{modesLOCServer('SOCK',		"Socket_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
+observeEvent(input$"CORE-modeUPD",		{modesLOCServer('CORE',		"Core_Energy",		"W",	1/1000)},	ignoreInit = TRUE)
+observeEvent(input$"UNCORE-modeUPD",	{modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
