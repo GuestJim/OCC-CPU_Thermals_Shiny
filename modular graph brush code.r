@@ -1,3 +1,7 @@
+#	it took a lot of frustration, but I managed to actually get this modular code working, more or less
+#	the less is I still want the brush code to be modular and then called by the other functions, but that just refuses to happen
+#	I also do not want the FREQ.COEF apply button to wipe thezoom graph and the brushes, but as that is not a value one should play with much, I can tolerate this loss of functionality
+
 #	in theory this might be able to work, but simply nothing about it really did
 #	originally I tried to have the zoomed graph included in this code, which would not be too difficult to replicate
 #	eventually I abandoned that because it simply refused to work, but hoped I could get this different approach to work
