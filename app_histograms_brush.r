@@ -3,7 +3,7 @@ brushHISTclearServer	<-	function(name)	{moduleServer(name, function(input, outpu
 	output$brushHISTtab	<-	renderTable({	TAB	},	striped = TRUE)
 })}
 
-brushHISTtabServer	<-	function(name, TYPE, r = 0, roundTerm)	{moduleServer(name, function(input, output, session)	{
+brushHISTtabServer	<-	function(name, TYPE, r = 0)	{roundTerm	<-	reactive(input$roundTerm)	;	moduleServer(name, function(input, output, session)	{
 	BRUSH	<-	reactiveValues(xMIN = NULL,	xMAX = NULL)
 	TAB		=	data.frame(cbind(
 		Type			=	c("Warm-up", "Test", "Cooldown"),
@@ -40,17 +40,9 @@ brushHISTtabServer	<-	function(name, TYPE, r = 0, roundTerm)	{moduleServer(name,
 		numCOL	=	sapply(out, is.numeric)
 
 		out[, c(which(!numCOL), which(numCOL))]
-	},	digits = roundTerm,	striped = TRUE)
+	},	digits = reactive(roundTerm()),	striped = TRUE)
 })}
 
-
-observeEvent(list(input$dataSelLOAD, input$roundTerm),	{
-	brushHISTtabServer('TEMP',		"CPU_Temp",			0,	input$roundTerm)
-	brushHISTtabServer('FREQ',		"Frequency",		0,	input$roundTerm)
-	brushHISTtabServer('SOCK',		"Socket_Energy",	1,	input$roundTerm)
-	brushHISTtabServer('CORE',		"Core_Energy",		1,	input$roundTerm)
-	brushHISTtabServer('UNCORE',	"Uncore_Energy",	1,	input$roundTerm)
-},	ignoreInit = FALSE)
 
 observeEvent(input$dataSelLOAD,	{
 	brushHISTclearServer('TEMP')
@@ -58,4 +50,10 @@ observeEvent(input$dataSelLOAD,	{
 	brushHISTclearServer('SOCK')
 	brushHISTclearServer('CORE')
 	brushHISTclearServer('UNCORE')
-},	priority = 10,	ignoreInit = FALSE)
+
+	brushHISTtabServer('TEMP',		"CPU_Temp",			0)
+	brushHISTtabServer('FREQ',		"Frequency",		0)
+	brushHISTtabServer('SOCK',		"Socket_Energy",	1)
+	brushHISTtabServer('CORE',		"Core_Energy",		1)
+	brushHISTtabServer('UNCORE',	"Uncore_Energy",	1)
+},	ignoreInit = FALSE)

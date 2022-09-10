@@ -44,11 +44,9 @@ TABLE$ORDER	<-	eventReactive(input$tabORDER,	{
 	ORD
 })
 
-observeEvent(list(input$roundTerm),	{
-	output$tableSUMM	=	renderTable({
-		tableFILT(TABLE$longSUM()[TABLE$ORDER(), ])
-	},	digits	=	input$roundTerm,	striped	=	TRUE)
-},	label = "Table - Summary")
+output$tableSUMM	=	renderTable({
+	tableFILT(TABLE$longSUM()[TABLE$ORDER(), ])
+},	digits	=	reactive(input$roundTerm),	striped	=	TRUE)
 
 if (VIEW$MULTtab)	source("app_tables_multi.r", local = TRUE)
 source("app_tables_cross.r", local = TRUE)
