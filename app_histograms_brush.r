@@ -45,11 +45,7 @@ brushHISTtabServer	<-	function(name, TYPE, r = 0)	{roundTerm	<-	reactive(input$r
 
 
 observeEvent(input$dataSelLOAD,	{
-	brushHISTclearServer('TEMP')
-	brushHISTclearServer('FREQ')
-	brushHISTclearServer('SOCK')
-	brushHISTclearServer('CORE')
-	brushHISTclearServer('UNCORE')
+	lapply(c('TEMP', 'FREQ', 'SOCK', 'CORE', 'UNCORE'), brushHISTclearServer)
 
 	brushHISTtabServer('TEMP',		"CPU_Temp",			0)
 	brushHISTtabServer('FREQ',		"Frequency",		0)
