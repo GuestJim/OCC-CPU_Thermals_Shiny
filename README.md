@@ -87,20 +87,84 @@ In this case the features include:
         *   mouse brush on Seasonal graph to create zoomed in graph
         *   button to apply Seasonal zoom for current graph to other Seasonal-zoom graphs
 
-Noticed something funny and rather annoying about the documentation concerning [NS()](https://shiny.rstudio.com/reference/shiny/1.7.0/NS.html): The article on [modularizing Shiny code](https://shiny.rstudio.com/articles/modules.html) that involve the function all use "id" as the object passed to it, but this is not the function's "id" argument; it is the "namespace" argument.
-When given just "namespace" the function returns another function, with this one expecting an "id" value.
-In other words, the examples should be more along the lines of:
+## Modular-Rebuild branch notes:
 
-***ns <- NS(namespace)***
+This branch has a version of the scripts where I attempted and mostly succeeded in modularizing much of the code in alignment with what is described in the article [Modularizing Shiny ap code](https://shiny.rstudio.com/articles/modules.html).
+Unfortunately that article has a number of deficiencies, at the time I am writing this at least.
+Among these is a confusing use of object IDs.
 
-***ns("id")***
+At the core of much of the modularizing the article describes are the concept and use of ***namespaces*** that, in effect, allow for objects segregated from others.
+This can allow one module to use one ID internally, but the module is called multiple times without confusion between values.
 
-Something else I noticed is you can explicitly call a value from a namespace by appending a prefix appropriately.
-This means you can access values from outside a namespace, without having to explicitly pass them out of a function.
-To call a UI input object, it looks like the followering, with "namespace" and "id" referring to the NS() arguments:
+The confusion within the article is its use of `id` as the object name passed to the `NS` function that creates namespaces.
+If you review the documentation for [`NS`](https://shiny.rstudio.com/reference/shiny/1.7.0/NS.html), you find it has an argument named `id`, but closer examination reveals this is not the argument the article refers to.
+The article's `id` object is going to the `namespace` argument.
 
-***input$"namespace-id"***
+Putting this into code, the article is written like this, when verbose with the IDs and arguments:
 
-The quotes are necessary as the "-" will break the value selection otherwise.
-This works with both inputs and outputs (though my initial attempt with outputs did fail for some reason), which is quite handy.
-By pulling objects out of a namespace, you can have access to other objects, not within the namespace, such as the numericInput I use for controlling rounding.
+```
+function(id) OR moduleServer(id, ...
+ns	<-	NS(namespace = id, id = NULL)
+ns("OBJECT_ID")
+```
+
+To avoid this confusion within my code, I have replaced the `id` object name with `name`.
+
+```
+function(name) OR moduleServer(name, ...
+ns	<-	NS(namespace = name, id = NULL)
+ns("OBJECT_ID")
+```
+
+I should also note how Shiny appears to implement namespaces, as I do abuse this at times, having found such abuse my only means of achieving certain behaviors.
+
+It appears namespaces work by adding a prefix to object IDs, so an object `ID` in namespace `NAME` has a true ID of `NAME-ID`, though there is likely more going on than that.
+Objects are filtered by the presence of the prefix in order to segregate them from everything else, but I had instances when piercing the namespace proved the only solution to a problem.
+To achieve this I simply constructed the true ID and would reference it, which is probably not proper, but it gets the job done when nothing else I tried would.
+
+I have only attempted to pierce the namespaces for `input` and `output` objects, and calling them is achieved like this: `input$"NAME-ID"`.
+The quotes around the true ID, as I am calling it, are necessary.
+
+Another trick I use after discovering it works allows me to more efficiently (at least in the code) pass external information into the server module.
+
+The way a server module is construction according to the earlier article is like this:
+
+```
+testServer	<-	function(name)	{moduleServer(name, function(input, output, session)	{
+	MODULE CODE
+})}
+```
+
+Within the article it is mention "Inside of the module function, it can use parameters from the outside function", where parameter is what I call an argument.
+What is not stated but is true, and is what I am taking advantage of, is everything from the outer function is accessible, not just the arguments.
+
+```
+a	<-	1	;	b	<-	2
+testServer	<-	function(name)	{
+	A	<-	a	;	B	<-	b
+	moduleServer(name, function(input, output, session)	{
+		MODULE CODE
+})}
+```
+
+In this crude example, both `a` and `b` will be accessible to the `moduleServer` via the `A` and `B` objects.
+If you have something you consistently want available to the `moduleServer` but without having to always pass it an argument, this is a viable means of doing that.
+
+Here is a slightly more advanced but still crude example of this:
+
+```
+numericInput("roundTerm",	value = 2,	step = 1)
+
+testServer	<-	function(name)	{
+	roundTerm	<-	reactive(input$roundTerm)
+	moduleServer(name, function(input, output, session)	{
+		TAB	<-	table_function(INPUTS)
+		output$table	<-	renderTable(	TAB,	digits = reactive(roundTerm()))
+})}
+```
+
+Each time that module is called, it will be passed `input$roundTerm` as a reactive with the ID `roundTerm`.
+That new reactive can then be used to control the rounding of the table, and without having to constantly recalculate the table and without needing to place the call to the module within an `observeEvent`, or similar.
+This is also achieved without `roundTerm` needing to be an argument for the module, because it simply knows to call that dynamic value itself.
+
+Though this is not perfect and it has not enabled me to do everything I wish, it is still quite effectivein many places and has allowed me to simplify various things.
