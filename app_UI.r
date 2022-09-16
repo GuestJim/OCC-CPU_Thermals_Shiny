@@ -262,7 +262,7 @@ TSERIEStabUI	<-	function(name, SHOW = TRUE, BRUSH = TRUE, ..., label = "Time Ser
 	)
 }
 
-ui	<-	ui <- function(request)	{fluidPage(
+ui <- function(request)	{fluidPage(
 	titlePanel("CPU Temperature Statistics and Graphs"),
 	sidebarLayout(
 		sidebarPanel(
