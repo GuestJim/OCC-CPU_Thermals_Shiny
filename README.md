@@ -125,6 +125,11 @@ To achieve this I simply constructed the true ID and would reference it, which i
 I have only attempted to pierce the namespaces for `input` and `output` objects, and calling them is achieved like this: `input$"NAME-ID"`.
 The quotes around the true ID, as I am calling it, are necessary.
 
+I have since found another way to pierce namespaces and I think it is a better format: `input[[NS(NAME, ID)]]`
+`input` is a `reactiveValues` object and so the double-bracket notation can be used to enter into it.
+The `NS` function then builds the string for the namespaced ID, taking the namespace `NAME` and `ID` used within the namespace
+I consider this a better format because it removes any concern of the separator being used within `NS` and variables can be passed for the arguments, enabling loops or variants of `apply`.
+
 Another trick I use after discovering it works allows me to more efficiently (at least in the code) pass external information into the server module.
 
 The way a server module is construction according to the earlier article is like this:

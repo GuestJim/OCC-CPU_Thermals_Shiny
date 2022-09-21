@@ -36,8 +36,9 @@ modesLOCServer	<-	function(name, TYPE, UNIT, COEF = 1)	{roundTerm <- reactive(in
 		output$modeTAB	=	renderTable({	as.data.frame(TAB())	},	digits = reactive(roundTerm()), rownames = TRUE)
 })}
 
-modesCLEARServer	<-	function(name)	{	moduleServer(name, function(input, output, session){
-	output$modeTAB	<-	NULL
+modesCLEARServer	<-	function(name)	{	dataSelLOAD	<-	reactive(input$dataSelLOAD)
+	moduleServer(name, function(input, output, session){
+		observeEvent(dataSelLOAD(),	output$modeTAB	<-	NULL	)
 })}
 
 #	calling the functions to calculate number of modes whenever new data is loaded, and clearing the tables
@@ -47,12 +48,12 @@ observeEvent(input$dataSelLOAD,	{
 	modesNUMServer('SOCK',		"Socket_Energy",	1/1000)
 	modesNUMServer('CORE',		"Core_Energy",		1/1000)
 	modesNUMServer('UNCORE',	"Uncore_Energy",	1/1000)
-	
-	lapply(c('TEMP', 'FREQ', 'SOCK', 'CORE', 'UNCORE'), modesCLEARServer)
 })
-#	Mode tables updated by their respective buttons, and tables react to roundTerm
-observeEvent(input$"TEMP-modeUPD",	{	modesLOCServer('TEMP',		"CPU_Temp",		"°C")	},	ignoreInit = TRUE)
-observeEvent(input$"FREQ-modeUPD",	{	modesLOCServer('FREQ',		"Frequency",	"MHz")	},	ignoreInit = TRUE)
-observeEvent(input$"SOCK-modeUPD",		{modesLOCServer('SOCK',		"Socket_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
-observeEvent(input$"CORE-modeUPD",		{modesLOCServer('CORE',		"Core_Energy",		"W",	1/1000)},	ignoreInit = TRUE)
-observeEvent(input$"UNCORE-modeUPD",	{modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
+lapply(c('TEMP', 'FREQ', 'SOCK', 'CORE', 'UNCORE'), modesCLEARServer)
+
+#	Mode tables updated by their respective buttons
+observeEvent(input[[NS("TEMP", "modeUPD")]],	{modesLOCServer('TEMP',		"CPU_Temp",			"°C")	},			ignoreInit = TRUE)
+observeEvent(input[[NS("FREQ", "modeUPD")]],	{modesLOCServer('FREQ',		"Frequency",		"MHz")	},			ignoreInit = TRUE)
+observeEvent(input[[NS("SOCK", "modeUPD")]],	{modesLOCServer('SOCK',		"Socket_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
+observeEvent(input[[NS("CORE", "modeUPD")]],	{modesLOCServer('CORE',		"Core_Energy",		"W",	1/1000)},	ignoreInit = TRUE)
+observeEvent(input[[NS("UNCORE", "modeUPD")]],	{modesLOCServer('UNCORE',	"Uncore_Energy",	"W",	1/1000)},	ignoreInit = TRUE)
