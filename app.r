@@ -1,7 +1,5 @@
 library(shiny)
-# setwd("C:/Users/Jim/Documents/OCC/@Reviews/@Thermal Scripts/@git-OCC-CPU_Thermals_Shiny")
-# setwd("E:/Users/Jim/My Documents/OCC/@Reviews/@Thermal Scripts/@git-OCC-CPU_Thermals_Shiny")
-# runApp()
+# runapp()
 # options(shiny.error = browser)
 # options(shiny.reactlog = TRUE)
 # options(shiny.maxRequestSize = 100*1024^2)
