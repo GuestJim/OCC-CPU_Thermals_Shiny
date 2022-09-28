@@ -1,5 +1,5 @@
-graphZOOMServer	<-	function(name, GRAPH)	{
-	WARM	<-	DATA$warm	;	DURATION	<-	DATA$duration
+graphZOOMServer	<-	function(name, GRAPHfun)	{
+	WARM	<-	DATA$warm	;	DURATION	<-	DATA$duration	;	COEF	<-	reactive(GRAPH$FREQ.COEF())
 	moduleServer(name, function(input, output, session)	{
 		updateNumericInput(inputId	=	"start",	value = -WARM)
 		updateNumericInput(inputId	=	"length",	value = 2 * DURATION + WARM)
@@ -19,7 +19,7 @@ graphZOOMServer	<-	function(name, GRAPH)	{
 		
 		output$graphZOOM	<-	renderPlot({
 			if (!anyNA(brush()))	{
-				GRAPH +
+				GRAPHfun(COEF()) +
 				coord_cartesian(xlim = brush(),	expand = FALSE) +
 				labs(subtitle = paste0("X: ", paste(round(brush(), 2), collapse = " to "), " (s)")	)
 			}
@@ -28,8 +28,8 @@ graphZOOMServer	<-	function(name, GRAPH)	{
 		if (!anyNA(brush()))	return(brush())
 })}
 
-graphSELECTServer	<-	function(name, GRAPH, TYPE,	HEIGHT = 480)	{
-	WARM <- DATA$warm	;	DURATION <- DATA$duration
+graphSELECTServer	<-	function(name, GRAPHfun, TYPE,	HEIGHT = 480)	{
+	WARM <- DATA$warm	;	DURATION <- DATA$duration	;	COEF	<-	reactive(GRAPH$FREQ.COEF())
 	IN <- DATA$dataALL	;	THREAD <- unique(DATA$dataALL$Thread)	;	CORE <- unique(DATA$dataALL$Core)
 	moduleServer(name, function(input, output, session)	{
 		updateNumericInput(inputId	=	"start",	value = -WARM)
@@ -58,7 +58,7 @@ graphSELECTServer	<-	function(name, GRAPH, TYPE,	HEIGHT = 480)	{
 			tagList(
 				strong(paste0(TYPE, ": ", i)),
 				renderPlot({
-					GRAPH(IN[, TYPE] == i) +
+					GRAPHfun(COEF(), IN[, TYPE] == i) +
 					coord_cartesian(xlim = brush(),	expand = FALSE) +
 					labs(subtitle = paste0("X: ", paste(round(brush(), 2), collapse = " to "), " (s)")	)
 				},	height = HEIGHT)
@@ -70,11 +70,10 @@ graphSELECTServer	<-	function(name, GRAPH, TYPE,	HEIGHT = 480)	{
 		
 		if (!anyNA(brush()))	return(brush())
 })}
-
-observeEvent(list(input$dataSelLOAD, input$COEFupd),	{
-	graphZOOMServer("MEAN",		GRAPH$graphMEAN(GRAPH$FREQ.COEF))
-	graphZOOMServer("MAX",		GRAPH$graphMAX(GRAPH$FREQ.COEF))
+observeEvent(input$dataSelLOAD,	{
+	graphZOOMServer("MEAN",		GRAPH$graphMEAN)
+	graphZOOMServer("MAX",		GRAPH$graphMAX)
 	
-	graphSELECTServer("THREAD",		function(FILT)	{GRAPH$graphFREQ(GRAPH$FREQ.COEF, FILT)},	"Thread",	HEIGHT = 480)
-	graphSELECTServer("POWER",		function(FILT)	{GRAPH$graphPOWER(GRAPH$FREQ.COEF, FILT)},	"Core",		HEIGHT = 480)
-},	ignoreInit = TRUE	)
+	graphSELECTServer("THREAD",		GRAPH$graphFREQ,	"Thread",	HEIGHT = 480)
+	graphSELECTServer("POWER",		GRAPH$graphPOWER,	"Core",		HEIGHT = 480)
+})

@@ -77,8 +77,7 @@ server <- function(input, output, session) {
 		DATA$maxCLK		=	nearCEIL(DATA$dataALL$Frequency,		500)
 		if	(!is.numeric(DATA$FREQ.COEF))	DATA$FREQ.COEF	=	signif(exp(round(log(DATA$maxPWR/DATA$maxCLK / 1000), 0)), 1)
 		
-		GRAPH$FREQ.COEF	<-	DATA$FREQ.COEF
-		if (GRAPH$FREQ.COEF < 1)	GRAPH$FREQ.COEF	<-	1 / GRAPH$FREQ.COEF
+		if (DATA$FREQ.COEF < 1)	DATA$FREQ.COEF	<-	1 / DATA$FREQ.COEF
 		
 		DATA$warmMED	=	median(DATA$dataALL[DATA$dataALL$Period == "Warm-up", "CPU_Temp"])
 		updateCheckboxInput(inputId = "medOFFapply", label = paste0("Subtract Median Warm-up Temp (", DATA$warmMED, " °C)"))
@@ -87,7 +86,7 @@ server <- function(input, output, session) {
 		GRAPH$CAPTION	=	labs(caption = paste(GRAPH$CAPTION, collapse = "\n"))
 
 		updateNumericInput(		inputId	=	"FREQ.COEF",
-			value	=	GRAPH$FREQ.COEF)
+			value	=	DATA$FREQ.COEF)
 		updateNumericInput(		inputId	=	"graphHISTfreqMIN",
 			value	=	round(min(DATA$dataALL$Frequency)-500, -3))
 

@@ -21,7 +21,7 @@ GRAPH$graphMAX	=	function(COEF = DATA$FREQ.COEF, FILT = TRUE)	{
 	ylab("Temperature (°C) and Power (W)")
 }
 
-GRAPH$graphFREQ	=	function(COEF = FREQ.COEF, FILT = TRUE)	{
+GRAPH$graphFREQ	=	function(COEF = DATA$FREQ.COEF, FILT = TRUE)	{
 	GRAPH$base(COEF, FILT) +
 	ggtitle("Frequency with Temperature and Core Power",
 		subtitle = "Even Thread: Physical, Odd Thread: Logical") + 
@@ -47,20 +47,23 @@ GRAPH$facetPOWER	=	facet_grid(rows = vars(Core),	switch = "y", labeller	=
 		labeller(Core	=	function(IN) paste0("Core: ", IN))
 		)
 
-observeEvent(input$COEFupd,	{	if (input$FREQ.COEF != 0)	GRAPH$FREQ.COEF	<-	input$FREQ.COEF	})
-#	fewer headaches keeping GRAPH$FREQ.COEF a traditional object than a headache
+# observeEvent(input$COEFupd,	{	if (input$FREQ.COEF != 0)	GRAPH$FREQ.COEF	<-	input$FREQ.COEF	})
+#	fewer headaches keeping GRAPH$FREQ.COEF a traditional object than a reactive
+GRAPH$FREQ.COEF	<-	eventReactive(input$COEFupd,	{	input$FREQ.COEF	},	ignoreNULL = FALSE)
 
-graphServer	<-	function(name, GRAPH, ...)	{	moduleServer(name, function(input, output, session)	{
-	output$graph	<-	renderPlot(	GRAPH,	...)
+graphServer	<-	function(name, GRAPHfun, FACET = NULL, ...)	{	COEF	<-	reactive(GRAPH$FREQ.COEF())
+	moduleServer(name, function(input, output, session)	{
+		output$graph	<-	renderPlot(	GRAPHfun(COEF()) + FACET,	...)
 })}
 #	really just so namespacing can be used, instead of explicitly named objects
 
-observeEvent(list(input$dataSelLOAD, input$COEFupd),	{
-	graphServer("MEAN",		GRAPH$graphMEAN(GRAPH$FREQ.COEF))
-	graphServer("MAX",		GRAPH$graphMAX(GRAPH$FREQ.COEF))
-	graphServer("THREAD",	GRAPH$graphFREQ(GRAPH$FREQ.COEF) + GRAPH$facetFREQ,
+observeEvent(input$dataSelLOAD,	{
+	graphServer("MEAN",		GRAPH$graphMEAN)
+	graphServer("MAX",		GRAPH$graphMAX)
+	
+	graphServer("THREAD",	GRAPH$graphFREQ,	GRAPH$facetFREQ,
 		height = 720/3 * length(unique(DATA$dataALL$Thread))	)
-	graphServer("POWER",	GRAPH$graphPOWER(GRAPH$FREQ.COEF) + GRAPH$facetPOWER,
+	graphServer("POWER",	GRAPH$graphPOWER,	GRAPH$facetPOWER,
 		height = 720/3 * length(unique(DATA$dataALL$Core))	)
 })
 

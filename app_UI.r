@@ -275,9 +275,8 @@ ui <- function(request)	{fluidPage(
 				tableUI("tableTAB", TRUE, SHOWmulti = VIEW$MULTtab, SHOWcross = VIEW$CROSStab),
 				tabPanel("Graphs",
 					numericInput('FREQ.COEF',	label	=	"Power-Frequency Coefficient",
-						value = GRAPH$FREQ.COEF,	min = 0,	max = GRAPH$FREQ.COEF * 10,	step = GRAPH$FREQ.COEF / 4),
+						value = 100,	min = 0,	max = 1000,	step = 25),
 					actionButton('COEFupd',	label = "Apply Coefficient"),
-					if (VIEW$BRUSH)	helpText("Applying a coefficient will wipe the zoom graphs and brushes")
 				),
 				id		=	"Table Controls",
 				type	=	"pills"
