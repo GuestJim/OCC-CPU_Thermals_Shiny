@@ -172,4 +172,4 @@ Each time that module is called, it will be passed `input$roundTerm` as a reacti
 That new reactive can then be used to control the rounding of the table, and without having to constantly recalculate the table and without needing to place the call to the module within an `observeEvent`, or similar.
 This is also achieved without `roundTerm` needing to be an argument for the module, because it simply knows to call that dynamic value itself.
 
-Though this is not perfect and it has not enabled me to do everything I wish, it is still quite effectivein many places and has allowed me to simplify various things.
+Though this is not perfect and it has not enabled me to do everything I wish, it is still quite effective in many places and has allowed me to simplify various things.
