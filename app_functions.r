@@ -149,8 +149,15 @@ tempCROSS	=	function(IN, PERIOD, LIM, OP = NULL)	{
 
 num2time	<-	function(IN)	format(structure(IN, class = c("POSIXct", "POSIXt"), tzone = "UTC"), "%T")
 # interFORM	<-	function(IN)	paste0(paste(num2time(IN), collapse = " - "), ', or ', diff(IN), ' s')
-interFORM	<-	function(IN)	c(paste(IN, collapse = " - "), paste0(diff(IN), ' s'))
-interFORMdiff	<-	function(IN)	cbind(
-	"Intervals"	=	apply(IN, 1, paste, collapse = " - "),
-	"Length"	=	apply(IN, 1, function(IN) paste(diff(IN), "s"))
+# interFORM	<-	function(IN)	c(paste(IN, collapse = " - "), paste0(diff(IN), ' s'))
+interFORMdiff	<-	function(IN, COOL = FALSE)	{
+	if (COOL)	return(	cbind(
+		"Interval"		=	apply(IN, 1, paste, collapse = " - "),
+		"Cooldown Time"	=	apply(IN - DATA$duration, 1, paste, collapse = " - "),
+		"Length"		=	apply(IN, 1, function(IN) paste(diff(IN), "s"))
+	)	)
+	cbind(
+		"Interval"	=	apply(IN, 1, paste, collapse = " - "),
+		"Length"	=	apply(IN, 1, function(IN) paste(diff(IN), "s"))
 	)
+}

@@ -35,5 +35,5 @@ output$tableCROSScool	=	renderTable({
 	},	striped	=	TRUE)
 output$tableINTERcool	<-	renderTable({
 	out	<-	seqToIntervals(CROSScool()$Time)
-	interFORMdiff(out)[1:min(nrow(out), input$tableCROSSlim), ]
+	interFORMdiff(out, TRUE)[1:min(nrow(out), input$tableCROSSlim), ]
 },	striped	=	TRUE)

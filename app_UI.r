@@ -82,13 +82,13 @@ tablecrossoutUI	<-	function(name, SHOW = TRUE, ..., label = "Temperature Cross T
 	ns	<-	NS(name)
 	
 	if (!SHOW)	return(NULL)
-	
-	tagList(
-		fillRow(
-			tagList(strong("Test Period"),	hr(),	tableOutput('tableCROSStest'),	hr(),	tableOutput('tableINTERtest')),
-			tagList(strong("Cooldown"),		hr(),	tableOutput('tableCROSScool'),	hr(),	tableOutput('tableINTERcool')),
-			flex = c(5, 7)
-		)
+
+	verticalLayout(
+		fluidRow(	column(5, strong("Test Period")),			column(7, strong("Cooldown"))),
+		hr(),
+		fluidRow(	column(5, tableOutput('tableCROSStest')),	column(7, tableOutput('tableCROSScool'))),
+		hr(),
+		fluidRow(	column(5, tableOutput('tableINTERtest')),	column(7, tableOutput('tableINTERcool'))),
 	)
 }
 
