@@ -1,3 +1,6 @@
+if (!require(R.utils))	install.package("R.utils")
+library(R.utils)
+
 observeEvent(input$dataSelLOAD,	{
 	tempTEST	=	DATA$dataALL[DATA$dataALL$Period == DATA$TESTname, "CPU_Temp"]
 	mmTEST	=	c(	min(tempTEST),	max(tempTEST)	)
@@ -16,36 +19,21 @@ observeEvent(input$dataSelLOAD,	{
 	)
 })
 
-observeEvent(input$tableCROSSlim,	{
-	observeEvent(input$tableCROSStest,	{
-		CROSStest	<-	tempCROSS(DATA$dataALL, DATA$TESTname, to.NUM(input$tableCROSStest))
-		output$tableCROSStest	=	renderTable({
-			CROSStest[1:input$tableCROSSlim, ]
-			},	striped	=	TRUE)
-		output$tableINTERtest	<-	renderTable({
-			out	<-	seqToIntervals(CROSStest$Time)
-			interFORMdiff(out)[1:min(nrow(out), input$tableCROSSlim), ]
-		},	striped	=	TRUE)
-	},	ignoreInit	=	TRUE)
+CROSStest	<-	reactive(	tempCROSS(DATA$dataALL,	DATA$TESTname,	to.NUM(input$tableCROSStest))	)	%>%	bindEvent(input$dataSelLOAD, input$tableCROSStest)
+CROSScool	<-	reactive(	tempCROSS(DATA$dataALL,	"Cooldown",		to.NUM(input$tableCROSScool))	)	%>%	bindEvent(input$dataSelLOAD, input$tableCROSScool)
 
-	observeEvent(input$tableCROSScool,	{
-		CROSScool	<-	tempCROSS(DATA$dataALL, "Cooldown", to.NUM(input$tableCROSScool))
-		output$tableCROSScool	=	renderTable({
-			CROSScool[1:input$tableCROSSlim, ]
-			},	striped	=	TRUE)
-		output$tableINTERcool	<-	renderTable({
-			out	<-	seqToIntervals(CROSScool$Time)
-			interFORMdiff(out)[1:min(nrow(out), input$tableCROSSlim), ]
-		},	striped	=	TRUE)
-	},	ignoreInit	=	TRUE)
-})
+output$tableCROSStest	<-	renderTable({	
+	CROSStest()[1:min(nrow(CROSStest()), input$tableCROSSlim), ]
+},	striped	=	TRUE)
+output$tableINTERtest	<-	renderTable({
+	out	<-	seqToIntervals(CROSStest()$Time)
+	interFORMdiff(out)[1:min(nrow(out), input$tableCROSSlim), ]
+},	striped	=	TRUE)
 
-if (!require(R.utils))	install.package("R.utils")
-library(R.utils)
-
-# output$aboveTABL	<-	renderTable({
-	# hold	<-	PART()$"Time in Video"[PART()$PULSE >= input$aboveTHRS]
-	# out	<-	seqToIntervals(hold)
-	
-	# data.frame("Intervals above Threshold" = apply(out, 1, function(IN)	paste(num2time(IN), collapse = " - ")), check.names = FALSE)
-# },	striped = TRUE)
+output$tableCROSScool	=	renderTable({
+	CROSScool()[1:min(nrow(CROSScool()), input$tableCROSSlim), ]
+	},	striped	=	TRUE)
+output$tableINTERcool	<-	renderTable({
+	out	<-	seqToIntervals(CROSScool()$Time)
+	interFORMdiff(out)[1:min(nrow(out), input$tableCROSSlim), ]
+},	striped	=	TRUE)
