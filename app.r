@@ -75,6 +75,8 @@ server <- function(input, output, session) {
 
 		DATA$maxPWR		=	nearCEIL(DATA$dataALL$Socket_Energy,	5000)
 		DATA$maxCLK		=	nearCEIL(DATA$dataALL$Frequency,		500)
+		# DATA$maxPWR		=	max(pretty(DATA$dataALL$Socket_Energy))
+		# DATA$maxCLK		=	max(pretty(DATA$dataALL$Frequency))
 		if	(!is.numeric(DATA$FREQ.COEF))	DATA$FREQ.COEF	=	signif(exp(round(log(DATA$maxPWR/DATA$maxCLK / 1000), 0)), 1)
 		
 		if (DATA$FREQ.COEF < 1)	DATA$FREQ.COEF	<-	1 / DATA$FREQ.COEF
